@@ -1,0 +1,15 @@
+{
+  "appName": "MeuTreino",
+  "login": {
+    "title": "Connexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "hint": "Comptes demo: admin@local / coach@local / user@local",
+    "error": "Identifiants invalides"
+  },
+  "common": {
+    "logout": "Deconnexion",
+    "loading": "Chargement..."
+  }
+}

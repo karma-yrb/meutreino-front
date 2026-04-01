@@ -1,0 +1,54 @@
+# MeuTreino Frontend Monorepo
+
+Frontend organise en monorepo pour partager le code entre:
+
+- `apps/web-pwa`: application web installable (PWA).
+- `packages/*`: bibliotheques partagees (domaine, data access, i18n).
+
+## Demarrage
+
+```bash
+npm install
+npm run dev
+```
+
+L'app web tourne via le workspace `@meutreino/web-pwa`.
+
+## Scripts racine
+
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run lint`
+- `npm run test`
+- `npm run test:integration`
+- `npm run test:e2e`
+
+## Comptes de test
+
+Utilise ces comptes pour tester les differents roles dans l'application:
+
+- `user`
+  - Email: `user@local`
+  - Mot de passe: `user123`
+  - Acces principal: accueil, jour, session, profil.
+- `coach`
+  - Email: `coach@local`
+  - Mot de passe: `coach123`
+  - Acces principal: menu/page `Coach` (`/coach/users`).
+- `admin`
+  - Email: `admin@local`
+  - Mot de passe: `admin123`
+  - Acces principal: menu/page `Admin` (`/admin/templates`).
+
+## Structure
+
+```txt
+apps/
+  web-pwa/
+packages/
+  core-domain/
+  data-access/
+  i18n/
+docs/
+```
