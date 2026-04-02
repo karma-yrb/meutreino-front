@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward } from "@fortawesome/free-solid-svg-icons";
 import {
   buildSessionRun,
   getElapsedMs,
@@ -14,6 +16,7 @@ import {
 import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser, getDayPlanForUser } from "../services/storage/repositories/plansRepository";
 import { saveSessionRun } from "../services/storage/repositories/sessionsRepository";
+import { getExerciseMedia } from "../data/exerciseMedia";
 
 function formatDuration(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -32,6 +35,7 @@ export function SessionRunPage() {
   const [planVersion, setPlanVersion] = useState("");
   const [session, setSession] = useState(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [justValidated, setJustValidated] = useState(false);
   const persistedRef = useRef(false);
 
   useEffect(() => {
@@ -99,11 +103,22 @@ export function SessionRunPage() {
     });
   }
 
+  function stepValue(field, delta) {
+    const raw = field === "actualReps" ? (currentSet?.actualReps ?? "") : (currentSet?.actualLoad ?? "");
+    const current = parseFloat(raw);
+    const base = isNaN(current) ? 0 : current;
+    const next = Math.max(field === "actualReps" ? 1 : 0, base + delta);
+    const formatted = Number.isInteger(next) ? String(next) : next.toFixed(1);
+    setValue(field, formatted);
+  }
+
   function onValidateSet() {
     setSession((prev) => {
       if (!prev) return prev;
       return validateCurrentSet(prev, { nowMs: Date.now(), restSeconds: 60 });
     });
+    setJustValidated(true);
+    setTimeout(() => setJustValidated(false), 700);
   }
 
   function onPauseResume() {
@@ -159,13 +174,15 @@ export function SessionRunPage() {
         </div>
         <div className="btn-row">
           {session.status === "running" || session.status === "paused" ? (
-            <button className="ghost-btn" type="button" onClick={onPauseResume}>
+            <button className="ghost-btn" type="button" onClick={onPauseResume} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <FontAwesomeIcon icon={session.status === "running" ? faPause : faPlay} />
               {session.status === "running" ? "Pause" : "Reprendre"}
             </button>
           ) : null}
           {session.status === "running" || session.status === "paused" ? (
-            <button className="ghost-btn" type="button" onClick={onStop}>
-              Arreter la session
+            <button className="ghost-btn" type="button" onClick={onStop} aria-label="Arreter la session" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <FontAwesomeIcon icon={faStop} />
+              Arrêter
             </button>
           ) : null}
           {(session.status === "completed" || session.status === "stopped") && (
@@ -179,40 +196,100 @@ export function SessionRunPage() {
       {session.status === "running" || session.status === "paused" ? (
         <section className="card">
           <h3>Exercice actuel</h3>
+
+          {/* Hero image de l'exercice */}
+          {(() => {
+            const media = getExerciseMedia(currentExercise?.name);
+            return media.imageUrl ? (
+              <img src={media.imageUrl} alt={currentExercise?.name} className="exercise-hero" />
+            ) : (
+              <div className="exercise-hero-placeholder" aria-hidden="true">
+                <FontAwesomeIcon icon={faDumbbell} />
+              </div>
+            );
+          })()}
+
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
-          <p className="muted" data-testid="current-series-label">
-            Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}
-          </p>
+          <div className="progress-badge">
+            <span>Ex. {session.currentExerciseIndex + 1}/{session.exercises.length}</span>
+            <span className="progress-sep">·</span>
+            <span data-testid="current-series-label">Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}</span>
+          </div>
 
           <div className="set-edit-grid">
-            <label>
-              <span>Repetitions</span>
-              <input
-                value={currentSet?.actualReps ?? ""}
-                onChange={(e) => setValue("actualReps", e.target.value)}
-                disabled={session.rest.active || session.status !== "running"}
-              />
-            </label>
-            <label>
-              <span>Charge</span>
-              <input
-                value={currentSet?.actualLoad ?? ""}
-                onChange={(e) => setValue("actualLoad", e.target.value)}
-                disabled={session.rest.active || session.status !== "running"}
-              />
-            </label>
+            <div className="set-stepper-group">
+              <span className="set-stepper-label">
+                <FontAwesomeIcon icon={faRepeat} size="sm" /> Rép.
+              </span>
+              <div className="set-stepper-row">
+                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                <input
+                  className="stepper-value-input"
+                  value={currentSet?.actualReps ?? ""}
+                  onChange={(e) => setValue("actualReps", e.target.value)}
+                  disabled={session.rest.active || session.status !== "running"}
+                />
+                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+              </div>
+            </div>
+            <div className="set-stepper-group">
+              <span className="set-stepper-label">
+                <FontAwesomeIcon icon={faDumbbell} size="sm" /> Charge
+              </span>
+              <div className="set-stepper-row">
+                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                <input
+                  className="stepper-value-input"
+                  value={currentSet?.actualLoad ?? ""}
+                  onChange={(e) => setValue("actualLoad", e.target.value)}
+                  disabled={session.rest.active || session.status !== "running"}
+                />
+                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+              </div>
+            </div>
           </div>
+
+          {/* Emplacement vidéo */}
+          {(() => {
+            const media = getExerciseMedia(currentExercise?.name);
+            return media.videoUrl ? (
+              <a
+                href={media.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="video-slot"
+                style={{ marginBottom: 12 }}
+              >
+                <FontAwesomeIcon icon={faPlay} size="xs" />
+                Voir la vidéo
+              </a>
+            ) : (
+              <span className="video-slot-placeholder" style={{ marginBottom: 12 }}>
+                <FontAwesomeIcon icon={faPlay} size="xs" />
+                Vidéo — à venir
+              </span>
+            );
+          })()}
 
           {session.rest.active ? (
             <div className="rest-box" data-testid="rest-box">
-              <strong>Recuperation en cours: {session.rest.remainingSeconds}s</strong>
-              <button className="ghost-btn" type="button" onClick={() => setSession((prev) => skipRestTimer(prev))}>
-                Passer le timer
+              <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
+              <div className="rest-countdown">{session.rest.remainingSeconds}</div>
+              <p className="rest-label">secondes</p>
+              <button className="ghost-btn" type="button" aria-label="Passer le timer" onClick={() => setSession((prev) => skipRestTimer(prev))} style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}>
+                <FontAwesomeIcon icon={faForward} size="xs" /> Passer
               </button>
             </div>
           ) : (
-            <button className="primary-btn" type="button" onClick={onValidateSet} disabled={session.status !== "running"}>
-              Valider la serie
+            <button
+              className={`primary-btn${justValidated ? " validate-flash" : ""}`}
+              type="button"
+              aria-label="Valider la serie"
+              onClick={onValidateSet}
+              disabled={session.status !== "running"}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%" }}
+            >
+              <FontAwesomeIcon icon={faCheck} /> Valider la série
             </button>
           )}
         </section>

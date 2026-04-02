@@ -4,6 +4,21 @@ import { afterEach, beforeEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { db } from "../services/storage/db";
 
+// jsdom does not implement matchMedia — provide a minimal stub
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: (query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
+});
+
 beforeEach(async () => {
   localStorage.clear();
   await db.open();

@@ -1,5 +1,5 @@
 function emptySet() {
-  return { reps: "-", load: "-", rest: "-", tempo: "-" };
+  return { reps: "12", load: "-", rest: "-", tempo: "-" };
 }
 
 function sets(count) {
