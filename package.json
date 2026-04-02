@@ -14,6 +14,17 @@
     "test": "node --test packages/core-domain/src/*.test.js",
     "test:integration": "npm run test:integration -w @meutreino/web-pwa --",
     "test:e2e": "npm run test:e2e -w @meutreino/web-pwa --",
-    "test:all": "npm run test && npm run test:integration"
+    "test:all": "npm run test && npm run test:integration",
+    "prepare": "husky",
+    "release": "bash ./scripts/release-auto.sh",
+    "release:minor": "bash ./scripts/release-auto.sh minor",
+    "release:major": "bash ./scripts/release-auto.sh major",
+    "release:dry-run": "standard-version --dry-run"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "husky": "^9.1.7",
+    "standard-version": "^9.5.0"
   }
 }

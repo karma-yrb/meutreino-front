@@ -23,6 +23,17 @@ L'app web tourne via le workspace `@meutreino/web-pwa`.
 - `npm run test`
 - `npm run test:integration`
 - `npm run test:e2e`
+- `npm run release`
+- `npm run release:minor`
+- `npm run release:major`
+- `npm run release:dry-run`
+
+## Workflow Git
+
+La strategie de versionning/commit/push est documentee ici:
+
+- `docs/10-strategie-git-versionning.md`
+- `docs/copilot-release.md`
 
 ## Comptes de test
 
