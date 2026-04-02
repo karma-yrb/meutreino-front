@@ -48,8 +48,8 @@ Exemples valides:
    `git checkout main && git pull origin main`
 2. Creer une branche:
    `git checkout -b feat/ma-feature`
-3. Developper puis commit:
-   `git add . && git commit -m "feat(scope): ma modification"`
+3. Developper puis commit (script obligatoire):
+   `bash ./scripts/commit-auto.sh "feat(scope): ma modification" patch`
 4. Push de la branche:
    `git push -u origin feat/ma-feature`
 5. Ouvrir une Pull Request vers `main`.
@@ -66,6 +66,8 @@ Hooks actifs via Husky:
 
 Scripts disponibles a la racine:
 
+- `npm run commit:auto -- "type(scope): message" [patch|minor|major]` -> checks + versionning + commit.
+- `npm run lance:pub` -> alias du release complet (commit auto + versionning + push).
 - `npm run release` -> lance `scripts/release-auto.sh` (dry-run + confirmation + release + push tags).
 - `npm run release:minor` -> meme workflow, force un bump MINOR.
 - `npm run release:major` -> meme workflow, force un bump MAJOR.

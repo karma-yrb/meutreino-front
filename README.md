@@ -23,6 +23,8 @@ L'app web tourne via le workspace `@meutreino/web-pwa`.
 - `npm run test`
 - `npm run test:integration`
 - `npm run test:e2e`
+- `npm run commit:auto -- "type(scope): message" [patch|minor|major]`
+- `npm run lance:pub` (alias release complet: commit auto + versionning + push)
 - `npm run release`
 - `npm run release:minor`
 - `npm run release:major`
@@ -34,6 +36,7 @@ La strategie de versionning/commit/push est documentee ici:
 
 - `docs/10-strategie-git-versionning.md`
 - `docs/copilot-release.md`
+- `.github/copilot-instructions.md`
 
 ## Comptes de test
 

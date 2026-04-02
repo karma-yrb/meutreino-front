@@ -17,9 +17,11 @@
     "test:all": "npm run test && npm run test:integration",
     "prepare": "husky",
     "release": "bash ./scripts/release-auto.sh",
+    "lance:pub": "bash ./scripts/release-auto.sh",
     "release:minor": "bash ./scripts/release-auto.sh minor",
     "release:major": "bash ./scripts/release-auto.sh major",
-    "release:dry-run": "standard-version --dry-run"
+    "release:dry-run": "standard-version --dry-run",
+    "commit:auto": "bash ./scripts/commit-auto.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",

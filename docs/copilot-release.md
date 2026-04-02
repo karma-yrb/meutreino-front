@@ -27,6 +27,9 @@ When the user asks to run a release:
 2. Run the release workflow immediately
 3. Do not wait for extra instructions unless there is a blocker
 
+Alias trigger:
+- If the user says `lance pub`, run `bash ./scripts/release-auto.sh`.
+
 ## Release workflow (required order)
 
 1. Preflight
@@ -69,7 +72,10 @@ When the user asks to run a release:
 
 ## Rules
 
-- Use `bash` for release script execution.
+- Use `bash` only for all commands in this workflow.
+- Never use PowerShell (`powershell` / `pwsh`) or `cmd.exe`.
+- Run `git`, `npm`, `node`, `npx` through bash.
+- Never run `git commit` directly outside release automation; use `bash ./scripts/commit-auto.sh` for regular commits.
 - Never hide dirty-tree changes.
 - Distinguish generated version files from source changes.
 - Record exact version numbers and tags (no "latest").
