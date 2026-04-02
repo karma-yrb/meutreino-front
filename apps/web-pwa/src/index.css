@@ -50,6 +50,7 @@ body {
   background: var(--bg);
   color: var(--text);
   transition: background 0.2s, color 0.2s;
+  overflow-x: hidden;
 }
 
 [data-theme="light"] body {
@@ -197,6 +198,11 @@ button {
   margin-top: 10px;
 }
 
+.btn-row > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .muted {
   color: var(--muted);
 }
@@ -266,23 +272,31 @@ button {
   background: var(--stats-cell-bg);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 8px;
+  padding: 8px 6px;
+  min-width: 0;
 }
 
 .stats-grid strong {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .stats-grid p {
   margin-top: 4px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .set-edit-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -347,13 +361,14 @@ button {
     padding: 12px;
   }
 
-  .btn-row {
-    flex-direction: column;
+  /* match negative margin to the smaller content padding so day-page
+     doesn't extend beyond the viewport */
+  .day-page {
+    margin-left: -12px;
+    margin-right: -12px;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+  /* stats-grid and btn-row stay horizontal — no column override */
 
   .set-edit-grid {
     grid-template-columns: 1fr;
@@ -392,8 +407,8 @@ button {
 
 .exercise-item-header {
   display: flex;
-  gap: 10px;
-  align-items: center;
+  gap: 12px;
+  align-items: flex-start;
   padding: 10px;
 }
 
@@ -426,11 +441,11 @@ button {
 
 .exercise-item-info h4 {
   margin: 0 0 2px;
-  font-size: 14px;
+  font-size: 28px;
   font-weight: 700;
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .exercise-item-body {
@@ -446,6 +461,93 @@ button {
   padding: 1px 7px;
   border-radius: 999px;
   background: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+/* ── Exercise media thumb (slideshow) ───────────────── */
+.exercise-media-thumb {
+  width: 144px;
+  height: 144px;
+  border-radius: 12px;
+  background: var(--ex-placeholder-bg);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.exercise-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.exercise-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--ex-placeholder-color);
+  font-size: 13px;
+}
+
+.exercise-media-placeholder.video {
+  color: var(--brand);
+}
+
+.media-slide-dots {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.media-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255 255 255 / 0.45);
+  transition: background 0.2s;
+}
+
+.media-dot.active {
+  background: var(--brand);
+}
+
+/* ── Serie action buttons (add / remove) ────────────── */
+.serie-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.serie-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.serie-add {
+  color: var(--brand);
+  border-color: var(--brand);
+  background: color-mix(in srgb, var(--brand) 8%, transparent);
 }
 
 /* ── Video slot ─────────────────────────────────────── */
@@ -515,16 +617,18 @@ button {
 
 .set-pill {
   display: inline-flex;
+  flex: 1;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 6px 12px;
-  font-size: 14px;
+  font-size: 28px;
   font-weight: 600;
   color: var(--text);
-  min-height: 36px;
+  min-height: 72px;
 }
 
 .set-pill input,
@@ -532,39 +636,60 @@ button {
   border: none;
   background: transparent;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 28px;
   color: inherit;
   padding: 0;
   min-width: 0;
+  text-align: center;
 }
 
-.reps-input { width: 44px; }
-.load-input { width: 68px; }
+.reps-input { width: 3ch; min-width: 48px; }
+.load-input { width: 4ch; min-width: 64px; }
 
 .set-pill-num {
-  width: 26px;
-  height: 26px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  border: 2px solid var(--line);
+  border: 3px solid var(--brand);
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--brand);
   flex-shrink: 0;
 }
 
 /* ── Series grid (compact mobile layout) ────────────── */
 .series-grid {
   display: grid;
-  gap: 6px;
+  gap: 10px;
+  width: 100%;
 }
 
 .series-grid-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  width: 100%;
   align-items: center;
-  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.series-grid-row .set-pill-num {
+  grid-row: 1 / 3;
+  align-self: center;
+}
+
+.series-grid-row .set-pill {
+  background: var(--surface);
 }
 
 /* ── Exercise action bar (icons + video) ─────────────── */
@@ -598,8 +723,8 @@ button {
 
 /* ── Stepper buttons inside pills ───────────────────── */
 .stepper-btn {
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   border-radius: 6px;
   border: 1px solid var(--line);
   background: var(--surface);
@@ -608,7 +733,7 @@ button {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 700;
   padding: 0;
   line-height: 1;
@@ -635,6 +760,7 @@ button {
 .set-stepper-group {
   display: grid;
   gap: 6px;
+  min-width: 0;
 }
 
 .set-stepper-label {
@@ -685,6 +811,70 @@ button {
 .progress-sep {
   color: var(--muted);
   font-weight: 400;
+}
+
+/* ── Session global progress bar ────────────────────── */
+.session-progress-bar-wrap {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255 255 255 / 0.10);
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.session-progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), #e86166);
+  transition: width 0.4s ease;
+}
+
+.session-progress-label {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7b849e;
+  text-align: right;
+}
+
+/* ── Session header card (status / stats / controls) ── */
+.session-header-card {
+  background: linear-gradient(135deg, #1a1f2e 0%, #0f1420 100%);
+  border-color: #2a3350;
+  border-left: 4px solid var(--brand);
+  color: #e8eaf2;
+}
+
+.session-header-card h2 {
+  color: #e8eaf2;
+  font-size: 16px;
+}
+
+.session-header-card p {
+  color: #7b849e;
+}
+
+.session-header-card .stats-grid > div {
+  background: rgba(255 255 255 / 0.05);
+  border-color: rgba(255 255 255 / 0.08);
+}
+
+.session-header-card .stats-grid strong {
+  color: #7b849e;
+}
+
+.session-header-card .stats-grid p {
+  color: #e8eaf2;
+}
+
+.session-header-card .ghost-btn {
+  background: rgba(255 255 255 / 0.07);
+  border-color: rgba(255 255 255 / 0.15);
+  color: #e8eaf2;
+}
+
+.session-header-card .ghost-btn:hover {
+  background: rgba(255 255 255 / 0.13);
 }
 
 /* ── Rest timer countdown ────────────────────────────── */

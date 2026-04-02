@@ -96,6 +96,19 @@ export function SessionRunPage() {
     return `${session.completedExercisesCount}/${session.exercises.length}`;
   }, [session]);
 
+  const { totalSets, completedSets } = useMemo(() => {
+    if (!session) return { totalSets: 0, completedSets: 0 };
+    let total = 0;
+    let done = 0;
+    for (const ex of session.exercises) {
+      for (const s of ex.sets) {
+        total++;
+        if (s.validated) done++;
+      }
+    }
+    return { totalSets: total, completedSets: done };
+  }, [session]);
+
   function setValue(field, value) {
     setSession((prev) => {
       if (!prev) return prev;
@@ -154,7 +167,7 @@ export function SessionRunPage() {
 
   return (
     <div className="page">
-      <section className="card">
+      <section className="card session-header-card">
         <h2>Session en cours - {day.fullLabel}</h2>
         <p>{day.title}</p>
         <p className="muted">Plan: {planVersion}</p>
@@ -172,6 +185,15 @@ export function SessionRunPage() {
             <p data-testid="session-status">{session.status}</p>
           </div>
         </div>
+        {/* Barre de progression globale */}
+        <div className="session-progress-bar-wrap">
+          <div
+            className="session-progress-bar-fill"
+            style={{ width: totalSets > 0 ? `${Math.round((completedSets / totalSets) * 100)}%` : "0%" }}
+          />
+        </div>
+        <p className="session-progress-label">{completedSets}/{totalSets} séries</p>
+
         <div className="btn-row">
           {session.status === "running" || session.status === "paused" ? (
             <button className="ghost-btn" type="button" onClick={onPauseResume} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -216,7 +238,7 @@ export function SessionRunPage() {
             <span data-testid="current-series-label">Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}</span>
           </div>
 
-          <div className="set-edit-grid">
+          {!session.rest.active && <div className="set-edit-grid">
             <div className="set-stepper-group">
               <span className="set-stepper-label">
                 <FontAwesomeIcon icon={faRepeat} size="sm" /> Rép.
@@ -225,6 +247,7 @@ export function SessionRunPage() {
                 <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
                 <input
                   className="stepper-value-input"
+                  size={1}
                   value={currentSet?.actualReps ?? ""}
                   onChange={(e) => setValue("actualReps", e.target.value)}
                   disabled={session.rest.active || session.status !== "running"}
@@ -240,6 +263,7 @@ export function SessionRunPage() {
                 <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
                 <input
                   className="stepper-value-input"
+                  size={1}
                   value={currentSet?.actualLoad ?? ""}
                   onChange={(e) => setValue("actualLoad", e.target.value)}
                   disabled={session.rest.active || session.status !== "running"}
@@ -247,7 +271,7 @@ export function SessionRunPage() {
                 <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
               </div>
             </div>
-          </div>
+          </div>}
 
           {/* Emplacement vidéo */}
           {(() => {

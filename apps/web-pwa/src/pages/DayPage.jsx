@@ -2,6 +2,18 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronUp, faChevronDown, faFire } from "@fortawesome/free-solid-svg-icons";
+
+function getSlides(exercise) {
+  const name = exercise.name ?? "";
+  const parts = name.split(/\s*\+\s*/);
+  return parts.flatMap((part) => {
+    const media = getExerciseMedia(part.trim());
+    return [
+      { type: "image", url: media.imageUrl, label: part.trim() },
+      { type: "video", url: media.videoUrl, label: part.trim() },
+    ];
+  });
+}
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
 import { getExerciseMedia } from "../data/exerciseMedia";
@@ -22,6 +34,16 @@ export function DayPage() {
   const navigate = useNavigate();
   const [day, setDay] = useState(null);
   const [openSections, setOpenSections] = useState({ warmup: false, exercises: true });
+  const [slideIndices, setSlideIndices] = useState({});
+
+  function cycleSlide(exIndex) {
+    if (!day) return;
+    setSlideIndices((prev) => {
+      const slides = getSlides(day.main[exIndex]);
+      const current = prev[exIndex] ?? 0;
+      return { ...prev, [exIndex]: (current + 1) % slides.length };
+    });
+  }
 
   useEffect(() => {
     async function load() {
@@ -192,7 +214,6 @@ export function DayPage() {
               <div className="day-accordion-body">
                 <div className="exercise-list">
                   {day.main.map((exercise, exIndex) => {
-                    const media = getExerciseMedia(exercise.name);
                     return (
                       <article
                         data-testid={`exercise-${exIndex}`}
@@ -200,13 +221,45 @@ export function DayPage() {
                         className="exercise-item"
                       >
                         <div className="exercise-item-header">
-                          {media.imageUrl ? (
-                            <img src={media.imageUrl} alt={exercise.name} className="exercise-thumb" />
-                          ) : (
-                            <div className="exercise-thumb-placeholder" aria-hidden="true">
-                              <FontAwesomeIcon icon={faDumbbell} />
-                            </div>
-                          )}
+                          {(() => {
+                            const slides = getSlides(exercise);
+                            const slideIdx = slideIndices[exIndex] ?? 0;
+                            const slide = slides[slideIdx];
+                            return (
+                              <button
+                                type="button"
+                                className="exercise-media-thumb"
+                                onClick={() => cycleSlide(exIndex)}
+                                aria-label={`Slide ${slideIdx + 1} sur ${slides.length}`}
+                              >
+                                {slide.type === "image" ? (
+                                  slide.url ? (
+                                    <img src={slide.url} alt={slide.label} className="exercise-media-img" />
+                                  ) : (
+                                    <div className="exercise-media-placeholder">
+                                      <FontAwesomeIcon icon={faDumbbell} size="2x" />
+                                    </div>
+                                  )
+                                ) : (
+                                  slide.url ? (
+                                    <div className="exercise-media-placeholder video">
+                                      <FontAwesomeIcon icon={faPlay} size="2x" />
+                                    </div>
+                                  ) : (
+                                    <div className="exercise-media-placeholder video">
+                                      <FontAwesomeIcon icon={faPlay} size="2x" />
+                                      <span>Vidéo à venir</span>
+                                    </div>
+                                  )
+                                )}
+                                <div className="media-slide-dots">
+                                  {slides.map((_, i) => (
+                                    <span key={i} className={`media-dot${i === slideIdx ? " active" : ""}`} />
+                                  ))}
+                                </div>
+                              </button>
+                            );
+                          })()}
                           <div className="exercise-item-info">
                             <h4>{exercise.name}</h4>
                             {exercise.tag && (
@@ -252,21 +305,12 @@ export function DayPage() {
                           </div>
 
                           <div className="exercise-actions">
-                            <button type="button" className="icon-btn" aria-label="+ Serie" onClick={() => handleSeriesCountChange(exIndex, 1)} title="Ajouter une série">
-                              <FontAwesomeIcon icon={faPlus} />
+                            <button type="button" className="serie-action-btn serie-add" aria-label="+ Serie" onClick={() => handleSeriesCountChange(exIndex, 1)}>
+                              <FontAwesomeIcon icon={faPlus} /> Ajouter une série
                             </button>
-                            <button type="button" className="icon-btn" aria-label="- Serie" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1} title="Retirer une série">
-                              <FontAwesomeIcon icon={faMinus} />
+                            <button type="button" className="serie-action-btn serie-remove" aria-label="- Serie" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1}>
+                              <FontAwesomeIcon icon={faMinus} /> Retirer une série
                             </button>
-                            {media.videoUrl ? (
-                              <a href={media.videoUrl} target="_blank" rel="noopener noreferrer" className="video-slot">
-                                <FontAwesomeIcon icon={faPlay} size="xs" /> Vidéo
-                              </a>
-                            ) : (
-                              <span className="video-slot-placeholder">
-                                <FontAwesomeIcon icon={faPlay} size="xs" /> Vidéo à venir
-                              </span>
-                            )}
                           </div>
                         </div>
                       </article>
