@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/karma-yrb/meutreino-front/compare/v1.0.2...v1.1.0) (2026-04-03)
+
+
+### Features
+
+* **ui:** afficher version sur accueil et corriger couleur texte inputs mode sombre ([cf31cdd](https://github.com/karma-yrb/meutreino-front/commit/cf31cdd182e029f8cd37d8e2244c8cccfaced20e))
+
 ### [1.0.3](https://github.com/karma-yrb/meutreino-front/compare/v1.0.2...v1.0.3) (2026-04-03)
 
 ### [1.0.2](https://github.com/karma-yrb/meutreino-front/compare/v1.0.1...v1.0.2) (2026-04-02)
