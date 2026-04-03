@@ -33,6 +33,7 @@ export function HomePage() {
         <h2>Bienvenue {currentUser?.firstName}</h2>
         <p className="muted">Role: {currentUser?.role}</p>
         <p className="muted">Plan actif: {activePlan?.version ?? "Aucun plan actif"}</p>
+        <p className="muted" style={{ fontSize: "0.75rem", marginTop: "0.5rem" }}>v{__APP_VERSION__}</p>
       </section>
 
       <section className="card">
