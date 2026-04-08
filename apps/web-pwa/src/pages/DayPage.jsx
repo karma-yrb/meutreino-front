@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronUp, faChevronDown, faFire } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronRight, faChevronUp, faChevronDown, faFire, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 function getSlides(exercise) {
   const name = exercise.name ?? "";
@@ -35,15 +35,60 @@ export function DayPage() {
   const [day, setDay] = useState(null);
   const [openSections, setOpenSections] = useState({ warmup: false, exercises: true });
   const [slideIndices, setSlideIndices] = useState({});
+  const [mediaModal, setMediaModal] = useState(null);
 
-  function cycleSlide(exIndex) {
+  function cycleSlide(exIndex, direction = 1) {
     if (!day) return;
     setSlideIndices((prev) => {
       const slides = getSlides(day.main[exIndex]);
       const current = prev[exIndex] ?? 0;
-      return { ...prev, [exIndex]: (current + 1) % slides.length };
+      const next = (current + direction + slides.length) % slides.length;
+      return { ...prev, [exIndex]: next };
     });
   }
+
+  function openModal(exIndex) { setMediaModal(exIndex); }
+  function closeModal() { setMediaModal(null); }
+
+  function handleNoteChange(exIndex, value) {
+    if (!currentUser || !dayId) return;
+    setDay((prev) => {
+      if (!prev) return prev;
+      const nextMain = prev.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, note: value }
+      );
+      return { ...prev, main: nextMain };
+    });
+    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
+      const nextMain = draftDay.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, note: value }
+      );
+      return { ...draftDay, main: nextMain };
+    });
+  }
+
+  function handleDescriptionChange(exIndex, value) {
+    if (!currentUser || !dayId) return;
+    setDay((prev) => {
+      if (!prev) return prev;
+      const nextMain = prev.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, description: value }
+      );
+      return { ...prev, main: nextMain };
+    });
+    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
+      const nextMain = draftDay.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, description: value }
+      );
+      return { ...draftDay, main: nextMain };
+    });
+  }
+
+  useEffect(() => {
+    function onKey(e) { if (e.key === "Escape") closeModal(); }
+    if (mediaModal !== null) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mediaModal]);
 
   useEffect(() => {
     async function load() {
@@ -126,9 +171,18 @@ export function DayPage() {
     <div className="day-page">
       {/* ── Hero ───────────────────────────────────────── */}
       <div className="day-hero">
-        <div className="day-hero-placeholder" aria-hidden="true">
-          <FontAwesomeIcon icon={faDumbbell} />
-        </div>
+        {(() => {
+          const firstImg = hasExercises
+            ? day.main.map(ex => getExerciseMedia(ex.name).imageUrl).find(Boolean)
+            : null;
+          return firstImg ? (
+            <img src={firstImg} alt={day.title ?? day.fullLabel} className="day-hero-img" />
+          ) : (
+            <div className="day-hero-placeholder" aria-hidden="true">
+              <FontAwesomeIcon icon={faDumbbell} />
+            </div>
+          );
+        })()}
         <button className="back-btn" type="button" onClick={() => navigate(-1)} aria-label="Retour">
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
@@ -229,8 +283,8 @@ export function DayPage() {
                               <button
                                 type="button"
                                 className="exercise-media-thumb"
-                                onClick={() => cycleSlide(exIndex)}
-                                aria-label={`Slide ${slideIdx + 1} sur ${slides.length}`}
+                                onClick={() => openModal(exIndex)}
+                                aria-label={`Agrandir – slide ${slideIdx + 1} sur ${slides.length}`}
                               >
                                 {slide.type === "image" ? (
                                   slide.url ? (
@@ -274,6 +328,22 @@ export function DayPage() {
                         </div>
 
                         <div className="exercise-item-body">
+                          <textarea
+                            className="exercise-description-input"
+                            value={exercise.description ?? ""}
+                            onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
+                            placeholder={getExerciseMedia(exercise.name).description ?? "Description de l'exercice, posture, conseils…"}
+                            rows={3}
+                            aria-label="Description de l'exercice"
+                          />
+                          <textarea
+                            className="exercise-note-input"
+                            value={exercise.note ?? ""}
+                            onChange={(e) => handleNoteChange(exIndex, e.target.value)}
+                            placeholder="Notes personnelles…"
+                            rows={2}
+                            aria-label="Note de l'exercice"
+                          />
                           <div className="series-grid">
                             {exercise.series.map((serie, setIndex) => (
                               <div key={setIndex} className="series-grid-row">
@@ -346,6 +416,54 @@ export function DayPage() {
           )}
         </div>
       )}
+
+      {/* ── Media Modal (plein écran) ──────────────────── */}
+      {mediaModal !== null && (() => {
+        const exercise = day.main[mediaModal];
+        const slides = getSlides(exercise);
+        const slideIdx = slideIndices[mediaModal] ?? 0;
+        const slide = slides[slideIdx];
+        return (
+          <div className="media-modal-overlay" onClick={closeModal} role="dialog" aria-modal="true" aria-label={exercise.name}>
+            <div className="media-modal-content" onClick={(e) => e.stopPropagation()}>
+              <button className="media-modal-close" type="button" onClick={closeModal} aria-label="Fermer">
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+              <p className="media-modal-label">{slide.label}</p>
+              {slide.type === "image" ? (
+                slide.url ? (
+                  <img src={slide.url} alt={slide.label} className="media-modal-img" />
+                ) : (
+                  <div className="media-modal-placeholder"><FontAwesomeIcon icon={faDumbbell} size="3x" /></div>
+                )
+              ) : (
+                <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Vidéo à venir</span></div>
+              )}
+              {slides.length > 1 && (
+                <>
+                  <button className="media-modal-nav media-modal-prev" type="button" onClick={() => cycleSlide(mediaModal, -1)} aria-label="Précédent">
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                  </button>
+                  <button className="media-modal-nav media-modal-next" type="button" onClick={() => cycleSlide(mediaModal, 1)} aria-label="Suivant">
+                    <FontAwesomeIcon icon={faChevronRight} />
+                  </button>
+                </>
+              )}
+              <div className="media-modal-dots">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`media-dot${i === slideIdx ? " active" : ""}`}
+                    type="button"
+                    onClick={() => setSlideIndices((prev) => ({ ...prev, [mediaModal]: i }))}
+                    aria-label={`Slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

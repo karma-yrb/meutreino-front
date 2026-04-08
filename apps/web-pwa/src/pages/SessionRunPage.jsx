@@ -232,6 +232,13 @@ export function SessionRunPage() {
           })()}
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
+          {(() => {
+            const desc = currentExercise?.description || getExerciseMedia(currentExercise?.name).description;
+            return desc ? <p className="exercise-description">{desc}</p> : null;
+          })()}
+          {currentExercise?.note && (
+            <p className="exercise-note-readonly">{currentExercise.note}</p>
+          )}
           <div className="progress-badge">
             <span>Ex. {session.currentExerciseIndex + 1}/{session.exercises.length}</span>
             <span className="progress-sep">·</span>

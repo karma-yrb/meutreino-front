@@ -62,7 +62,7 @@ export const defaultTemplate = {
         },
         {
           id: "lun-ex-4",
-          name: "Souleve de terre jambes tendues",
+          name: "Soulevé de terre jambes tendues",
           tag: null,
           series: [
             { reps: "12", load: "30 kg", rest: "-", tempo: "3020" },
@@ -73,7 +73,7 @@ export const defaultTemplate = {
         },
         {
           id: "lun-ex-5",
-          name: "Mollets verticaux",
+          name: "Mollets debout",
           tag: "Pyramide",
           tagColor: "#8e44ad",
           series: [
@@ -97,11 +97,11 @@ export const defaultTemplate = {
         { name: "Etirement unilateral lateral tronc", detail: "1 serie" },
       ],
       main: [
-        { id: "mar-ex-1", name: "Tirage frontal", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
-        { id: "mar-ex-2", name: "Tirage frontal", tag: "Principal", tagColor: "#e53935", series: sets(4), note: null },
+        { id: "mar-ex-1", name: "Tirage vertical", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
+        { id: "mar-ex-2", name: "Tirage vertical", tag: "Principal", tagColor: "#e53935", series: sets(4), note: null },
         { id: "mar-ex-3", name: "Rowing assis poulie basse", tag: null, series: sets(3), note: null },
-        { id: "mar-ex-4", name: "Rowing pronation barre", tag: null, series: sets(3), note: null },
-        { id: "mar-ex-5", name: "Extension du tronc", tag: null, series: sets(3), note: null },
+        { id: "mar-ex-4", name: "Tirage barre penché", tag: null, series: sets(3), note: null },
+        { id: "mar-ex-5", name: "Extension lombaire", tag: null, series: sets(3), note: null },
       ],
     },
     {
@@ -134,9 +134,9 @@ export const defaultTemplate = {
       main: [
         { id: "jeu-ex-1", name: "Leg Curl assis", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
         { id: "jeu-ex-2", name: "Leg Curl assis", tag: "Principal", tagColor: "#e53935", series: sets(3), note: null },
-        { id: "jeu-ex-3", name: "Abducteur tronc penche", tag: null, series: sets(3), note: null },
+        { id: "jeu-ex-3", name: "Abduction hanche penché", tag: null, series: sets(3), note: null },
         { id: "jeu-ex-4", name: "Leg Press 45", tag: null, series: sets(3), note: null },
-        { id: "jeu-ex-5", name: "Mollets Leg Press", tag: null, series: sets(4), note: null },
+        { id: "jeu-ex-5", name: "Mollets presse 45°", tag: null, series: sets(4), note: null },
       ],
     },
     {
@@ -150,10 +150,10 @@ export const defaultTemplate = {
         { name: "Etirement rotateurs internes", detail: "1 serie" },
       ],
       main: [
-        { id: "ven-ex-1", name: "Developpe incline", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
-        { id: "ven-ex-2", name: "Developpe incline", tag: "Principal", tagColor: "#e53935", series: sets(3), note: null },
+        { id: "ven-ex-1", name: "Développé incliné", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
+        { id: "ven-ex-2", name: "Développé incliné", tag: "Principal", tagColor: "#e53935", series: sets(3), note: null },
         { id: "ven-ex-3", name: "Pec deck", tag: null, series: sets(3), note: null },
-        { id: "ven-ex-4", name: "Developpe frontal + Elevation laterale", tag: "Superset", tagColor: "#1abc9c", series: sets(4), note: null },
+        { id: "ven-ex-4", name: "Développé militaire + Élévation latérale", tag: "Superset", tagColor: "#1abc9c", series: sets(4), note: null },
       ],
     },
     {
