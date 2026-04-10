@@ -754,6 +754,28 @@ button {
   border-radius: 10px;
 }
 
+.video-slot-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.session-video-embed-wrap {
+  width: 100%;
+  margin: 0 0 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line);
+}
+
+.session-video-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  display: block;
+}
+
 /* ── Session hero image ─────────────────────────────── */
 .exercise-hero {
   width: 100%;
@@ -1332,6 +1354,12 @@ button {
   gap: 8px;
 }
 
+.warmup-main {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
 .warmup-item:last-child {
   border-bottom: none;
 }
@@ -1341,6 +1369,25 @@ button {
   font-size: 12px;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.warmup-video-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.warmup-video-link:hover {
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
 }
 
 /* ── Sticky CTA bar ─────────────────────────────── */
@@ -1391,4 +1438,3 @@ button {
   font-weight: 600;
   color: var(--muted);
 }
-

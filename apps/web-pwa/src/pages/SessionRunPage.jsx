@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 import {
   buildSessionRun,
   getElapsedMs,
@@ -16,7 +17,7 @@ import {
 import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser, getDayPlanForUser } from "../services/storage/repositories/plansRepository";
 import { saveSessionRun } from "../services/storage/repositories/sessionsRepository";
-import { getExerciseMedia } from "../data/exerciseMedia";
+import { getExerciseMedia, getExerciseVideoSearchUrl } from "../data/exerciseMedia";
 
 function formatDuration(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -27,10 +28,29 @@ function formatDuration(ms) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+function getYoutubeVideoId(url) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) {
+      const shortId = parsed.pathname.replace("/", "").trim();
+      return shortId || null;
+    }
+    if (parsed.hostname.includes("youtube.com")) {
+      return parsed.searchParams.get("v");
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 export function SessionRunPage() {
   const { dayId } = useParams();
+  const { i18n } = useTranslation();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const uiLanguage = i18n.resolvedLanguage || i18n.language || "fr";
   const [day, setDay] = useState(null);
   const [planVersion, setPlanVersion] = useState("");
   const [session, setSession] = useState(null);
@@ -90,6 +110,19 @@ export function SessionRunPage() {
 
   const currentExercise = session?.exercises?.[session.currentExerciseIndex] ?? null;
   const currentSet = currentExercise?.sets?.[session.currentSetIndex] ?? null;
+  const currentMedia = useMemo(
+    () => getExerciseMedia(currentExercise?.name, uiLanguage),
+    [currentExercise?.name, uiLanguage]
+  );
+  const videoInfo = useMemo(() => {
+    const directUrl = currentMedia.videoUrl;
+    const fallbackUrl = getExerciseVideoSearchUrl(currentExercise?.name, uiLanguage);
+    return {
+      url: directUrl || fallbackUrl,
+      embedId: getYoutubeVideoId(directUrl),
+      isFallback: !directUrl && Boolean(fallbackUrl),
+    };
+  }, [currentExercise?.name, currentMedia.videoUrl, uiLanguage]);
   const elapsedLabel = formatDuration(session ? getElapsedMs(session, nowMs) : 0);
   const progressLabel = useMemo(() => {
     if (!session) return "0/0";
@@ -221,9 +254,8 @@ export function SessionRunPage() {
 
           {/* Hero image de l'exercice */}
           {(() => {
-            const media = getExerciseMedia(currentExercise?.name);
-            return media.imageUrl ? (
-              <img src={media.imageUrl} alt={currentExercise?.name} className="exercise-hero" />
+            return currentMedia.imageUrl ? (
+              <img src={currentMedia.imageUrl} alt={currentExercise?.name} className="exercise-hero" />
             ) : (
               <div className="exercise-hero-placeholder" aria-hidden="true">
                 <FontAwesomeIcon icon={faDumbbell} />
@@ -233,7 +265,7 @@ export function SessionRunPage() {
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
           {(() => {
-            const desc = currentExercise?.description || getExerciseMedia(currentExercise?.name).description;
+            const desc = currentExercise?.description || currentMedia.description;
             return desc ? <p className="exercise-description">{desc}</p> : null;
           })()}
           {currentExercise?.note && (
@@ -280,27 +312,41 @@ export function SessionRunPage() {
             </div>
           </div>}
 
-          {/* Emplacement vidéo */}
-          {(() => {
-            const media = getExerciseMedia(currentExercise?.name);
-            return media.videoUrl ? (
-              <a
-                href={media.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="video-slot"
-                style={{ marginBottom: 12 }}
-              >
-                <FontAwesomeIcon icon={faPlay} size="xs" />
-                Voir la vidéo
-              </a>
-            ) : (
-              <span className="video-slot-placeholder" style={{ marginBottom: 12 }}>
-                <FontAwesomeIcon icon={faPlay} size="xs" />
-                Vidéo — à venir
-              </span>
-            );
-          })()}
+          {/* Video guidance */}
+          {videoInfo.embedId ? (
+            <div className="session-video-embed-wrap">
+              <iframe
+                className="session-video-embed"
+                title={`Video - ${currentExercise?.name ?? "exercice"}`}
+                src={`https://www.youtube-nocookie.com/embed/${videoInfo.embedId}?rel=0&modestbranding=1&playsinline=1`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+          ) : null}
+
+          {videoInfo.url ? (
+            <a
+              href={videoInfo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="video-slot"
+              style={{ marginBottom: 8 }}
+            >
+              <FontAwesomeIcon icon={faPlay} size="xs" />
+              {videoInfo.isFallback ? "Chercher une video liee" : "Ouvrir la video sur YouTube"}
+            </a>
+          ) : (
+            <span className="video-slot-placeholder" style={{ marginBottom: 8 }}>
+              <FontAwesomeIcon icon={faPlay} size="xs" />
+              Video indisponible
+            </span>
+          )}
+          {videoInfo.isFallback && (
+            <p className="video-slot-hint">Lien de secours cible sur le nom de l exercice.</p>
+          )}
 
           {session.rest.active ? (
             <div className="rest-box" data-testid="rest-box">

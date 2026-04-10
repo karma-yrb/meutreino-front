@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronRight, faChevronUp, faChevronDown, faFire, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
-function getSlides(exercise) {
+function getSlides(exercise, language) {
   const name = exercise.name ?? "";
   const parts = name.split(/\s*\+\s*/);
   return parts.flatMap((part) => {
-    const media = getExerciseMedia(part.trim());
+    const media = getExerciseMedia(part.trim(), language);
     return [
       { type: "image", url: media.imageUrl, label: part.trim() },
       { type: "video", url: media.videoUrl, label: part.trim() },
@@ -16,7 +17,7 @@ function getSlides(exercise) {
 }
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
-import { getExerciseMedia } from "../data/exerciseMedia";
+import { getExerciseMedia, getExerciseVideoSearchUrl } from "../data/exerciseMedia";
 
 const WEEK_DAYS = [
   { short: "L", id: "lundi" },
@@ -30,8 +31,10 @@ const WEEK_DAYS = [
 
 export function DayPage() {
   const { dayId } = useParams();
+  const { i18n } = useTranslation();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const uiLanguage = i18n.resolvedLanguage || i18n.language || "fr";
   const [day, setDay] = useState(null);
   const [openSections, setOpenSections] = useState({ warmup: false, exercises: true });
   const [slideIndices, setSlideIndices] = useState({});
@@ -40,7 +43,7 @@ export function DayPage() {
   function cycleSlide(exIndex, direction = 1) {
     if (!day) return;
     setSlideIndices((prev) => {
-      const slides = getSlides(day.main[exIndex]);
+      const slides = getSlides(day.main[exIndex], uiLanguage);
       const current = prev[exIndex] ?? 0;
       const next = (current + direction + slides.length) % slides.length;
       return { ...prev, [exIndex]: next };
@@ -173,7 +176,7 @@ export function DayPage() {
       <div className="day-hero">
         {(() => {
           const firstImg = hasExercises
-            ? day.main.map(ex => getExerciseMedia(ex.name).imageUrl).find(Boolean)
+            ? day.main.map(ex => getExerciseMedia(ex.name, uiLanguage).imageUrl).find(Boolean)
             : null;
           return firstImg ? (
             <img src={firstImg} alt={day.title ?? day.fullLabel} className="day-hero-img" />
@@ -239,10 +242,29 @@ export function DayPage() {
             {openSections.warmup && (
               <div className="day-accordion-body">
                 {day.warmup.map((item, i) => (
-                  <div key={i} className="warmup-item">
-                    <span>{item.name}</span>
-                    <span className="warmup-detail">{item.detail}</span>
-                  </div>
+                  (() => {
+                    const media = getExerciseMedia(item.name, uiLanguage);
+                    const warmupVideoUrl = media.videoUrl || getExerciseVideoSearchUrl(item.name, uiLanguage);
+                    return (
+                      <div key={i} className="warmup-item">
+                        <div className="warmup-main">
+                          <span>{item.name}</span>
+                          <span className="warmup-detail">{item.detail}</span>
+                        </div>
+                        {warmupVideoUrl ? (
+                          <a
+                            href={warmupVideoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="warmup-video-link"
+                          >
+                            <FontAwesomeIcon icon={faPlay} size="xs" />
+                            Vidéo
+                          </a>
+                        ) : null}
+                      </div>
+                    );
+                  })()
                 ))}
               </div>
             )}
@@ -276,7 +298,7 @@ export function DayPage() {
                       >
                         <div className="exercise-item-header">
                           {(() => {
-                            const slides = getSlides(exercise);
+                            const slides = getSlides(exercise, uiLanguage);
                             const slideIdx = slideIndices[exIndex] ?? 0;
                             const slide = slides[slideIdx];
                             return (
@@ -332,7 +354,7 @@ export function DayPage() {
                             className="exercise-description-input"
                             value={exercise.description ?? ""}
                             onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
-                            placeholder={getExerciseMedia(exercise.name).description ?? "Description de l'exercice, posture, conseils…"}
+                            placeholder={getExerciseMedia(exercise.name, uiLanguage).description ?? "Description de l'exercice, posture, conseils…"}
                             rows={3}
                             aria-label="Description de l'exercice"
                           />
@@ -420,7 +442,7 @@ export function DayPage() {
       {/* ── Media Modal (plein écran) ──────────────────── */}
       {mediaModal !== null && (() => {
         const exercise = day.main[mediaModal];
-        const slides = getSlides(exercise);
+        const slides = getSlides(exercise, uiLanguage);
         const slideIdx = slideIndices[mediaModal] ?? 0;
         const slide = slides[slideIdx];
         return (
