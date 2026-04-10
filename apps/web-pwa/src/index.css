@@ -487,6 +487,27 @@ button {
   display: block;
 }
 
+.exercise-media-video-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.exercise-media-play-badge {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0 0 0 / 0.65);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255 255 255 / 0.28);
+}
+
 .exercise-media-placeholder {
   width: 100%;
   height: 100%;
@@ -551,6 +572,21 @@ button {
   max-height: 70dvh;
   object-fit: contain;
   border-radius: 12px;
+}
+
+.media-modal-video-wrap {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.media-modal-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  display: block;
+  background: #000;
 }
 
 .media-modal-placeholder {
@@ -694,6 +730,22 @@ button {
   font-style: italic;
 }
 
+.exercise-video-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.exercise-video-input::placeholder {
+  color: var(--muted);
+}
+
 /* ── Serie action buttons (add / remove) ────────────── */
 .serie-action-btn {
   display: inline-flex;
@@ -774,6 +826,16 @@ button {
   aspect-ratio: 16 / 9;
   border: 0;
   display: block;
+}
+
+.session-video-native {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #000;
+  display: block;
+  margin: 0 0 10px;
 }
 
 /* ── Session hero image ─────────────────────────────── */

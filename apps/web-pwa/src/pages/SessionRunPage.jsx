@@ -115,14 +115,15 @@ export function SessionRunPage() {
     [currentExercise?.name, uiLanguage]
   );
   const videoInfo = useMemo(() => {
-    const directUrl = currentMedia.videoUrl;
+    const customUrl = currentExercise?.videoUrl?.trim() || null;
+    const directUrl = customUrl || currentMedia.videoUrl;
     const fallbackUrl = getExerciseVideoSearchUrl(currentExercise?.name, uiLanguage);
     return {
       url: directUrl || fallbackUrl,
       embedId: getYoutubeVideoId(directUrl),
       isFallback: !directUrl && Boolean(fallbackUrl),
     };
-  }, [currentExercise?.name, currentMedia.videoUrl, uiLanguage]);
+  }, [currentExercise?.name, currentExercise?.videoUrl, currentMedia.videoUrl, uiLanguage]);
   const elapsedLabel = formatDuration(session ? getElapsedMs(session, nowMs) : 0);
   const progressLabel = useMemo(() => {
     if (!session) return "0/0";
@@ -327,25 +328,23 @@ export function SessionRunPage() {
             </div>
           ) : null}
 
-          {videoInfo.url ? (
-            <a
-              href={videoInfo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="video-slot"
-              style={{ marginBottom: 8 }}
-            >
-              <FontAwesomeIcon icon={faPlay} size="xs" />
-              {videoInfo.isFallback ? "Chercher une video liee" : "Ouvrir la video sur YouTube"}
-            </a>
-          ) : (
+          {!videoInfo.embedId && videoInfo.url && !videoInfo.isFallback ? (
+            <video
+              className="session-video-native"
+              src={videoInfo.url}
+              controls
+              playsInline
+              preload="metadata"
+            />
+          ) : null}
+          {!videoInfo.embedId && (!videoInfo.url || videoInfo.isFallback) ? (
             <span className="video-slot-placeholder" style={{ marginBottom: 8 }}>
               <FontAwesomeIcon icon={faPlay} size="xs" />
               Video indisponible
             </span>
-          )}
+          ) : null}
           {videoInfo.isFallback && (
-            <p className="video-slot-hint">Lien de secours cible sur le nom de l exercice.</p>
+            <p className="video-slot-hint">Lien de secours non previsualisable automatiquement.</p>
           )}
 
           {session.rest.active ? (
