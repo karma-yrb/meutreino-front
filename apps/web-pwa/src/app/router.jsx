@@ -12,8 +12,11 @@ import { CoachUsersPage } from "../pages/CoachUsersPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 
 export function AppRouter() {
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
+  const basename = base && base !== "/" ? base : undefined;
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
