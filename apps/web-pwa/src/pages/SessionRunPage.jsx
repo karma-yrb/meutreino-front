@@ -246,13 +246,26 @@ export function SessionRunPage() {
     if (!session || session.exercises.length === 0) return 0;
     return Math.round((session.completedExercisesCount / session.exercises.length) * 100);
   }, [session]);
+  const baseExerciseOrderIds = useMemo(() => {
+    if (day?.main?.length) {
+      return day.main.map((exercise, idx) => exercise.id ?? `${dayId}-ex-${idx + 1}`);
+    }
+    return session?.exercises?.map((exercise) => exercise.id) ?? [];
+  }, [day, dayId, session]);
   const progressionExercises = useMemo(() => {
     if (!session?.exercises?.length) return [];
     const hideCurrentExercise = session.status === "running" || session.status === "paused";
-    const indexedExercises = session.exercises.map((exercise, idx) => ({ exercise, idx }));
-    if (!hideCurrentExercise) return indexedExercises;
-    return indexedExercises.filter(({ idx }) => idx !== session.currentExerciseIndex);
-  }, [session]);
+    const focusedExerciseId = session.exercises[session.currentExerciseIndex]?.id;
+    const byId = new Map(session.exercises.map((exercise, idx) => [exercise.id, { exercise, idx }]));
+    const orderedIds = baseExerciseOrderIds.length
+      ? baseExerciseOrderIds
+      : session.exercises.map((exercise) => exercise.id);
+
+    return orderedIds
+      .map((id) => byId.get(id))
+      .filter(Boolean)
+      .filter(({ exercise }) => !(hideCurrentExercise && exercise.id === focusedExerciseId));
+  }, [session, baseExerciseOrderIds]);
 
   function setValue(field, value) {
     setSession((prev) => {
@@ -308,12 +321,6 @@ export function SessionRunPage() {
       const nextSetIndex = targetExercise.sets.findIndex((set) => !set.validated);
       next.currentSetIndex = nextSetIndex >= 0 ? nextSetIndex : Math.max(0, targetExercise.sets.length - 1);
 
-      // Keep a single focused exercise in `in_progress`.
-      next.exercises.forEach((exercise, idx) => {
-        if (exercise.status === "completed") return;
-        exercise.status = idx === exerciseIndex ? "in_progress" : "pending";
-      });
-
       // Switching exercise exits rest mode to let the user continue immediately.
       next.rest.active = false;
       next.rest.remainingSeconds = 0;
@@ -321,6 +328,7 @@ export function SessionRunPage() {
 
       return next;
     });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (!day) {
