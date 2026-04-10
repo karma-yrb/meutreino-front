@@ -30,11 +30,14 @@ describe("App integration additional", () => {
 
     await user.click(screen.getByRole("button", { name: "Pause" }));
     expect(screen.getByRole("button", { name: "Reprendre" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Arreter la session" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Valider la serie" })).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Reprendre" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Arreter la session" })).not.toBeInTheDocument();
 
+    await user.click(screen.getByRole("button", { name: "Pause" }));
     await user.click(screen.getByRole("button", { name: "Arreter la session" }));
     await waitFor(() => {
       expect(screen.getByTestId("session-status")).toHaveTextContent("stopped");

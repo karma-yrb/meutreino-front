@@ -378,6 +378,14 @@ button {
   .week-grid {
     grid-template-columns: 1fr;
   }
+
+  .session-progression-item {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .session-progression-thumb {
+    width: 88px;
+  }
 }
 
 /* ── Theme toggle button ─────────────────────────────── */
@@ -861,6 +869,138 @@ button {
   margin-bottom: 10px;
 }
 
+.session-media-top {
+  margin-bottom: 10px;
+}
+
+.session-media-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--ex-placeholder-bg);
+  padding: 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.session-media-thumb .exercise-media-img,
+.session-media-thumb .exercise-media-video-thumb,
+.session-media-thumb .exercise-media-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.session-media-thumb .exercise-media-img {
+  object-fit: cover;
+}
+
+.session-media-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  min-height: 30px;
+}
+
+.session-media-nav-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.session-media-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.session-media-dots .media-dot {
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.session-progression-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.session-progression-item {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 8px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.session-progression-item:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+}
+
+.session-progression-item:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 70%, #ffffff);
+  outline-offset: 1px;
+}
+
+.session-progression-thumb {
+  width: 100px;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--ex-placeholder-bg);
+  overflow: hidden;
+}
+
+.session-progression-thumb .exercise-media-img,
+.session-progression-thumb .exercise-media-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.session-progression-body {
+  min-width: 0;
+}
+
+.session-progression-title {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.session-progression-meta {
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.session-progression-meta span {
+  white-space: nowrap;
+}
+
+.session-progression-empty {
+  margin: 0;
+  color: var(--muted);
+}
+
 /* ── Set pills (read-only view) ─────────────────────── */
 .set-pills-row {
   display: flex;
@@ -1094,42 +1234,174 @@ button {
 
 /* ── Session header card (status / stats / controls) ── */
 .session-header-card {
+  position: sticky;
+  top: 8px;
+  z-index: 20;
   background: linear-gradient(135deg, #1a1f2e 0%, #0f1420 100%);
   border-color: #2a3350;
   border-left: 4px solid var(--brand);
   color: #e8eaf2;
+  padding: 10px 12px 11px;
 }
 
 .session-header-card h2 {
   color: #e8eaf2;
   font-size: 16px;
+  margin-bottom: 2px;
 }
 
-.session-header-card p {
-  color: #7b849e;
+.session-header-card .session-subtitle {
+  color: #c8cfe0;
+  margin: 0 0 8px;
+  font-weight: 600;
 }
 
-.session-header-card .stats-grid > div {
+.session-top-line {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  align-items: stretch;
+}
+
+.session-mini-block {
+  min-width: 0;
   background: rgba(255 255 255 / 0.05);
-  border-color: rgba(255 255 255 / 0.08);
+  border: 1px solid rgba(255 255 255 / 0.08);
+  border-radius: 10px;
+  padding: 7px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
 }
 
-.session-header-card .stats-grid strong {
+.session-mini-block strong {
   color: #7b849e;
+  font-size: 11px;
+  line-height: 1.1;
 }
 
-.session-header-card .stats-grid p {
+.session-mini-block p {
+  margin: 0;
   color: #e8eaf2;
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.session-header-card .ghost-btn {
+.session-pizza-block {
+  gap: 6px;
+}
+
+.session-pizza {
+  --progress: 0%;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, #111827 58%, transparent 59%),
+    conic-gradient(var(--brand) var(--progress), rgba(255 255 255 / 0.18) 0);
+  display: grid;
+  place-items: center;
+}
+
+.session-pizza span {
+  color: #e8eaf2;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.session-controls-block {
+  gap: 6px;
+}
+
+.session-control-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 52px;
+}
+
+.session-icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   background: rgba(255 255 255 / 0.07);
   border-color: rgba(255 255 255 / 0.15);
   color: #e8eaf2;
 }
 
-.session-header-card .ghost-btn:hover {
+.session-icon-btn:hover {
   background: rgba(255 255 255 / 0.13);
+}
+
+.session-icon-btn.stop {
+  color: #ffb4b4;
+}
+
+.session-return-btn {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.session-header-card.compact {
+  padding: 7px 10px;
+}
+
+.session-header-card.compact h2,
+.session-header-card.compact .session-subtitle,
+.session-header-card.compact .session-mini-block strong {
+  display: none;
+}
+
+.session-header-card.compact .session-top-line {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.session-header-card.compact .session-mini-block {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+}
+
+.session-header-card.compact .session-mini-block + .session-mini-block {
+  border-left: 1px solid rgba(255 255 255 / 0.18);
+  padding-left: 10px;
+}
+
+.session-header-card.compact .session-mini-block p {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.session-header-card.compact .session-pizza {
+  width: 36px;
+  height: 36px;
+}
+
+.session-header-card.compact .session-pizza span {
+  font-size: 10px;
+}
+
+.session-header-card.compact .session-control-row {
+  min-height: 0;
+}
+
+.session-header-card.compact .session-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
 }
 
 /* ── Rest timer countdown ────────────────────────────── */

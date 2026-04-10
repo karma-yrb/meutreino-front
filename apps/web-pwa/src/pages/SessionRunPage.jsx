@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import {
   buildSessionRun,
@@ -17,7 +17,7 @@ import {
 import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser, getDayPlanForUser } from "../services/storage/repositories/plansRepository";
 import { saveSessionRun } from "../services/storage/repositories/sessionsRepository";
-import { getExerciseMedia, getExerciseVideoSearchUrl } from "../data/exerciseMedia";
+import { getExerciseMedia } from "../data/exerciseMedia";
 
 function formatDuration(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -45,6 +45,69 @@ function getYoutubeVideoId(url) {
   }
 }
 
+function getYoutubeThumbnailUrl(url) {
+  const id = getYoutubeVideoId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+
+function getSlides(exercise, language) {
+  if (!exercise) return [{ type: "image", url: null, label: "Exercice" }];
+
+  const name = exercise.name ?? "";
+  const parts = name.split(/\s*\+\s*/);
+  const customVideoUrl = exercise.videoUrl?.trim() || null;
+  const slides = parts.flatMap((part) => {
+    const media = getExerciseMedia(part.trim(), language);
+    const imageSlide = { type: "image", url: media.imageUrl, label: part.trim() || name || "Exercice" };
+
+    if (customVideoUrl) return [imageSlide];
+    if (!media.videoUrl) return [imageSlide];
+
+    return [
+      imageSlide,
+      {
+        type: "video",
+        url: media.videoUrl,
+        embedId: getYoutubeVideoId(media.videoUrl),
+        thumbnailUrl: getYoutubeThumbnailUrl(media.videoUrl),
+        label: part.trim() || name || "Video",
+      },
+    ];
+  });
+
+  if (customVideoUrl) {
+    slides.push({
+      type: "video",
+      url: customVideoUrl,
+      embedId: getYoutubeVideoId(customVideoUrl),
+      thumbnailUrl: getYoutubeThumbnailUrl(customVideoUrl),
+      label: name || "Video",
+    });
+  }
+
+  return slides.length > 0 ? slides : [{ type: "image", url: null, label: name || "Exercice" }];
+}
+
+function getExercisePreviewImage(exercise, language) {
+  return getSlides(exercise, language).find((slide) => slide.type === "image" && slide.url)?.url ?? null;
+}
+
+function formatExerciseSetMetric(sets, key) {
+  if (!Array.isArray(sets) || sets.length === 0) return "-";
+  const values = sets.map((set) => {
+    const value = set?.[key];
+    if (value === null || value === undefined || value === "") return "-";
+    return String(value);
+  });
+  const uniqueValues = [...new Set(values)];
+  return uniqueValues.length === 1 ? uniqueValues[0] : values.join(" / ");
+}
+
+function cloneValue(value) {
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
 export function SessionRunPage() {
   const { dayId } = useParams();
   const { i18n } = useTranslation();
@@ -52,11 +115,16 @@ export function SessionRunPage() {
   const navigate = useNavigate();
   const uiLanguage = i18n.resolvedLanguage || i18n.language || "fr";
   const [day, setDay] = useState(null);
-  const [planVersion, setPlanVersion] = useState("");
   const [session, setSession] = useState(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [justValidated, setJustValidated] = useState(false);
+  const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const persistedRef = useRef(false);
+  const headerCardRef = useRef(null);
+  const stickyActivationYRef = useRef(null);
+  const pinnedRef = useRef(false);
+  const [isHeaderPinned, setIsHeaderPinned] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -67,8 +135,6 @@ export function SessionRunPage() {
       ]);
 
       setDay(dayData);
-      setPlanVersion(activePlan?.version ?? "unknown");
-
       if (!dayData?.rest && !dayData?.cardioOnly && (dayData?.main?.length ?? 0) > 0) {
         const run = buildSessionRun({
           userId: currentUser.id,
@@ -94,6 +160,17 @@ export function SessionRunPage() {
   }, []);
 
   useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setMediaModalOpen(false);
+    }
+    if (mediaModalOpen) {
+      window.addEventListener("keydown", onKeyDown);
+      return () => window.removeEventListener("keydown", onKeyDown);
+    }
+    return undefined;
+  }, [mediaModalOpen]);
+
+  useEffect(() => {
     async function persistIfFinalized() {
       if (!session || persistedRef.current) return;
       if (session.status !== "completed" && session.status !== "stopped") return;
@@ -108,39 +185,73 @@ export function SessionRunPage() {
     persistIfFinalized();
   }, [session]);
 
+  useEffect(() => {
+    const topOffset = 8;
+    const activateDelta = 6;
+    const releaseAtTopY = 4;
+
+    const computeActivationY = () => {
+      const card = headerCardRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      stickyActivationYRef.current = window.scrollY + rect.top - topOffset;
+    };
+
+    const updatePinnedState = () => {
+      if (stickyActivationYRef.current === null) return;
+      const y = window.scrollY;
+      let next = pinnedRef.current;
+
+      if (!pinnedRef.current && y >= stickyActivationYRef.current + activateDelta) {
+        next = true;
+      } else if (pinnedRef.current && y <= releaseAtTopY) {
+        next = false;
+      }
+
+      if (next !== pinnedRef.current) {
+        pinnedRef.current = next;
+        setIsHeaderPinned(next);
+      }
+    };
+    const handleResize = () => {
+      computeActivationY();
+      updatePinnedState();
+    };
+
+    computeActivationY();
+    updatePinnedState();
+
+    window.addEventListener("scroll", updatePinnedState, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", updatePinnedState);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const currentExercise = session?.exercises?.[session.currentExerciseIndex] ?? null;
   const currentSet = currentExercise?.sets?.[session.currentSetIndex] ?? null;
-  const currentMedia = useMemo(
-    () => getExerciseMedia(currentExercise?.name, uiLanguage),
-    [currentExercise?.name, uiLanguage]
-  );
-  const videoInfo = useMemo(() => {
-    const customUrl = currentExercise?.videoUrl?.trim() || null;
-    const directUrl = customUrl || currentMedia.videoUrl;
-    const fallbackUrl = getExerciseVideoSearchUrl(currentExercise?.name, uiLanguage);
-    return {
-      url: directUrl || fallbackUrl,
-      embedId: getYoutubeVideoId(directUrl),
-      isFallback: !directUrl && Boolean(fallbackUrl),
-    };
-  }, [currentExercise?.name, currentExercise?.videoUrl, currentMedia.videoUrl, uiLanguage]);
+  const currentMedia = useMemo(() => getExerciseMedia(currentExercise?.name, uiLanguage), [currentExercise?.name, uiLanguage]);
+  const currentSlides = useMemo(() => getSlides(currentExercise, uiLanguage), [currentExercise, uiLanguage]);
+  const activeSlideIndex = currentSlides.length > 0 ? currentSlideIndex % currentSlides.length : 0;
+  const activeSlide = currentSlides[activeSlideIndex] ?? currentSlides[0];
+
   const elapsedLabel = formatDuration(session ? getElapsedMs(session, nowMs) : 0);
   const progressLabel = useMemo(() => {
     if (!session) return "0/0";
     return `${session.completedExercisesCount}/${session.exercises.length}`;
   }, [session]);
-
-  const { totalSets, completedSets } = useMemo(() => {
-    if (!session) return { totalSets: 0, completedSets: 0 };
-    let total = 0;
-    let done = 0;
-    for (const ex of session.exercises) {
-      for (const s of ex.sets) {
-        total++;
-        if (s.validated) done++;
-      }
-    }
-    return { totalSets: total, completedSets: done };
+  const exerciseProgressPercent = useMemo(() => {
+    if (!session || session.exercises.length === 0) return 0;
+    return Math.round((session.completedExercisesCount / session.exercises.length) * 100);
+  }, [session]);
+  const progressionExercises = useMemo(() => {
+    if (!session?.exercises?.length) return [];
+    const hideCurrentExercise = session.status === "running" || session.status === "paused";
+    const indexedExercises = session.exercises.map((exercise, idx) => ({ exercise, idx }));
+    if (!hideCurrentExercise) return indexedExercises;
+    return indexedExercises.filter(({ idx }) => idx !== session.currentExerciseIndex);
   }, [session]);
 
   function setValue(field, value) {
@@ -181,6 +292,37 @@ export function SessionRunPage() {
     setSession((prev) => (prev ? stopSession(prev, Date.now()) : prev));
   }
 
+  function cycleSlide(direction = 1) {
+    if (currentSlides.length <= 1) return;
+    setCurrentSlideIndex((prev) => (prev + direction + currentSlides.length) % currentSlides.length);
+  }
+
+  function focusExercise(exerciseIndex) {
+    setSession((prev) => {
+      if (!prev || !prev.exercises?.[exerciseIndex]) return prev;
+      if (prev.currentExerciseIndex === exerciseIndex) return prev;
+
+      const next = cloneValue(prev);
+      next.currentExerciseIndex = exerciseIndex;
+      const targetExercise = next.exercises[exerciseIndex];
+      const nextSetIndex = targetExercise.sets.findIndex((set) => !set.validated);
+      next.currentSetIndex = nextSetIndex >= 0 ? nextSetIndex : Math.max(0, targetExercise.sets.length - 1);
+
+      // Keep a single focused exercise in `in_progress`.
+      next.exercises.forEach((exercise, idx) => {
+        if (exercise.status === "completed") return;
+        exercise.status = idx === exerciseIndex ? "in_progress" : "pending";
+      });
+
+      // Switching exercise exits rest mode to let the user continue immediately.
+      next.rest.active = false;
+      next.rest.remainingSeconds = 0;
+      next.rest.endsAtMs = null;
+
+      return next;
+    });
+  }
+
   if (!day) {
     return <div className="page">Chargement de la session...</div>;
   }
@@ -201,51 +343,80 @@ export function SessionRunPage() {
 
   return (
     <div className="page">
-      <section className="card session-header-card">
+      <section ref={headerCardRef} className={`card session-header-card${isHeaderPinned ? " compact" : ""}`}>
         <h2>Session en cours - {day.fullLabel}</h2>
-        <p>{day.title}</p>
-        <p className="muted">Plan: {planVersion}</p>
-        <div className="stats-grid">
-          <div>
+        <p className="session-subtitle">{day.title}</p>
+        <span
+          data-testid="session-status"
+          style={{
+            position: "absolute",
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: "hidden",
+            clip: "rect(0, 0, 0, 0)",
+            whiteSpace: "nowrap",
+            border: 0,
+          }}
+        >
+          {session.status}
+        </span>
+        <div className="session-top-line">
+          <div className="session-mini-block">
             <strong>Temps global</strong>
             <p>{elapsedLabel}</p>
           </div>
-          <div>
+          <div className="session-mini-block session-pizza-block">
             <strong>Exercices finalises</strong>
-            <p>{progressLabel}</p>
+            <div className="session-pizza" style={{ "--progress": `${exerciseProgressPercent}%` }}>
+              <span>{progressLabel}</span>
+            </div>
           </div>
-          <div>
-            <strong>Etat</strong>
-            <p data-testid="session-status">{session.status}</p>
+          <div className="session-mini-block session-controls-block">
+            <div className="session-control-row">
+              {session.status === "running" && (
+                <button
+                  className="ghost-btn session-icon-btn"
+                  type="button"
+                  onClick={onPauseResume}
+                  aria-label="Pause"
+                  title="Pause"
+                >
+                  <FontAwesomeIcon icon={faPause} />
+                </button>
+              )}
+              {session.status === "paused" && (
+                <>
+                  <button
+                    className="ghost-btn session-icon-btn"
+                    type="button"
+                    onClick={onPauseResume}
+                    aria-label="Reprendre"
+                    title="Reprendre"
+                  >
+                    <FontAwesomeIcon icon={faPlay} />
+                  </button>
+                  {!isHeaderPinned && (
+                    <button
+                      className="ghost-btn session-icon-btn stop"
+                      type="button"
+                      onClick={onStop}
+                      aria-label="Arreter la session"
+                      title="Arreter la session"
+                    >
+                      <FontAwesomeIcon icon={faStop} />
+                    </button>
+                  )}
+                </>
+              )}
+              {(session.status === "completed" || session.status === "stopped") && (
+                <button className="primary-btn session-return-btn" type="button" onClick={() => navigate("/")}>
+                  Retour accueil
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-        {/* Barre de progression globale */}
-        <div className="session-progress-bar-wrap">
-          <div
-            className="session-progress-bar-fill"
-            style={{ width: totalSets > 0 ? `${Math.round((completedSets / totalSets) * 100)}%` : "0%" }}
-          />
-        </div>
-        <p className="session-progress-label">{completedSets}/{totalSets} séries</p>
-
-        <div className="btn-row">
-          {session.status === "running" || session.status === "paused" ? (
-            <button className="ghost-btn" type="button" onClick={onPauseResume} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <FontAwesomeIcon icon={session.status === "running" ? faPause : faPlay} />
-              {session.status === "running" ? "Pause" : "Reprendre"}
-            </button>
-          ) : null}
-          {session.status === "running" || session.status === "paused" ? (
-            <button className="ghost-btn" type="button" onClick={onStop} aria-label="Arreter la session" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <FontAwesomeIcon icon={faStop} />
-              Arrêter
-            </button>
-          ) : null}
-          {(session.status === "completed" || session.status === "stopped") && (
-            <button className="primary-btn" type="button" onClick={() => navigate("/")}>
-              Retour accueil
-            </button>
-          )}
         </div>
       </section>
 
@@ -253,16 +424,67 @@ export function SessionRunPage() {
         <section className="card">
           <h3>Exercice actuel</h3>
 
-          {/* Hero image de l'exercice */}
-          {(() => {
-            return currentMedia.imageUrl ? (
-              <img src={currentMedia.imageUrl} alt={currentExercise?.name} className="exercise-hero" />
-            ) : (
-              <div className="exercise-hero-placeholder" aria-hidden="true">
-                <FontAwesomeIcon icon={faDumbbell} />
-              </div>
-            );
-          })()}
+          <div className="session-media-top">
+            <button
+              type="button"
+              className="session-media-thumb"
+              onClick={() => setMediaModalOpen(true)}
+              aria-label={`Agrandir - slide ${activeSlideIndex + 1} sur ${currentSlides.length}`}
+            >
+              {activeSlide?.type === "image" ? (
+                activeSlide?.url ? (
+                  <img src={activeSlide.url} alt={activeSlide.label} className="exercise-media-img" />
+                ) : (
+                  <div className="exercise-media-placeholder">
+                    <FontAwesomeIcon icon={faDumbbell} size="2x" />
+                  </div>
+                )
+              ) : (
+                activeSlide?.url ? (
+                  activeSlide.thumbnailUrl ? (
+                    <div className="exercise-media-video-thumb">
+                      <img src={activeSlide.thumbnailUrl} alt={activeSlide.label} className="exercise-media-img" />
+                      <span className="exercise-media-play-badge">
+                        <FontAwesomeIcon icon={faPlay} size="sm" />
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="exercise-media-placeholder video">
+                      <FontAwesomeIcon icon={faPlay} size="2x" />
+                    </div>
+                  )
+                ) : (
+                  <div className="exercise-media-placeholder video">
+                    <FontAwesomeIcon icon={faPlay} size="2x" />
+                    <span>Video a venir</span>
+                  </div>
+                )
+              )}
+            </button>
+            <div className="session-media-controls">
+              {currentSlides.length > 1 && (
+                <>
+                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(-1)} aria-label="Slide precedent">
+                    <FontAwesomeIcon icon={faChevronLeft} />
+                  </button>
+                  <div className="session-media-dots">
+                    {currentSlides.map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
+                        aria-label={`Slide ${i + 1}`}
+                        onClick={() => setCurrentSlideIndex(i)}
+                      />
+                    ))}
+                  </div>
+                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(1)} aria-label="Slide suivant">
+                    <FontAwesomeIcon icon={faChevronRight} />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
           {(() => {
@@ -313,40 +535,6 @@ export function SessionRunPage() {
             </div>
           </div>}
 
-          {/* Video guidance */}
-          {videoInfo.embedId ? (
-            <div className="session-video-embed-wrap">
-              <iframe
-                className="session-video-embed"
-                title={`Video - ${currentExercise?.name ?? "exercice"}`}
-                src={`https://www.youtube-nocookie.com/embed/${videoInfo.embedId}?rel=0&modestbranding=1&playsinline=1`}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-              />
-            </div>
-          ) : null}
-
-          {!videoInfo.embedId && videoInfo.url && !videoInfo.isFallback ? (
-            <video
-              className="session-video-native"
-              src={videoInfo.url}
-              controls
-              playsInline
-              preload="metadata"
-            />
-          ) : null}
-          {!videoInfo.embedId && (!videoInfo.url || videoInfo.isFallback) ? (
-            <span className="video-slot-placeholder" style={{ marginBottom: 8 }}>
-              <FontAwesomeIcon icon={faPlay} size="xs" />
-              Video indisponible
-            </span>
-          ) : null}
-          {videoInfo.isFallback && (
-            <p className="video-slot-hint">Lien de secours non previsualisable automatiquement.</p>
-          )}
-
           {session.rest.active ? (
             <div className="rest-box" data-testid="rest-box">
               <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
@@ -371,20 +559,103 @@ export function SessionRunPage() {
         </section>
       ) : null}
 
+      {mediaModalOpen && activeSlide ? (
+        <div className="media-modal-overlay" onClick={() => setMediaModalOpen(false)} role="dialog" aria-modal="true" aria-label={currentExercise?.name ?? "Media"}>
+          <div className="media-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="media-modal-close" type="button" onClick={() => setMediaModalOpen(false)} aria-label="Fermer">
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <p className="media-modal-label">{activeSlide.label}</p>
+
+            {activeSlide.type === "image" ? (
+              activeSlide.url ? (
+                <img src={activeSlide.url} alt={activeSlide.label} className="media-modal-img" />
+              ) : (
+                <div className="media-modal-placeholder"><FontAwesomeIcon icon={faDumbbell} size="3x" /></div>
+              )
+            ) : activeSlide.url ? (
+              activeSlide.embedId ? (
+                <div className="media-modal-video-wrap">
+                  <iframe
+                    className="media-modal-video"
+                    title={`Video - ${activeSlide.label}`}
+                    src={`https://www.youtube-nocookie.com/embed/${activeSlide.embedId}?rel=0&modestbranding=1&playsinline=1`}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <video className="media-modal-video" src={activeSlide.url} controls playsInline preload="metadata" />
+              )
+            ) : (
+              <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Video a venir</span></div>
+            )}
+
+            {currentSlides.length > 1 && (
+              <>
+                <button className="media-modal-nav media-modal-prev" type="button" onClick={() => cycleSlide(-1)} aria-label="Precedent">
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                </button>
+                <button className="media-modal-nav media-modal-next" type="button" onClick={() => cycleSlide(1)} aria-label="Suivant">
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </button>
+              </>
+            )}
+            <div className="media-modal-dots">
+              {currentSlides.map((_, i) => (
+                <button
+                  key={i}
+                  className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
+                  type="button"
+                  onClick={() => setCurrentSlideIndex(i)}
+                  aria-label={`Slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <section className="card">
-        <h3>Progression exercices</h3>
-        <ul className="simple-list">
-          {session.exercises.map((exercise, idx) => (
-            <li key={exercise.id}>
-              <strong>{exercise.name}</strong>
-              <span className="muted">
-                {" "}
-                - {exercise.status}
-                {idx === session.currentExerciseIndex ? " (en focus)" : ""}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <h3>Prochains exercices</h3>
+        {progressionExercises.length === 0 ? (
+          <p className="session-progression-empty">Aucun autre exercice.</p>
+        ) : (
+          <div className="session-progression-grid">
+            {progressionExercises.map(({ exercise, idx }) => {
+              const previewImage = getExercisePreviewImage(exercise, uiLanguage);
+              const reps = formatExerciseSetMetric(exercise.sets, "targetReps");
+
+              return (
+                <button
+                  type="button"
+                  className="session-progression-item"
+                  key={exercise.id}
+                  onClick={() => focusExercise(idx)}
+                  aria-label={`Focus exercice ${exercise.name}`}
+                >
+                  <div className="session-progression-thumb">
+                    {previewImage ? (
+                      <img src={previewImage} alt={exercise.name} className="exercise-media-img" />
+                    ) : (
+                      <div className="exercise-media-placeholder">
+                        <FontAwesomeIcon icon={faDumbbell} size="lg" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="session-progression-body">
+                    <p className="session-progression-title">{exercise.name}</p>
+                    <p className="session-progression-meta">
+                      <span>{exercise.sets?.length ?? 0} series de {reps} Repetitions</span>
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );
