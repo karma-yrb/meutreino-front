@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/karma-yrb/meutreino-front/compare/v1.3.1...v1.3.2) (2026-04-10)
+
+
+### Bug Fixes
+
+* **pages:** deploy web-pwa to github pages with base path ([1e2b336](https://github.com/karma-yrb/meutreino-front/commit/1e2b3365fa5ad9e24826949b42ad0a98ee9f22ab))
+
 ### [1.3.1](https://github.com/karma-yrb/meutreino-front/compare/v1.3.0...v1.3.1) (2026-04-10)
 
 ## [1.3.0](https://github.com/karma-yrb/meutreino-front/compare/v1.1.0...v1.3.0) (2026-04-08)
