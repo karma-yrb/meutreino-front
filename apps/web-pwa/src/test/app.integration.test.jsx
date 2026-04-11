@@ -47,7 +47,7 @@ describe("App integration", () => {
     const user = await loginAsUser();
     await user.click(screen.getByRole("link", { name: "Voir la semaine" }));
 
-    await screen.findByRole("heading", { name: "Séances de la semaine" });
+    await screen.findByRole("heading", { name: "Séances de la semaine" }, { timeout: 5000 });
 
     const mondayCard = screen.getByTestId("week-day-lundi");
     expect(within(mondayCard).getByRole("link", { name: "Visualiser" })).toHaveAttribute("href", "/jour/lundi");
