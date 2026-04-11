@@ -32,3 +32,15 @@ export async function updateUserProfile(userId, profilePatch) {
   return updated;
 }
 
+export async function updateUserIdentity(userId, identityPatch) {
+  const user = await db.users.get(userId);
+  if (!user) return null;
+
+  const updated = {
+    ...user,
+    ...identityPatch,
+    updatedAt: new Date().toISOString(),
+  };
+  await db.users.put(updated);
+  return updated;
+}

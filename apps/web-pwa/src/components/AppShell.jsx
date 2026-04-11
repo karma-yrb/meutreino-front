@@ -4,25 +4,19 @@ import { faSun, faMoon, faHouse, faUser, faShield, faUserTie, faRightFromBracket
 import { useAuth } from "../features/auth/useAuth";
 import { useTheme } from "../features/theme/useTheme";
 
-const ROLE_LABELS = {
-  admin: "Administrateur",
-  coach: "Coach",
-  user: "Utilisateur",
-};
-
 export function AppShell() {
   const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const roleLabel = ROLE_LABELS[currentUser?.role] ?? currentUser?.role ?? "-";
 
   return (
     <div className="app-shell">
       <header className="topbar">
-        <Link to="/" className="brand">
-          MeuTreino
+        <Link to="/" className="brand" aria-label="Mon Entraînement">
+          <span className="brand-name">Mon Entraînement</span>
+          <span className="brand-version">v{__APP_VERSION__}</span>
         </Link>
         <div className="topbar-right">
-          <span className="role-pill">{roleLabel}</span>
+          <span className="role-pill">{currentUser?.firstName ?? "Prénom"}</span>
           <button className="theme-toggle" onClick={toggleTheme} type="button" title="Changer le thème">
             <FontAwesomeIcon icon={theme === "dark" ? faSun : faMoon} />
           </button>

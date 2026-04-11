@@ -32,6 +32,11 @@ export function AuthProvider({ children }) {
         await localAuthService.logout();
         setCurrentUser(null);
       },
+      async refreshCurrentUser() {
+        const user = await localAuthService.getCurrentUser();
+        setCurrentUser(user);
+        return user;
+      },
     }),
     [currentUser, isBootstrapping],
   );

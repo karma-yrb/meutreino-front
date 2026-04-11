@@ -91,8 +91,21 @@ button {
 }
 
 .brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.brand-name {
   font-weight: 800;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.2px;
+}
+
+.brand-version {
+  color: #9fb1d8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .topbar-right {
@@ -106,8 +119,9 @@ button {
   color: #dbe4f8;
   border: 1px solid #43567e;
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 5px 11px;
   font-size: 12px;
+  font-weight: 700;
 }
 
 .content {
@@ -159,6 +173,7 @@ button {
 }
 
 .form-stack input,
+.form-stack select,
 .set-row input {
   width: 100%;
   border: 1px solid var(--line);
@@ -166,6 +181,331 @@ button {
   color: var(--text);
   border-radius: 10px;
   padding: 9px 10px;
+}
+
+.form-stack select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) calc(50% + 1px),
+    calc(100% - 11px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+
+.profile-inline-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-card {
+  padding: 14px;
+}
+
+.profile-form {
+  gap: 12px;
+}
+
+.profile-inline-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--line) 84%, transparent);
+  border-radius: 14px;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--surface-2) 88%, transparent),
+    color-mix(in srgb, var(--surface) 92%, transparent)
+  );
+}
+
+.profile-stepper-row .stepper-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 12px;
+  line-height: 1;
+  border-color: color-mix(in srgb, var(--line) 78%, transparent);
+  background: var(--surface);
+  color: color-mix(in srgb, var(--text) 88%, var(--brand));
+  box-shadow:
+    0 1px 0 rgba(255 255 255 / 0.65) inset,
+    0 2px 6px rgba(11 24 48 / 0.08);
+  transition: transform 0.08s ease, background 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.profile-stepper-row .stepper-btn:hover {
+  border-color: color-mix(in srgb, var(--brand) 24%, var(--line));
+  background: color-mix(in srgb, var(--surface) 84%, var(--surface-2));
+}
+
+.profile-stepper-row .stepper-btn:active {
+  transform: scale(0.96);
+  background: color-mix(in srgb, var(--surface-2) 92%, var(--surface));
+  box-shadow: 0 1px 2px rgba(11 24 48 / 0.08) inset;
+}
+
+.profile-stepper-row .stepper-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.profile-stepper-input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1;
+  padding: 0;
+}
+
+.profile-stepper-input::-webkit-outer-spin-button,
+.profile-stepper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.profile-stepper-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.profile-stepper-row--waist {
+  width: 100%;
+}
+
+.profile-stepper-unit {
+  min-width: 24px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.profile-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-help-block {
+  display: grid;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+.profile-help-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.profile-help-icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.profile-help-icon-btn:hover {
+  border-color: color-mix(in srgb, var(--brand) 22%, var(--line));
+}
+
+.profile-help-icon-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.profile-help-figure {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.profile-help-image {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  background: var(--surface-2);
+}
+
+.profile-help-figure figcaption {
+  font-size: 12px;
+}
+
+.profile-metrics {
+  margin-top: 2px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.profile-bmi-main {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+
+.profile-bmi-value {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.profile-bmi-label {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.profile-bmi-label.imc-neutral {
+  color: var(--muted);
+}
+
+.profile-bmi-label.imc-under {
+  color: #2a6ecb;
+}
+
+.profile-bmi-label.imc-normal {
+  color: #207a34;
+}
+
+.profile-bmi-label.imc-over {
+  color: #b66400;
+}
+
+.profile-bmi-label.imc-obese {
+  color: #b8322b;
+}
+
+.bmi-gauge-wrap {
+  display: grid;
+  gap: 6px;
+}
+
+.bmi-gauge {
+  position: relative;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  background: linear-gradient(
+    90deg,
+    #7fb8ea 0%,
+    #6fc27c 28%,
+    #c8cb55 45%,
+    #f4a536 60%,
+    #d8454f 78%,
+    #a4262d 100%
+  );
+}
+
+.bmi-gauge-marker {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 26px;
+  border-radius: 3px;
+  background: #1f1f1f;
+  transform: translateX(-50%);
+}
+
+.bmi-ticks {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.bmi-ticks span:nth-child(1) {
+  justify-self: start;
+}
+
+.bmi-ticks span:nth-child(6) {
+  justify-self: end;
+}
+
+.bmi-ticks span {
+  justify-self: center;
+}
+
+.profile-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.profile-kpi-card,
+.profile-risk-card {
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 84%, var(--surface));
+  padding: 12px;
+}
+
+.profile-kpi-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-kpi-value {
+  margin: 4px 0 2px;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.profile-kpi-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.profile-risk-value {
+  margin: 4px 0 2px;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.profile-risk-card.risk-neutral .profile-risk-value {
+  color: var(--muted);
+}
+
+.profile-risk-card.risk-low .profile-risk-value {
+  color: #207a34;
+}
+
+.profile-risk-card.risk-mid .profile-risk-value {
+  color: #b66400;
+}
+
+.profile-risk-card.risk-high .profile-risk-value {
+  color: #b8322b;
 }
 
 .primary-btn,
@@ -204,8 +544,27 @@ button {
   min-width: 0;
 }
 
+.with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.section-title-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .muted {
   color: var(--muted);
+}
+
+.history-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .title-main {
@@ -260,6 +619,34 @@ button {
   padding: 0 0 0 16px;
   display: grid;
   gap: 8px;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+}
+
+.history-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.history-day {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: capitalize;
+}
+
+.history-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
 }
 
 .stats-grid {
@@ -490,9 +877,8 @@ button {
 
 .bottom-nav {
   display: flex;
-  justify-content: space-around;
-  gap: 8px;
-  padding: 10px 8px 14px;
+  gap: 10px;
+  padding: 10px 10px 14px;
   border-top: 1px solid var(--line);
   background: var(--nav-bg);
   position: sticky;
@@ -500,17 +886,29 @@ button {
 }
 
 .bottom-nav a {
-  font-size: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 56px;
+  font-size: 15px;
   color: var(--nav-link);
-  display: flex;
-  flex-direction: column;
+  font-weight: 700;
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--ghost-border);
+  background: var(--ghost-bg);
+}
+
+.bottom-nav a svg {
+  font-size: 16px;
 }
 
 .bottom-nav a.active {
-  color: var(--brand);
-  font-weight: 700;
+  color: #fff;
+  border-color: var(--brand);
+  background: linear-gradient(130deg, var(--brand), #e86166);
 }
 
 @media (max-width: 640px) {
@@ -531,6 +929,15 @@ button {
     grid-template-columns: 1fr;
   }
 
+  .profile-bmi-value {
+    font-size: 40px;
+  }
+
+  .profile-kpi-value,
+  .profile-risk-value {
+    font-size: 30px;
+  }
+
   .week-grid {
     grid-template-columns: 1fr;
   }
@@ -541,6 +948,19 @@ button {
 
   .session-progression-thumb {
     width: 88px;
+  }
+}
+
+@media (max-width: 520px) {
+  .profile-inline-grid--2,
+  .profile-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .profile-stepper-input {
+    font-size: 28px;
   }
 }
 
