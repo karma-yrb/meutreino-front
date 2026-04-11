@@ -1,1 +1,1 @@
-npx --no -- commitlint --edit "$1"
+node ./scripts/exec-bin.js npx --no -- commitlint --edit "$1"

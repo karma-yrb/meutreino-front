@@ -42,11 +42,11 @@ STANDARD_VERSION_ARGS=(
 )
 
 echo "Running checks (lint + tests)..."
-npm run lint
-npm run test:all
+node ./scripts/exec-bin.js npm run lint
+node ./scripts/exec-bin.js npm run test:all
 
 echo "Applying version bump (${BUMP_LEVEL}) without tag..."
-npx standard-version "${STANDARD_VERSION_ARGS[@]}"
+node ./scripts/exec-bin.js npx standard-version "${STANDARD_VERSION_ARGS[@]}"
 
 echo "Creating commit..."
 git add -A

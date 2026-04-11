@@ -16,8 +16,8 @@ cd "$ROOT_DIR"
 RELEASE_AS="${1:-${RELEASE_AS:-}}"
 RELEASE_TAG_PREFIX="${RELEASE_TAG_PREFIX:-v}"
 PRE_RELEASE_COMMIT_MSG="${RELEASE_AUTOCOMMIT_MSG:-chore(release): pre-release checkpoint}"
-RELEASE_TEST_CMD="${RELEASE_TEST_CMD:-npm run test:all}"
-RELEASE_BUILD_CMD="${RELEASE_BUILD_CMD:-npm run build}"
+RELEASE_TEST_CMD="${RELEASE_TEST_CMD:-node ./scripts/exec-bin.js npm run test:all}"
+RELEASE_BUILD_CMD="${RELEASE_BUILD_CMD:-node ./scripts/exec-bin.js npm run build}"
 
 PACKAGE_FILES=(
   package.json
@@ -72,14 +72,14 @@ fi
 echo "Checks passed. Proceeding with release."
 
 echo "Running dry-run (standard-version)..."
-npx standard-version --dry-run \
+node ./scripts/exec-bin.js npx standard-version --dry-run \
   "${STANDARD_VERSION_ARGS[@]}"
 
 echo
 read -r -p "Dry-run complete. Press Enter to continue with the real release (this WILL push commits+tags), or Ctrl+C to abort..."
 
 echo "Running real release (standard-version)..."
-npx standard-version \
+node ./scripts/exec-bin.js npx standard-version \
   "${STANDARD_VERSION_ARGS[@]}"
 
 echo

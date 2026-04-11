@@ -1,2 +1,2 @@
-npm run lint
-npm run test
+node ./scripts/exec-bin.js npm run lint
+node ./scripts/exec-bin.js npm run test

@@ -14,6 +14,18 @@ npm run dev
 
 L'app web tourne via le workspace `@meutreino/web-pwa`.
 
+## Windows PowerShell (important)
+
+Pour eviter totalement PowerShell, utilise Git Bash (recommande) pour toutes les commandes projet.
+Le repo est configure pour ca dans `.vscode/settings.json` et `.vscode/tasks.json`.
+
+Si tu executes quand meme une commande depuis PowerShell et que `npm.ps1` est bloque (`PSSecurityException`), utilise l'une de ces options:
+
+- Commandes directes: `npm.cmd run test`, `npm.cmd run lint`, etc.
+- Session courante uniquement: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
+
+Les hooks Git et scripts `commit/release` du repo sont maintenant durcis pour resoudre automatiquement `npm/npx` sur Windows.
+
 ## Scripts racine
 
 - `npm run dev`

@@ -62,6 +62,13 @@ Hooks actifs via Husky:
 - `commit-msg`: valide le message avec `commitlint`.
 - `pre-push`: lance `npm run test:integration`.
 
+Important Windows:
+
+- Workflow recommande sans PowerShell: terminal Git Bash uniquement.
+- VS Code peut lancer les taches projet via `.vscode/tasks.json` (shell Git Bash force).
+- Les hooks appellent maintenant `scripts/exec-bin.js` pour resoudre `npm/npx` en mode cross-platform.
+- Si PowerShell bloque `npm.ps1`, utiliser `npm.cmd ...` ou `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
+
 ## Versionning et release
 
 Scripts disponibles a la racine:
