@@ -41,9 +41,35 @@ export function buildSessionRun({
   restSeconds = 60,
   nowMs = Date.now(),
 }) {
-  const exercises = (day?.main ?? []).map((exercise, exerciseIndex) => ({
+  const warmupExercises = (day?.warmup ?? []).map((warmup, warmupIndex) => ({
+    id: warmup.id ?? `${dayId}-wu-${warmupIndex + 1}`,
+    name: warmup.name,
+    description: warmup.detail ?? null,
+    videoUrl: warmup.videoUrl ?? null,
+    previewImageUrl: warmup.previewImageUrl ?? null,
+    phase: "warmup",
+    status: "pending",
+    sets: [{
+      id: `${warmup.id ?? `wu-${warmupIndex + 1}`}-set-1`,
+      index: 0,
+      targetReps: "-",
+      targetLoad: "-",
+      actualReps: "-",
+      actualLoad: "-",
+      validated: false,
+      validatedAt: null,
+      restSeconds: 0,
+    }],
+  }));
+
+  const mainExercises = (day?.main ?? []).map((exercise, exerciseIndex) => ({
     id: exercise.id ?? `${dayId}-ex-${exerciseIndex + 1}`,
     name: exercise.name,
+    description: exercise.description ?? null,
+    note: exercise.note ?? null,
+    videoUrl: exercise.videoUrl ?? null,
+    previewImageUrl: exercise.previewImageUrl ?? null,
+    phase: "main",
     status: "pending",
     sets: (exercise.series ?? []).map((serie, setIndex) => ({
       id: `${exercise.id ?? `ex-${exerciseIndex + 1}`}-set-${setIndex + 1}`,
@@ -57,6 +83,8 @@ export function buildSessionRun({
       restSeconds,
     })),
   }));
+
+  const exercises = [...warmupExercises, ...mainExercises];
 
   const session = {
     id: `run-${userId}-${dayId}-${nowMs}`,
@@ -211,10 +239,19 @@ export function validateCurrentSet(session, { nowMs = Date.now(), restSeconds } 
     next.currentSetIndex += 1;
   }
 
-  const restDuration = typeof restSeconds === "number" ? restSeconds : next.rest.defaultSeconds;
-  next.rest.active = true;
-  next.rest.remainingSeconds = restDuration;
-  next.rest.endsAtMs = nowMs + (restDuration * 1000);
+  const restDuration = typeof restSeconds === "number"
+    ? restSeconds
+    : (typeof set.restSeconds === "number" ? set.restSeconds : next.rest.defaultSeconds);
+
+  if (restDuration > 0) {
+    next.rest.active = true;
+    next.rest.remainingSeconds = restDuration;
+    next.rest.endsAtMs = nowMs + (restDuration * 1000);
+  } else {
+    next.rest.active = false;
+    next.rest.remainingSeconds = 0;
+    next.rest.endsAtMs = null;
+  }
   return next;
 }
 

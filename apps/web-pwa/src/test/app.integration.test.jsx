@@ -79,7 +79,19 @@ describe("App integration", () => {
       expect(loadInput).toHaveValue("72 kg");
       expect(seriesCount).toHaveTextContent("3 series");
     });
+  });
 
+  test("warmup video opens inside the app modal", async () => {
+    const user = await loginAsUser();
+    await navigateTo("/jour/lundi");
+    await screen.findByRole("button", { name: /chauffement/i });
+
+    await user.click(screen.getByRole("button", { name: /chauffement/i }));
+    await user.click(screen.getAllByRole("button", { name: /Vid/i })[0]);
+
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByTitle(/Video -/i)).toBeInTheDocument();
   });
 
   test("run mode validates one set then starts and skips rest timer", async () => {
@@ -87,18 +99,20 @@ describe("App integration", () => {
     await navigateTo("/session/lundi");
 
     await screen.findByRole("heading", { name: /Session en cours/i });
-    expect(screen.getByTestId("current-series-label")).toHaveTextContent("Serie 1/2");
+    expect(screen.getByTestId("current-series-label")).toHaveTextContent("Serie 1/");
 
-    await user.click(screen.getByRole("button", { name: "Valider la serie" }));
+    for (let i = 0; i < 12; i += 1) {
+      if (screen.queryByTestId("rest-box")) break;
+      await user.click(screen.getByRole("button", { name: "Valider la serie" }));
+    }
+
     await screen.findByTestId("rest-box");
-    expect(screen.getByTestId("current-series-label")).toHaveTextContent("Serie 2/2");
-
     await user.click(screen.getByRole("button", { name: "Passer le timer" }));
+
     await waitFor(() => {
       expect(screen.queryByTestId("rest-box")).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Valider la serie" })).toBeInTheDocument();
     });
-
   });
 
   test("run mode only accepts numeric values for repetitions and weight", async () => {
@@ -123,6 +137,16 @@ describe("App integration", () => {
     await navigateTo("/session/lundi");
     await screen.findByRole("heading", { name: /Session en cours/i });
 
+    for (let i = 0; i < 20; i += 1) {
+      if (screen.getByTestId("current-series-label").textContent === "Serie 1/2") break;
+      const restBox = screen.queryByTestId("rest-box");
+      if (restBox) {
+        await user.click(within(restBox).getByRole("button", { name: "Passer le timer" }));
+      } else {
+        await user.click(screen.getByRole("button", { name: "Valider la serie" }));
+      }
+    }
+
     fireEvent.change(screen.getByLabelText("Repetitions"), { target: { value: "14" } });
     fireEvent.change(screen.getByLabelText("Poids"), { target: { value: "35" } });
 
@@ -131,12 +155,11 @@ describe("App integration", () => {
     await user.click(screen.getByRole("button", { name: "Valider la serie" }));
     await user.click(screen.getByRole("button", { name: "Passer le timer" }));
 
-    const exerciseButtons = screen.getAllByRole("button", { name: /Focus exercice/i });
-    await user.click(exerciseButtons[0]);
+    await user.click(screen.getByRole("button", { name: /Focus exercice Leg Extension/i }));
 
     const seriesList = screen.getByLabelText("Series");
-    expect(within(seriesList).queryByText("Série en cours")).not.toBeInTheDocument();
-    expect(within(seriesList).getAllByText("Validée").length).toBeGreaterThan(0);
+    expect(within(seriesList).queryByText(/en cours/i)).not.toBeInTheDocument();
+    expect(within(seriesList).getAllByText(/Valid/i).length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole("button", { name: "Recommencer l exercice" }));
     expect(screen.getByTestId("current-series-label")).toHaveTextContent("Serie 1/2");

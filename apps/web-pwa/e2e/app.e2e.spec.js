@@ -44,7 +44,7 @@ test.describe("E2E web/mobile parcours critiques", () => {
     await completeSession(page);
 
     await expect(page.getByTestId("session-status")).toHaveText("completed");
-    await expect(page.getByText("5/5")).toBeVisible();
+    await expect(page.getByText("10/10")).toBeVisible();
     await page.getByRole("button", { name: "Retour accueil" }).click();
     await expect(page.getByRole("heading", { name: /Bienvenue/i })).toBeVisible();
     await expect(page.getByText(/completed/i).first()).toBeVisible();

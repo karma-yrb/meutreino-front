@@ -32,6 +32,16 @@ function sampleDay() {
   };
 }
 
+function sampleDayWithWarmup() {
+  return {
+    ...sampleDay(),
+    warmup: [
+      { id: "wu1", name: "Warmup 1", detail: "30 sec", previewImageUrl: "https://example.com/wu1.jpg" },
+      { id: "wu2", name: "Warmup 2", detail: "10 reps" },
+    ],
+  };
+}
+
 test("buildSessionRun initializes with running status and first exercise in progress", () => {
   const session = buildSessionRun({
     userId: "u1",
@@ -142,4 +152,35 @@ test("restartCurrentExercise reopens exercise and keeps actual values", () => {
   assert.equal(restarted.exercises[0].sets[1].validated, false);
   assert.equal(restarted.exercises[0].sets[0].actualReps, "14");
   assert.equal(restarted.exercises[0].sets[0].actualLoad, "35");
+});
+
+test("buildSessionRun includes warmup steps before main and skips warmup rest", () => {
+  let session = buildSessionRun({
+    userId: "u1",
+    dayId: "lundi",
+    day: sampleDayWithWarmup(),
+    planVersion: "2026-04-v1",
+    nowMs: 1000,
+  });
+
+  assert.equal(session.exercises.length, 4);
+  assert.equal(session.exercises[0].name, "Warmup 1");
+  assert.equal(session.exercises[0].phase, "warmup");
+  assert.equal(session.exercises[0].sets[0].restSeconds, 0);
+  assert.equal(session.exercises[0].previewImageUrl, "https://example.com/wu1.jpg");
+  assert.equal(session.exercises[2].phase, "main");
+
+  session = validateCurrentSet(session, { nowMs: 1500 });
+  assert.equal(session.currentExerciseIndex, 1);
+  assert.equal(session.rest.active, false);
+
+  session = validateCurrentSet(session, { nowMs: 2000 });
+  assert.equal(session.currentExerciseIndex, 2);
+  assert.equal(session.rest.active, false);
+
+  session = validateCurrentSet(session, { nowMs: 2500 });
+  assert.equal(session.currentExerciseIndex, 2);
+  assert.equal(session.currentSetIndex, 1);
+  assert.equal(session.rest.active, true);
+  assert.equal(session.rest.remainingSeconds, 60);
 });

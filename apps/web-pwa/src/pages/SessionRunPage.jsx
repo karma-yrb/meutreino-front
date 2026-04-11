@@ -57,9 +57,12 @@ function getSlides(exercise, language) {
   const name = exercise.name ?? "";
   const parts = name.split(/\s*\+\s*/);
   const customVideoUrl = exercise.videoUrl?.trim() || null;
+  const customPreviewImageUrl = exercise.previewImageUrl?.trim() || null;
   const slides = parts.flatMap((part) => {
     const media = getExerciseMedia(part.trim(), language);
-    const imageSlide = { type: "image", url: media.imageUrl, label: part.trim() || name || "Exercice" };
+    const resolvedVideoUrl = customVideoUrl || media.videoUrl || null;
+    const resolvedImageUrl = customPreviewImageUrl || getYoutubeThumbnailUrl(resolvedVideoUrl) || media.imageUrl;
+    const imageSlide = { type: "image", url: resolvedImageUrl, label: part.trim() || name || "Exercice" };
 
     if (customVideoUrl) return [imageSlide];
     if (!media.videoUrl) return [imageSlide];
@@ -161,7 +164,8 @@ export function SessionRunPage() {
       ]);
 
       setDay(dayData);
-      if (!dayData?.rest && !dayData?.cardioOnly && (dayData?.main?.length ?? 0) > 0) {
+      const hasRunnableContent = (dayData?.main?.length ?? 0) > 0 || (dayData?.warmup?.length ?? 0) > 0;
+      if (!dayData?.rest && !dayData?.cardioOnly && hasRunnableContent) {
         const run = buildSessionRun({
           userId: currentUser.id,
           dayId,
@@ -280,8 +284,10 @@ export function SessionRunPage() {
     return Math.round((session.completedExercisesCount / session.exercises.length) * 100);
   }, [session]);
   const baseExerciseOrderIds = useMemo(() => {
-    if (day?.main?.length) {
-      return day.main.map((exercise, idx) => exercise.id ?? `${dayId}-ex-${idx + 1}`);
+    const warmupIds = (day?.warmup ?? []).map((item, idx) => item.id ?? `${dayId}-wu-${idx + 1}`);
+    const mainIds = (day?.main ?? []).map((exercise, idx) => exercise.id ?? `${dayId}-ex-${idx + 1}`);
+    if (warmupIds.length || mainIds.length) {
+      return [...warmupIds, ...mainIds];
     }
     return session?.exercises?.map((exercise) => exercise.id) ?? [];
   }, [day, dayId, session]);
@@ -327,7 +333,7 @@ export function SessionRunPage() {
   function onValidateSet() {
     setSession((prev) => {
       if (!prev) return prev;
-      return validateCurrentSet(prev, { nowMs: Date.now(), restSeconds: 60 });
+      return validateCurrentSet(prev, { nowMs: Date.now() });
     });
     setJustValidated(true);
     setTimeout(() => setJustValidated(false), 700);
@@ -502,7 +508,7 @@ export function SessionRunPage() {
                     <div className="exercise-media-video-thumb">
                       <img src={activeSlide.thumbnailUrl} alt={activeSlide.label} className="exercise-media-img" />
                       <span className="exercise-media-play-badge">
-                        <FontAwesomeIcon icon={faPlay} size="sm" />
+                        <FontAwesomeIcon icon={faPlay} size="2x" />
                       </span>
                     </div>
                   ) : (
@@ -761,7 +767,7 @@ export function SessionRunPage() {
                   <iframe
                     className="media-modal-video"
                     title={`Video - ${activeSlide.label}`}
-                    src={`https://www.youtube-nocookie.com/embed/${activeSlide.embedId}?rel=0&modestbranding=1&playsinline=1`}
+                    src={`https://www.youtube-nocookie.com/embed/${activeSlide.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
                     loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
@@ -769,7 +775,7 @@ export function SessionRunPage() {
                   />
                 </div>
               ) : (
-                <video className="media-modal-video" src={activeSlide.url} controls playsInline preload="metadata" />
+                <video className="media-modal-video" src={activeSlide.url} controls autoPlay playsInline preload="metadata" />
               )
             ) : (
               <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Video a venir</span></div>
@@ -810,6 +816,7 @@ export function SessionRunPage() {
               const previewImage = getExercisePreviewImage(exercise, uiLanguage);
               const reps = formatExerciseSetMetric(exercise.sets, "targetReps");
               const stateLabel = state === "active" ? "En cours" : state === "validated" ? "Validé" : "Non actif";
+              const itemLabel = exercise.phase === "warmup" ? "Échauffement" : "Exercice";
 
               return (
                 <button
@@ -830,7 +837,7 @@ export function SessionRunPage() {
                   </div>
                   <div className="session-progression-body">
                     <div className="session-progression-topline">
-                      <p className="session-progression-title">Exercice {order} - {exercise.name}</p>
+                      <p className="session-progression-title">{itemLabel} {order} - {exercise.name}</p>
                       <span className={`session-progression-state ${state}`}>{stateLabel}</span>
                     </div>
                     <p className="session-progression-meta">

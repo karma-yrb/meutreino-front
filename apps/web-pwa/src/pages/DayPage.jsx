@@ -30,9 +30,12 @@ function getSlides(exercise, language) {
   const name = exercise.name ?? "";
   const parts = name.split(/\s*\+\s*/);
   const customVideoUrl = exercise.videoUrl?.trim() || null;
+  const customPreviewImageUrl = exercise.previewImageUrl?.trim() || null;
   const slides = parts.flatMap((part) => {
     const media = getExerciseMedia(part.trim(), language);
-    const imageSlide = { type: "image", url: media.imageUrl, label: part.trim() };
+    const resolvedVideoUrl = customVideoUrl || media.videoUrl || null;
+    const resolvedImageUrl = customPreviewImageUrl || getYoutubeThumbnailUrl(resolvedVideoUrl) || media.imageUrl;
+    const imageSlide = { type: "image", url: resolvedImageUrl, label: part.trim() };
 
     if (customVideoUrl) return [imageSlide];
     if (!media.videoUrl) return [imageSlide];
@@ -58,9 +61,13 @@ function getSlides(exercise, language) {
 
   return slides.length > 0 ? slides : [{ type: "image", url: null, label: name || "Exercice" }];
 }
+
+function getExercisePreviewImage(exercise, language) {
+  return getSlides(exercise, language).find((slide) => slide.type === "image" && slide.url)?.url ?? null;
+}
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
-import { getExerciseMedia, getExerciseVideoSearchUrl } from "../data/exerciseMedia";
+import { getExerciseMedia } from "../data/exerciseMedia";
 
 const WEEK_DAYS = [
   { short: "L", id: "lundi" },
@@ -82,6 +89,7 @@ export function DayPage() {
   const [openSections, setOpenSections] = useState({ warmup: false, exercises: true });
   const [slideIndices, setSlideIndices] = useState({});
   const [mediaModal, setMediaModal] = useState(null);
+  const [warmupVideoModal, setWarmupVideoModal] = useState(null);
 
   function cycleSlide(exIndex, direction = 1) {
     if (!day) return;
@@ -94,7 +102,24 @@ export function DayPage() {
   }
 
   function openModal(exIndex) { setMediaModal(exIndex); }
-  function closeModal() { setMediaModal(null); }
+
+  function openWarmupVideoModal(item) {
+    const media = getExerciseMedia(item?.name, uiLanguage);
+    const videoUrl = item?.videoUrl?.trim() || media.videoUrl || null;
+    const previewImageUrl = item?.previewImageUrl?.trim() || getYoutubeThumbnailUrl(videoUrl) || media.imageUrl;
+    if (!videoUrl && !previewImageUrl) return;
+    setWarmupVideoModal({
+      url: videoUrl,
+      imageUrl: previewImageUrl,
+      embedId: getYoutubeVideoId(videoUrl),
+      label: item?.name || "Video",
+    });
+  }
+
+  function closeModal() {
+    setMediaModal(null);
+    setWarmupVideoModal(null);
+  }
 
   function handleNoteChange(exIndex, value) {
     if (!currentUser || !dayId) return;
@@ -148,11 +173,47 @@ export function DayPage() {
     });
   }
 
+  function handlePreviewImageUrlChange(exIndex, value) {
+    if (!currentUser || !dayId) return;
+    const nextValue = value.trim() ? value.trim() : null;
+    setDay((prev) => {
+      if (!prev) return prev;
+      const nextMain = prev.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, previewImageUrl: nextValue }
+      );
+      return { ...prev, main: nextMain };
+    });
+    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
+      const nextMain = draftDay.main.map((exercise, i) =>
+        i !== exIndex ? exercise : { ...exercise, previewImageUrl: nextValue }
+      );
+      return { ...draftDay, main: nextMain };
+    });
+  }
+
+  function handleWarmupMediaChange(warmupIndex, field, value) {
+    if (!currentUser || !dayId) return;
+    const nextValue = value.trim() ? value.trim() : null;
+    setDay((prev) => {
+      if (!prev) return prev;
+      const nextWarmup = (prev.warmup ?? []).map((item, i) =>
+        i !== warmupIndex ? item : { ...item, [field]: nextValue }
+      );
+      return { ...prev, warmup: nextWarmup };
+    });
+    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
+      const nextWarmup = (draftDay.warmup ?? []).map((item, i) =>
+        i !== warmupIndex ? item : { ...item, [field]: nextValue }
+      );
+      return { ...draftDay, warmup: nextWarmup };
+    });
+  }
+
   useEffect(() => {
     function onKey(e) { if (e.key === "Escape") closeModal(); }
-    if (mediaModal !== null) window.addEventListener("keydown", onKey);
+    if (mediaModal !== null || warmupVideoModal !== null) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mediaModal]);
+  }, [mediaModal, warmupVideoModal]);
 
   useEffect(() => {
     async function load() {
@@ -237,7 +298,7 @@ export function DayPage() {
       <div className="day-hero">
         {(() => {
           const firstImg = hasExercises
-            ? day.main.map(ex => getExerciseMedia(ex.name, uiLanguage).imageUrl).find(Boolean)
+            ? day.main.map((ex) => getExercisePreviewImage(ex, uiLanguage)).find(Boolean)
             : null;
           return firstImg ? (
             <img src={firstImg} alt={day.title ?? day.fullLabel} className="day-hero-img" />
@@ -305,23 +366,55 @@ export function DayPage() {
                 {day.warmup.map((item, i) => (
                   (() => {
                     const media = getExerciseMedia(item.name, uiLanguage);
-                    const warmupVideoUrl = media.videoUrl || getExerciseVideoSearchUrl(item.name, uiLanguage);
+                    const warmupVideoUrl = item.videoUrl?.trim() || media.videoUrl || null;
+                    const warmupPreviewImageUrl = item.previewImageUrl?.trim() || getYoutubeThumbnailUrl(warmupVideoUrl) || media.imageUrl;
+                    const canOpenWarmupMedia = Boolean(warmupVideoUrl || warmupPreviewImageUrl);
                     return (
                       <div key={i} className="warmup-item">
+                        <button
+                          type="button"
+                          className="warmup-media-thumb"
+                          onClick={() => openWarmupVideoModal(item)}
+                          disabled={!canOpenWarmupMedia}
+                          aria-label={`Agrandir ${item.name}`}
+                        >
+                          {warmupPreviewImageUrl ? (
+                            <img src={warmupPreviewImageUrl} alt={item.name} className="exercise-media-img" />
+                          ) : (
+                            <div className="exercise-media-placeholder">
+                              <FontAwesomeIcon icon={faDumbbell} size="lg" />
+                            </div>
+                          )}
+                        </button>
                         <div className="warmup-main">
                           <span>{item.name}</span>
                           <span className="warmup-detail">{item.detail}</span>
+                          <input
+                            className="warmup-media-input"
+                            type="url"
+                            value={item.videoUrl ?? ""}
+                            onChange={(e) => handleWarmupMediaChange(i, "videoUrl", e.target.value)}
+                            placeholder="Lien video echauffement (YouTube)"
+                            aria-label={`Lien video echauffement ${item.name}`}
+                          />
+                          <input
+                            className="warmup-media-input"
+                            type="url"
+                            value={item.previewImageUrl ?? ""}
+                            onChange={(e) => handleWarmupMediaChange(i, "previewImageUrl", e.target.value)}
+                            placeholder="Miniature image (URL)"
+                            aria-label={`Miniature echauffement ${item.name}`}
+                          />
                         </div>
                         {warmupVideoUrl ? (
-                          <a
-                            href={warmupVideoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            type="button"
                             className="warmup-video-link"
+                            onClick={() => openWarmupVideoModal(item)}
                           >
                             <FontAwesomeIcon icon={faPlay} size="xs" />
                             Vidéo
-                          </a>
+                          </button>
                         ) : null}
                       </div>
                     );
@@ -384,7 +477,7 @@ export function DayPage() {
                                       <div className="exercise-media-video-thumb">
                                         <img src={slide.thumbnailUrl} alt={slide.label} className="exercise-media-img" />
                                         <span className="exercise-media-play-badge">
-                                          <FontAwesomeIcon icon={faPlay} size="sm" />
+                                          <FontAwesomeIcon icon={faPlay} size="2x" />
                                         </span>
                                       </div>
                                     ) : (
@@ -444,6 +537,14 @@ export function DayPage() {
                             onChange={(e) => handleVideoUrlChange(exIndex, e.target.value)}
                             placeholder="Lien vidéo personnalisé (YouTube)"
                             aria-label="Lien vidéo de l'exercice"
+                          />
+                          <input
+                            className="exercise-video-input"
+                            type="url"
+                            value={exercise.previewImageUrl ?? ""}
+                            onChange={(e) => handlePreviewImageUrlChange(exIndex, e.target.value)}
+                            placeholder="Miniature image personnalisee (URL)"
+                            aria-label="Miniature de l'exercice"
                           />
                           <div className="series-grid">
                             {exercise.series.map((serie, setIndex) => (
@@ -519,6 +620,38 @@ export function DayPage() {
       )}
 
       {/* ── Media Modal (plein écran) ──────────────────── */}
+      {warmupVideoModal && (
+        <div className="media-modal-overlay" onClick={closeModal} role="dialog" aria-modal="true" aria-label={warmupVideoModal.label}>
+          <div className="media-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="media-modal-close" type="button" onClick={closeModal} aria-label="Fermer">
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <p className="media-modal-label">{warmupVideoModal.label}</p>
+            {warmupVideoModal.url ? (
+              warmupVideoModal.embedId ? (
+                <div className="media-modal-video-wrap">
+                <iframe
+                  className="media-modal-video"
+                  title={`Video - ${warmupVideoModal.label}`}
+                  src={`https://www.youtube-nocookie.com/embed/${warmupVideoModal.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <video className="media-modal-video" src={warmupVideoModal.url} controls autoPlay playsInline preload="metadata" />
+            )
+          ) : warmupVideoModal.imageUrl ? (
+            <img src={warmupVideoModal.imageUrl} alt={warmupVideoModal.label} className="media-modal-img" />
+            ) : (
+              <div className="media-modal-placeholder"><FontAwesomeIcon icon={faDumbbell} size="3x" /></div>
+            )}
+          </div>
+        </div>
+      )}
+
       {mediaModal !== null && (() => {
         const exercise = day.main[mediaModal];
         const slides = getSlides(exercise, uiLanguage);
@@ -544,7 +677,7 @@ export function DayPage() {
                     <iframe
                       className="media-modal-video"
                       title={`Video - ${slide.label}`}
-                      src={`https://www.youtube-nocookie.com/embed/${slide.embedId}?rel=0&modestbranding=1&playsinline=1`}
+                      src={`https://www.youtube-nocookie.com/embed/${slide.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
                       loading="lazy"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       referrerPolicy="strict-origin-when-cross-origin"
@@ -552,7 +685,7 @@ export function DayPage() {
                     />
                   </div>
                 ) : (
-                  <video className="media-modal-video" src={slide.url} controls playsInline preload="metadata" />
+                  <video className="media-modal-video" src={slide.url} controls autoPlay playsInline preload="metadata" />
                 )
               ) : (
                 <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Vidéo à venir</span></div>

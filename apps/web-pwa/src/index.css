@@ -659,17 +659,21 @@ button {
 
 .exercise-media-play-badge {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
-  width: 28px;
-  height: 28px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(58px, 44%, 96px);
+  height: clamp(58px, 44%, 96px);
   border-radius: 50%;
-  background: rgba(0 0 0 / 0.65);
+  background: rgba(0 0 0 / 0.3);
   color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255 255 255 / 0.28);
+  border: 2px solid rgba(255 255 255 / 0.72);
+  box-shadow: 0 10px 24px rgba(0 0 0 / 0.25);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
 }
 
 .exercise-media-placeholder {
@@ -2004,17 +2008,38 @@ button {
 .warmup-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 10px 4px;
   border-bottom: 1px solid var(--line);
   font-size: 14px;
   gap: 8px;
 }
 
+.warmup-media-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: stretch;
+  justify-content: stretch;
+  cursor: pointer;
+}
+
+.warmup-media-thumb:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .warmup-main {
   display: grid;
-  gap: 3px;
+  gap: 5px;
   min-width: 0;
+  flex: 1;
 }
 
 .warmup-item:last-child {
@@ -2036,15 +2061,27 @@ button {
   padding: 0 10px;
   border-radius: 999px;
   border: 1px solid var(--brand);
+  background: transparent;
   color: var(--brand);
   text-decoration: none;
   font-size: 12px;
   font-weight: 700;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .warmup-video-link:hover {
   background: color-mix(in srgb, var(--brand) 10%, transparent);
+}
+
+.warmup-media-input {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 9px;
+  font-size: 12px;
 }
 
 /* ── Sticky CTA bar ─────────────────────────────── */
