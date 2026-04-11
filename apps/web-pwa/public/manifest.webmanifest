@@ -1,7 +1,7 @@
 {
   "name": "MeuTreino",
   "short_name": "MeuTreino",
-  "description": "Planification et suivi des entrainements",
+  "description": "Planification et suivi des entraînements",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f3f4f7",

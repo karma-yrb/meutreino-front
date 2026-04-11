@@ -8,7 +8,7 @@ function sets(count) {
 
 export const defaultTemplate = {
   id: "template-mois-2",
-  name: "Template Mois 2",
+  name: "Modèle Mois 2",
   monthLabel: "2026-03",
   createdByAdminId: "admin-1",
   days: [
@@ -16,14 +16,14 @@ export const defaultTemplate = {
       id: "lundi",
       label: "LUN",
       fullLabel: "Lundi",
-      training: "Treino A",
-      title: "Membres inferieurs A",
+      training: "Séance A",
+      title: "Membres inférieurs A",
       warmup: [
-        { name: "Etirement fessier", detail: "30 sec chaque cote" },
-        { name: "Etirement dynamique ischio", detail: "30 sec chaque cote" },
-        { name: "Mobilite hanche 90/90", detail: "12 reps chaque cote" },
-        { name: "Etirement mollet", detail: "30 sec chaque cote" },
-        { name: "Mobilite cheville", detail: "15 reps chaque cote" },
+        { name: "Étirement fessier", detail: "30 s de chaque côté" },
+        { name: "Étirement dynamique ischio", detail: "30 s de chaque côté" },
+        { name: "Mobilité hanche 90/90", detail: "12 rép. de chaque côté" },
+        { name: "Étirement mollet", detail: "30 s de chaque côté" },
+        { name: "Mobilité cheville", detail: "15 rép. de chaque côté" },
       ],
       main: [
         {
@@ -45,9 +45,9 @@ export const defaultTemplate = {
           series: [
             { reps: "12", load: "70 kg", rest: "-", tempo: "3020" },
             { reps: "12", load: "70 kg", rest: "-", tempo: "3020" },
-            { reps: "12 + drop set", load: "70 kg -> -30%", rest: "-", tempo: "3020" },
+            { reps: "12 + série dégressive", load: "70 kg -> -30%", rest: "-", tempo: "3020" },
           ],
-          note: "Derniere serie: drop set",
+          note: "Dernière série: série dégressive",
         },
         {
           id: "lun-ex-3",
@@ -77,7 +77,7 @@ export const defaultTemplate = {
           tag: "Pyramide",
           tagColor: "#8e44ad",
           series: [
-            { reps: "20", load: "Charge legere", rest: "60 s", tempo: "3020" },
+            { reps: "20", load: "Charge légère", rest: "60 s", tempo: "3020" },
             { reps: "15", load: "Charge moyenne", rest: "60 s", tempo: "3020" },
             { reps: "12", load: "Charge lourde", rest: "60 s", tempo: "3020" },
           ],
@@ -89,12 +89,12 @@ export const defaultTemplate = {
       id: "mardi",
       label: "MAR",
       fullLabel: "Mardi",
-      training: "Treino B",
-      title: "Dorsaux + Biceps",
+      training: "Séance B",
+      title: "Dorsaux + biceps",
       warmup: [
-        { name: "Etirement pectoraux bilateral", detail: "1 serie" },
-        { name: "Mobilite colonne thoracique", detail: "1 serie" },
-        { name: "Etirement unilateral lateral tronc", detail: "1 serie" },
+        { name: "Étirement pectoraux bilatéral", detail: "1 série" },
+        { name: "Mobilité colonne thoracique", detail: "1 série" },
+        { name: "Étirement unilatéral latéral tronc", detail: "1 série" },
       ],
       main: [
         { id: "mar-ex-1", name: "Tirage vertical", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
@@ -108,28 +108,28 @@ export const defaultTemplate = {
       id: "mercredi",
       label: "MER",
       fullLabel: "Mercredi",
-      training: "Treino C",
-      title: "Triceps + Biceps",
+      training: "Séance C",
+      title: "Triceps + biceps",
       warmup: [
-        { name: "Etirement pectoraux unilateral", detail: "1 serie" },
-        { name: "Etirement lateral tronc", detail: "1 serie" },
-        { name: "Mobilite YTW", detail: "1 serie" },
+        { name: "Étirement pectoraux unilatéral", detail: "1 série" },
+        { name: "Étirement latéral tronc", detail: "1 série" },
+        { name: "Mobilité YTW", detail: "1 série" },
       ],
       main: [
         { id: "mer-ex-1", name: "Triceps corde poulie haute", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
         { id: "mer-ex-2", name: "Triceps corde + Curl 21", tag: "Superset", tagColor: "#1abc9c", series: sets(3), note: null },
-        { id: "mer-ex-3", name: "Triceps francais + Curl poulie", tag: "Superset", tagColor: "#1abc9c", series: sets(3), note: null },
+        { id: "mer-ex-3", name: "Triceps français + Curl poulie", tag: "Superset", tagColor: "#1abc9c", series: sets(3), note: null },
       ],
     },
     {
       id: "jeudi",
       label: "JEU",
       fullLabel: "Jeudi",
-      training: "Treino D",
-      title: "Membres inferieurs D",
+      training: "Séance D",
+      title: "Membres inférieurs D",
       warmup: [
-        { name: "Etirement quadriceps unilateral", detail: "1 serie" },
-        { name: "Etirement dynamique ischio", detail: "1 serie" },
+        { name: "Étirement quadriceps unilatéral", detail: "1 série" },
+        { name: "Étirement dynamique ischio", detail: "1 série" },
       ],
       main: [
         { id: "jeu-ex-1", name: "Leg Curl assis", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
@@ -143,11 +143,11 @@ export const defaultTemplate = {
       id: "vendredi",
       label: "VEN",
       fullLabel: "Vendredi",
-      training: "Treino E",
-      title: "Pectoraux + Epaules",
+      training: "Séance E",
+      title: "Pectoraux + épaules",
       warmup: [
-        { name: "Etirement pectoraux bilateral", detail: "1 serie" },
-        { name: "Etirement rotateurs internes", detail: "1 serie" },
+        { name: "Étirement pectoraux bilatéral", detail: "1 série" },
+        { name: "Étirement rotateurs internes", detail: "1 série" },
       ],
       main: [
         { id: "ven-ex-1", name: "Développé incliné", tag: "Activation", tagColor: "#f5a623", series: sets(2), note: null },
@@ -167,7 +167,7 @@ export const defaultTemplate = {
       label: "DIM",
       fullLabel: "Dimanche",
       training: "Cardio",
-      title: "Cardio 40 Minutes",
+      title: "Cardio 40 minutes",
       cardioOnly: true,
     },
   ],

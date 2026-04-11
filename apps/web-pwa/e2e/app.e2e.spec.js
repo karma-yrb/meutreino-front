@@ -13,7 +13,7 @@ async function completeSession(page) {
   await expect(page.getByRole("heading", { name: /Session en cours/i })).toBeVisible();
 
   for (let step = 0; step < 80; step += 1) {
-    const backHomeButton = page.getByRole("button", { name: "Retour accueil" });
+    const backHomeButton = page.getByRole("button", { name: "Retour à l'accueil" });
     if (await backHomeButton.isVisible()) {
       return;
     }
@@ -24,7 +24,7 @@ async function completeSession(page) {
       continue;
     }
 
-    const validateSetButton = page.getByRole("button", { name: "Valider la serie" });
+    const validateSetButton = page.getByRole("button", { name: "Valider la série" });
     if (await validateSetButton.isVisible()) {
       await validateSetButton.click();
       continue;
@@ -33,7 +33,7 @@ async function completeSession(page) {
     await page.waitForTimeout(100);
   }
 
-  throw new Error("La session ne se termine pas dans le nombre d etapes attendu.");
+  throw new Error("La session ne se termine pas dans le nombre d'étapes attendu.");
 }
 
 test.describe("E2E web/mobile parcours critiques", () => {
@@ -45,30 +45,30 @@ test.describe("E2E web/mobile parcours critiques", () => {
 
     await expect(page.getByTestId("session-status")).toHaveText("completed");
     await expect(page.getByText("10/10")).toBeVisible();
-    await page.getByRole("button", { name: "Retour accueil" }).click();
+    await page.getByRole("button", { name: "Retour à l'accueil" }).click();
     await expect(page.getByRole("heading", { name: /Bienvenue/i })).toBeVisible();
-    await expect(page.getByText(/completed/i).first()).toBeVisible();
+    await expect(page.getByText(/terminée/i).first()).toBeVisible();
   });
 
   test("role routes are guarded for admin and coach", async ({ page }) => {
     await loginAs(page, "admin@local", "admin123");
-    await expect(page.getByRole("link", { name: "Admin" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Administration" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Coach" })).toHaveCount(0);
-    await page.getByRole("link", { name: "Admin" }).click();
-    await expect(page.getByRole("heading", { name: "Admin - Templates" })).toBeVisible();
+    await page.getByRole("link", { name: "Administration" }).click();
+    await expect(page.getByRole("heading", { name: "Admin - Modèles" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Deconnexion" }).click();
+    await page.getByRole("button", { name: "Déconnexion" }).click();
     await expect(page.getByRole("heading", { name: "Connexion" })).toBeVisible();
 
     await loginAs(page, "coach@local", "coach123");
     await expect(page.getByRole("link", { name: "Coach" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Admin" })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Administration" })).toHaveCount(0);
     await page.getByRole("link", { name: "Coach" }).click();
-    await expect(page.getByRole("heading", { name: "Coach - Utilisateurs assignes" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Coach - Utilisateurs assignés" })).toBeVisible();
 
     await page.goto("/admin/templates");
     await expect(page.getByRole("heading", { name: /Bienvenue/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Admin - Templates" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Admin - Modèles" })).toHaveCount(0);
   });
 
   test("pwa metadata and service worker make the app installable", async ({ page }) => {

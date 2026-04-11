@@ -74,7 +74,7 @@ function getSlides(exercise, language) {
         url: media.videoUrl,
         embedId: getYoutubeVideoId(media.videoUrl),
         thumbnailUrl: getYoutubeThumbnailUrl(media.videoUrl),
-        label: part.trim() || name || "Video",
+        label: part.trim() || name || "Vidéo",
       },
     ];
   });
@@ -85,7 +85,7 @@ function getSlides(exercise, language) {
       url: customVideoUrl,
       embedId: getYoutubeVideoId(customVideoUrl),
       thumbnailUrl: getYoutubeThumbnailUrl(customVideoUrl),
-      label: name || "Video",
+      label: name || "Vidéo",
     });
   }
 
@@ -395,7 +395,7 @@ export function SessionRunPage() {
       <div className="page">
         <section className="card">
           <h2>Session non disponible</h2>
-          <p className="muted">Ce jour ne contient pas de sequence d exercices a valider.</p>
+          <p className="muted">Ce jour ne contient pas de séquence d'exercices à valider.</p>
           <Link className="primary-btn" to={`/jour/${day.id}`}>
             Retour au jour
           </Link>
@@ -431,7 +431,7 @@ export function SessionRunPage() {
             <p>{elapsedLabel}</p>
           </div>
           <div className="session-mini-block session-pizza-block">
-            <strong>Exercices finalises</strong>
+            <strong>Exercices finalisés</strong>
             <div className="session-pizza" style={{ "--progress": `${exerciseProgressPercent}%` }}>
               <span>{progressLabel}</span>
             </div>
@@ -465,8 +465,8 @@ export function SessionRunPage() {
                       className="ghost-btn session-icon-btn stop"
                       type="button"
                       onClick={onStop}
-                      aria-label="Arreter la session"
-                      title="Arreter la session"
+                      aria-label="Arrêter la séance"
+                      title="Arrêter la séance"
                     >
                       <FontAwesomeIcon icon={faStop} />
                     </button>
@@ -475,7 +475,7 @@ export function SessionRunPage() {
               )}
               {(session.status === "completed" || session.status === "stopped") && (
                 <button className="primary-btn session-return-btn" type="button" onClick={() => navigate("/")}>
-                  Retour accueil
+                  Retour à l'accueil
                 </button>
               )}
             </div>
@@ -492,7 +492,7 @@ export function SessionRunPage() {
               type="button"
               className="session-media-thumb"
               onClick={() => setMediaModalOpen(true)}
-              aria-label={`Agrandir - slide ${activeSlideIndex + 1} sur ${currentSlides.length}`}
+              aria-label={`Agrandir - diapositive ${activeSlideIndex + 1} sur ${currentSlides.length}`}
             >
               {activeSlide?.type === "image" ? (
                 activeSlide?.url ? (
@@ -519,7 +519,7 @@ export function SessionRunPage() {
                 ) : (
                   <div className="exercise-media-placeholder video">
                     <FontAwesomeIcon icon={faPlay} size="2x" />
-                    <span>Video a venir</span>
+                    <span>Vidéo à venir</span>
                   </div>
                 )
               )}
@@ -527,7 +527,7 @@ export function SessionRunPage() {
             <div className="session-media-controls">
               {currentSlides.length > 1 && (
                 <>
-                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(-1)} aria-label="Slide precedent">
+                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(-1)} aria-label="Diapositive précédente">
                     <FontAwesomeIcon icon={faChevronLeft} />
                   </button>
                   <div className="session-media-dots">
@@ -536,12 +536,12 @@ export function SessionRunPage() {
                         key={i}
                         type="button"
                         className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
-                        aria-label={`Slide ${i + 1}`}
+                        aria-label={`Diapositive ${i + 1}`}
                         onClick={() => setCurrentSlideIndex(i)}
                       />
                     ))}
                   </div>
-                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(1)} aria-label="Slide suivant">
+                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(1)} aria-label="Diapositive suivante">
                     <FontAwesomeIcon icon={faChevronRight} />
                   </button>
                 </>
@@ -571,7 +571,7 @@ export function SessionRunPage() {
               border: 0,
             }}
           >
-            Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}
+            Série {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}
           </div>
 
           {canRestartCurrentExercise ? (
@@ -579,7 +579,7 @@ export function SessionRunPage() {
               <button
                 className="ghost-btn set-restart-btn"
                 type="button"
-                aria-label="Recommencer l exercice"
+                aria-label="Recommencer l'exercice"
                 onClick={onRestartExercise}
               >
                 Recommencer l'exercice
@@ -587,7 +587,7 @@ export function SessionRunPage() {
             </div>
           ) : null}
 
-          <section className="set-ordered-list" aria-label="Series">
+          <section className="set-ordered-list" aria-label="Séries">
             {orderedSets.map((set, idx) => {
               const isActive = idx === session.currentSetIndex && !set?.validated;
               const isValidated = Boolean(set?.validated);
@@ -629,7 +629,7 @@ export function SessionRunPage() {
                               size={1}
                               inputMode="numeric"
                               pattern="[0-9]*"
-                              aria-label="Repetitions"
+                              aria-label="Répétitions"
                               value={repsInputValue}
                               onChange={(e) => setValue("actualReps", e.target.value)}
                               disabled={session.rest.active || session.status !== "running"}
@@ -657,7 +657,7 @@ export function SessionRunPage() {
                         <button
                           className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
                           type="button"
-                          aria-label="Valider la serie"
+                          aria-label="Valider la série"
                           onClick={onValidateSet}
                           disabled={session.status !== "running"}
                         >
@@ -748,7 +748,7 @@ export function SessionRunPage() {
       ) : null}
 
       {mediaModalOpen && activeSlide ? (
-        <div className="media-modal-overlay" onClick={() => setMediaModalOpen(false)} role="dialog" aria-modal="true" aria-label={currentExercise?.name ?? "Media"}>
+        <div className="media-modal-overlay" onClick={() => setMediaModalOpen(false)} role="dialog" aria-modal="true" aria-label={currentExercise?.name ?? "Média"}>
           <div className="media-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="media-modal-close" type="button" onClick={() => setMediaModalOpen(false)} aria-label="Fermer">
               <FontAwesomeIcon icon={faXmark} />
@@ -766,7 +766,7 @@ export function SessionRunPage() {
                 <div className="media-modal-video-wrap">
                   <iframe
                     className="media-modal-video"
-                    title={`Video - ${activeSlide.label}`}
+                    title={`Vidéo - ${activeSlide.label}`}
                     src={`https://www.youtube-nocookie.com/embed/${activeSlide.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
                     loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -778,12 +778,12 @@ export function SessionRunPage() {
                 <video className="media-modal-video" src={activeSlide.url} controls autoPlay playsInline preload="metadata" />
               )
             ) : (
-              <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Video a venir</span></div>
+              <div className="media-modal-placeholder"><FontAwesomeIcon icon={faPlay} size="3x" /><span>Vidéo à venir</span></div>
             )}
 
             {currentSlides.length > 1 && (
               <>
-                <button className="media-modal-nav media-modal-prev" type="button" onClick={() => cycleSlide(-1)} aria-label="Precedent">
+                <button className="media-modal-nav media-modal-prev" type="button" onClick={() => cycleSlide(-1)} aria-label="Précédent">
                   <FontAwesomeIcon icon={faChevronLeft} />
                 </button>
                 <button className="media-modal-nav media-modal-next" type="button" onClick={() => cycleSlide(1)} aria-label="Suivant">
@@ -798,7 +798,7 @@ export function SessionRunPage() {
                   className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
                   type="button"
                   onClick={() => setCurrentSlideIndex(i)}
-                  aria-label={`Slide ${i + 1}`}
+                  aria-label={`Diapositive ${i + 1}`}
                 />
               ))}
             </div>
@@ -824,7 +824,7 @@ export function SessionRunPage() {
                   className={`session-progression-item is-${state}`}
                   key={exercise.id}
                   onClick={() => focusExercise(idx)}
-                  aria-label={`Focus exercice ${exercise.name}`}
+                  aria-label={`Voir l'exercice ${exercise.name}`}
                 >
                   <div className="session-progression-thumb">
                     {previewImage ? (
@@ -841,7 +841,7 @@ export function SessionRunPage() {
                       <span className={`session-progression-state ${state}`}>{stateLabel}</span>
                     </div>
                     <p className="session-progression-meta">
-                      <span>{exercise.sets?.length ?? 0} series de {reps} Repetitions</span>
+                      <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
                     </p>
                   </div>
                 </button>

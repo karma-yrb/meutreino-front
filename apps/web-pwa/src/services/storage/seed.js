@@ -72,7 +72,7 @@ export async function ensureSeedData() {
         password: "user123",
         role: "user",
         firstName: "Client",
-        lastName: "Demo",
+        lastName: "Démo",
         coachId: "coach-1",
         assignedUserIds: [],
         profile: {
@@ -100,4 +100,3 @@ export async function ensureSeedData() {
     await db.appMeta.put({ key: "seedVersion", value: SEED_VERSION });
   });
 }
-

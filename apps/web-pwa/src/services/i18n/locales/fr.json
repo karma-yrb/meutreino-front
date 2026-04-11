@@ -5,11 +5,11 @@
     "email": "Email",
     "password": "Mot de passe",
     "submit": "Se connecter",
-    "hint": "Comptes demo: admin@local / coach@local / user@local",
+    "hint": "Comptes démo: admin@local / coach@local / user@local",
     "error": "Identifiants invalides"
   },
   "common": {
-    "logout": "Deconnexion",
+    "logout": "Déconnexion",
     "loading": "Chargement..."
   }
 }

@@ -25,8 +25,8 @@ export function CoachUsersPage() {
   return (
     <div className="page">
       <section className="card">
-        <h2>Coach - Utilisateurs assignes</h2>
-        <p className="muted">La modification detaillee des plans arrive en phase suivante.</p>
+        <h2>Coach - Utilisateurs assignés</h2>
+        <p className="muted">La modification détaillée des plans arrive en phase suivante.</p>
       </section>
       <section className="card">
         <ul className="simple-list">

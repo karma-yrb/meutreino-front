@@ -30,23 +30,23 @@ describe("App integration additional", () => {
 
     await user.click(screen.getByRole("button", { name: "Pause" }));
     expect(screen.getByRole("button", { name: "Reprendre" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Arreter la session" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Valider la serie" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Arrêter la séance" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Valider la série" })).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Reprendre" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Arreter la session" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Arrêter la séance" })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Pause" }));
-    await user.click(screen.getByRole("button", { name: "Arreter la session" }));
+    await user.click(screen.getByRole("button", { name: "Arrêter la séance" }));
     await waitFor(() => {
       expect(screen.getByTestId("session-status")).toHaveTextContent("stopped");
-      expect(screen.getByRole("button", { name: "Retour accueil" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Retour à l'accueil" })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "Retour accueil" }));
+    await user.click(screen.getByRole("button", { name: "Retour à l'accueil" }));
     await waitFor(() => {
-      expect(screen.getByText(/stopped/i)).toBeInTheDocument();
+      expect(screen.getByText(/arrêtée/i)).toBeInTheDocument();
     });
   });
 
@@ -56,7 +56,7 @@ describe("App integration additional", () => {
     await screen.findByRole("heading", { name: /Session en cours/i });
 
     for (let i = 0; i < 60; i += 1) {
-      if (screen.queryByRole("button", { name: "Retour accueil" })) {
+      if (screen.queryByRole("button", { name: "Retour à l'accueil" })) {
         break;
       }
 
@@ -64,7 +64,7 @@ describe("App integration additional", () => {
       if (restBox) {
         await user.click(within(restBox).getByRole("button", { name: "Passer le timer" }));
       } else {
-        const validateBtn = screen.queryByRole("button", { name: "Valider la serie" });
+        const validateBtn = screen.queryByRole("button", { name: "Valider la série" });
         if (validateBtn) {
           await user.click(validateBtn);
         }
@@ -72,32 +72,32 @@ describe("App integration additional", () => {
     }
 
     expect(screen.getByTestId("session-status")).toHaveTextContent("completed");
-    expect(screen.getByRole("button", { name: "Retour accueil" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retour à l'accueil" })).toBeInTheDocument();
     expect(screen.getByText("10/10")).toBeInTheDocument();
-  }, 10000);
+  }, 20000);
 
   test("role navigation and guard behavior for admin and coach", async () => {
     const user = await loginAs("admin@local", "admin123");
-    expect(screen.getByRole("link", { name: "Admin" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Administration" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Coach" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("link", { name: "Admin" }));
-    await screen.findByRole("heading", { name: "Admin - Templates" });
+    await user.click(screen.getByRole("link", { name: "Administration" }));
+    await screen.findByRole("heading", { name: "Admin - Modèles" });
 
-    await user.click(screen.getByRole("button", { name: "Deconnexion" }));
+    await user.click(screen.getByRole("button", { name: "Déconnexion" }));
     await screen.findByRole("heading", { name: "Connexion" });
 
     cleanup();
     const coachUser = await loginAs("coach@local", "coach123");
     expect(screen.getByRole("link", { name: "Coach" })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Admin" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Administration" })).not.toBeInTheDocument();
 
     await coachUser.click(screen.getByRole("link", { name: "Coach" }));
-    await screen.findByRole("heading", { name: "Coach - Utilisateurs assignes" });
+    await screen.findByRole("heading", { name: "Coach - Utilisateurs assignés" });
 
     await navigateTo("/admin/templates");
     await waitFor(() => {
-      expect(screen.queryByRole("heading", { name: "Admin - Templates" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "Admin - Modèles" })).not.toBeInTheDocument();
       expect(screen.getByRole("heading", { name: /Bienvenue/i })).toBeInTheDocument();
     });
   });

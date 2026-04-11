@@ -28,7 +28,7 @@ const EXERCISE_MEDIA = {
   "squat barre libre": {
     imageUrl: `${EK}/barbell-squat-1.png`,
     videoUrl: "https://www.youtube.com/watch?v=jMca5TnlOv8",
-    description: "Debout, barre posée sur les trapèzes (position haute) ou les deltoïdes postérieurs (position basse), pieds à largeur d'épaules, pointes légèrement tournées vers l'extérieur. Descent en poussant les genoux dans l'axe des pieds et en gardant le buste droit et le regard vers l'avant, jusqu'à ce que les cuisses soient parallèles au sol. Remontez en poussant dans le sol, hanches et épaules à la même vitesse.",
+    description: "Debout, barre posée sur les trapèzes (position haute) ou les deltoïdes postérieurs (position basse), pieds à largeur d'épaules, pointes légèrement tournées vers l'extérieur. Descendez en poussant les genoux dans l'axe des pieds et en gardant le buste droit et le regard vers l'avant, jusqu'à ce que les cuisses soient parallèles au sol. Remontez en poussant dans le sol, hanches et épaules à la même vitesse.",
   },
   "soulevé de terre jambes tendues": {
     imageUrl: `${EK}/romanian-dead-lift-1.png`,
@@ -124,7 +124,7 @@ const EXERCISE_MEDIA = {
   "pec deck": {
     imageUrl: `${EK}/butterfly-machine-1.png`,
     videoUrl: "https://www.youtube.com/watch?v=3jYo5cMU3d4",
-    description: "Assis sur la machine butterfly, dos entièrement plaqué contre le dossier, avant-bras contre les rembourrage ou mains sur les poignées. Ramenez les bras vers le centre en contractant les pectoraux, sans enrouler les épaules vers l'avant. Contrôlez l'ouverture en étirant progressivement les pectoraux sans aller au-delà du plan des épaules.",
+    description: "Assis sur la machine butterfly, dos entièrement plaqué contre le dossier, avant-bras contre les rembourrages ou mains sur les poignées. Ramenez les bras vers le centre en contractant les pectoraux, sans enrouler les épaules vers l'avant. Contrôlez l'ouverture en étirant progressivement les pectoraux sans aller au-delà du plan des épaules.",
   },
   "développé militaire + élévation latérale": {
     imageUrl: `${EK}/seated-military-press-1.png`,
@@ -146,7 +146,7 @@ const EXERCISE_MEDIA = {
   "etirement fessier": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=mT-3b4rgRzg",
-    description: "Etirement du piriforme et du fessier en amplitude confortable, sans douleur."
+    description: "Étirement du piriforme et du fessier en amplitude confortable, sans douleur."
   },
   "etirement dynamique ischio": {
     imageUrl: null,
@@ -156,12 +156,12 @@ const EXERCISE_MEDIA = {
   "mobilite hanche 90/90": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=VYvMMw8z3rE",
-    description: "Transition 90/90 controlee pour preparer la rotation interne et externe de hanche."
+    description: "Transition 90/90 contrôlée pour préparer la rotation interne et externe de hanche."
   },
   "etirement mollet": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=mafo7o7OnFo",
-    description: "Etirement du mollet au mur, talon ancre au sol et alignement du pied."
+    description: "Étirement du mollet au mur, talon ancré au sol et alignement du pied."
   },
   "mobilite cheville": {
     imageUrl: null,
@@ -171,44 +171,44 @@ const EXERCISE_MEDIA = {
   "etirement pectoraux bilateral": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=M850sCj9LHQ",
-    description: "Etirement bilateral des pectoraux en ouverture thoracique."
+    description: "Étirement bilatéral des pectoraux en ouverture thoracique."
   },
   "etirement pectoraux unilateral": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=86GYarExzgc",
-    description: "Etirement unilateral des pectoraux pour corriger les asymetries."
+    description: "Étirement unilatéral des pectoraux pour corriger les asymétries."
   },
   "mobilite colonne thoracique": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=hhvHpsxKjXw",
-    description: "Mobilite thoracique au sol pour ameliorer la posture et la rotation."
+    description: "Mobilité thoracique au sol pour améliorer la posture et la rotation."
   },
   "etirement unilateral lateral tronc": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=Dt1LDEkYXDo",
-    description: "Inclinaison laterale controlee pour etirer le flanc et le grand dorsal."
+    description: "Inclinaison latérale contrôlée pour étirer le flanc et le grand dorsal."
   },
   "etirement lateral tronc": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=Dt1LDEkYXDo",
-    description: "Etirement lateral du tronc, sans compensation lombaire."
+    description: "Étirement latéral du tronc, sans compensation lombaire."
   },
   "mobilite ytw": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=QdGTI4Lshg4",
-    description: "Sequence Y-T-W pour activer les muscles scapulaires et stabilisateurs de l epaule."
+    description: "Séquence Y-T-W pour activer les muscles scapulaires et stabilisateurs de l'épaule."
   },
   "etirement quadriceps unilateral": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=zi5__zBRzYc",
-    description: "Etirement unilateral du quadriceps avec bassin neutre."
+    description: "Étirement unilatéral du quadriceps avec bassin neutre."
   },
   "etirement rotateurs internes": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=-YFWrYkJVBs",
-    description: "Mobilite d epaule en rotation interne avec serviette."
+    description: "Mobilité d'épaule en rotation interne avec serviette."
   },
-  // Alias PT-BR frequents des captures/imports
+  // Alias PT-BR fréquents des captures/imports
   "alongamento do gluteo (piriforme)": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=mT-3b4rgRzg" },
   "alongamento dinamico da posterior da coxa": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=nSUfsT3D2rQ" },
   "mobilidade de quadril 90/90": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=VYvMMw8z3rE" },
@@ -277,7 +277,7 @@ export function getExerciseVideoSearchUrl(name, language = "fr") {
   if (!name) return null;
   const primary = normalizeLanguageTag(language).split("-")[0];
   const suffixByLanguage = {
-    fr: "execution correcte musculation",
+    fr: "exécution correcte musculation",
     pt: "execucao correta musculacao",
     en: "proper form gym exercise",
   };

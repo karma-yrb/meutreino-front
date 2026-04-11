@@ -31,23 +31,23 @@ export function AdminTemplatesPage() {
     template.monthLabel = new Date(now).toISOString().slice(0, 7);
     template.createdByAdminId = "admin-1";
     await saveTemplate(template);
-    setStatus("Template cree");
+    setStatus("Modèle créé");
     refresh();
   }
 
   return (
     <div className="page">
       <section className="card">
-        <h2>Admin - Templates</h2>
-        <p className="muted">Creation et gestion des templates de plan.</p>
+        <h2>Admin - Modèles</h2>
+        <p className="muted">Création et gestion des modèles de plan.</p>
         <button className="primary-btn" onClick={duplicateDefaultTemplate} type="button">
-          Creer une copie du template de base
+          Créer une copie du modèle de base
         </button>
         {status ? <p className="muted">{status}</p> : null}
       </section>
 
       <section className="card">
-        <h3>Templates existants</h3>
+        <h3>Modèles existants</h3>
         <ul className="simple-list">
           {templates.map((template) => (
             <li key={template.id}>

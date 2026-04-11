@@ -55,7 +55,7 @@ function getSlides(exercise, language) {
       url: customVideoUrl,
       embedId: getYoutubeVideoId(customVideoUrl),
       thumbnailUrl: getYoutubeThumbnailUrl(customVideoUrl),
-      label: name || "Video",
+      label: name || "Vidéo",
     });
   }
 
@@ -112,7 +112,7 @@ export function DayPage() {
       url: videoUrl,
       imageUrl: previewImageUrl,
       embedId: getYoutubeVideoId(videoUrl),
-      label: item?.name || "Video",
+      label: item?.name || "Vidéo",
     });
   }
 
@@ -394,8 +394,8 @@ export function DayPage() {
                             type="url"
                             value={item.videoUrl ?? ""}
                             onChange={(e) => handleWarmupMediaChange(i, "videoUrl", e.target.value)}
-                            placeholder="Lien video echauffement (YouTube)"
-                            aria-label={`Lien video echauffement ${item.name}`}
+                            placeholder="Lien vidéo d'échauffement (YouTube)"
+                            aria-label={`Lien vidéo d'échauffement ${item.name}`}
                           />
                           <input
                             className="warmup-media-input"
@@ -403,7 +403,7 @@ export function DayPage() {
                             value={item.previewImageUrl ?? ""}
                             onChange={(e) => handleWarmupMediaChange(i, "previewImageUrl", e.target.value)}
                             placeholder="Miniature image (URL)"
-                            aria-label={`Miniature echauffement ${item.name}`}
+                            aria-label={`Miniature d'échauffement ${item.name}`}
                           />
                         </div>
                         {warmupVideoUrl ? (
@@ -461,7 +461,7 @@ export function DayPage() {
                                 type="button"
                                 className="exercise-media-thumb"
                                 onClick={() => openModal(exIndex)}
-                                aria-label={`Agrandir – slide ${slideIdx + 1} sur ${slides.length}`}
+                                aria-label={`Agrandir – diapositive ${slideIdx + 1} sur ${slides.length}`}
                               >
                                 {slide.type === "image" ? (
                                   slide.url ? (
@@ -508,7 +508,7 @@ export function DayPage() {
                               </span>
                             )}
                             <p className="muted" style={{ margin: "2px 0 0", fontSize: 13 }} data-testid={`exercise-${exIndex}-series-count`}>
-                              {exercise.series.length} serie{exercise.series.length > 1 ? "s" : ""}
+                              {exercise.series.length} série{exercise.series.length > 1 ? "s" : ""}
                             </p>
                           </div>
                         </div>
@@ -543,7 +543,7 @@ export function DayPage() {
                             type="url"
                             value={exercise.previewImageUrl ?? ""}
                             onChange={(e) => handlePreviewImageUrlChange(exIndex, e.target.value)}
-                            placeholder="Miniature image personnalisee (URL)"
+                            placeholder="Miniature personnalisée (URL)"
                             aria-label="Miniature de l'exercice"
                           />
                           <div className="series-grid">
@@ -577,10 +577,10 @@ export function DayPage() {
                           </div>
 
                           <div className="exercise-actions">
-                            <button type="button" className="serie-action-btn serie-add" aria-label="+ Serie" onClick={() => handleSeriesCountChange(exIndex, 1)}>
+                            <button type="button" className="serie-action-btn serie-add" aria-label="+ Série" onClick={() => handleSeriesCountChange(exIndex, 1)}>
                               <FontAwesomeIcon icon={faPlus} /> Ajouter une série
                             </button>
-                            <button type="button" className="serie-action-btn serie-remove" aria-label="- Serie" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1}>
+                            <button type="button" className="serie-action-btn serie-remove" aria-label="- Série" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1}>
                               <FontAwesomeIcon icon={faMinus} /> Retirer une série
                             </button>
                           </div>
@@ -632,7 +632,7 @@ export function DayPage() {
                 <div className="media-modal-video-wrap">
                 <iframe
                   className="media-modal-video"
-                  title={`Video - ${warmupVideoModal.label}`}
+                  title={`Vidéo - ${warmupVideoModal.label}`}
                   src={`https://www.youtube-nocookie.com/embed/${warmupVideoModal.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
                   loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -676,7 +676,7 @@ export function DayPage() {
                   <div className="media-modal-video-wrap">
                     <iframe
                       className="media-modal-video"
-                      title={`Video - ${slide.label}`}
+                      title={`Vidéo - ${slide.label}`}
                       src={`https://www.youtube-nocookie.com/embed/${slide.embedId}?rel=0&modestbranding=1&playsinline=1&autoplay=1`}
                       loading="lazy"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -707,7 +707,7 @@ export function DayPage() {
                     className={`media-dot${i === slideIdx ? " active" : ""}`}
                     type="button"
                     onClick={() => setSlideIndices((prev) => ({ ...prev, [mediaModal]: i }))}
-                    aria-label={`Slide ${i + 1}`}
+                    aria-label={`Diapositive ${i + 1}`}
                   />
                 ))}
               </div>

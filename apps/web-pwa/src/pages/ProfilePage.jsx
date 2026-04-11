@@ -11,7 +11,7 @@ export function ProfilePage() {
     event.preventDefault();
     if (!currentUser) return;
     await updateUserProfile(currentUser.id, profile);
-    setStatus("Profil sauvegarde");
+    setStatus("Profil sauvegardé");
   }
 
   return (
@@ -30,7 +30,7 @@ export function ProfilePage() {
             />
           </label>
           <label>
-            <span>Annee de naissance</span>
+            <span>Année de naissance</span>
             <input
               value={profile.birthYear ?? ""}
               onChange={(e) => setProfile((prev) => ({ ...prev, birthYear: Number(e.target.value) || 0 }))}

@@ -4,9 +4,16 @@ import { faSun, faMoon, faHouse, faUser, faShield, faUserTie, faRightFromBracket
 import { useAuth } from "../features/auth/useAuth";
 import { useTheme } from "../features/theme/useTheme";
 
+const ROLE_LABELS = {
+  admin: "Administrateur",
+  coach: "Coach",
+  user: "Utilisateur",
+};
+
 export function AppShell() {
   const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const roleLabel = ROLE_LABELS[currentUser?.role] ?? currentUser?.role ?? "-";
 
   return (
     <div className="app-shell">
@@ -15,11 +22,11 @@ export function AppShell() {
           MeuTreino
         </Link>
         <div className="topbar-right">
-          <span className="role-pill">{currentUser?.role}</span>
+          <span className="role-pill">{roleLabel}</span>
           <button className="theme-toggle" onClick={toggleTheme} type="button" title="Changer le thème">
             <FontAwesomeIcon icon={theme === "dark" ? faSun : faMoon} />
           </button>
-          <button aria-label="Deconnexion" className="ghost-btn" onClick={logout} type="button" title="Déconnexion">
+          <button aria-label="Déconnexion" className="ghost-btn" onClick={logout} type="button" title="Déconnexion">
             <FontAwesomeIcon icon={faRightFromBracket} />
           </button>
         </div>
@@ -41,7 +48,7 @@ export function AppShell() {
         {currentUser?.role === "admin" ? (
           <NavLink to="/admin/templates">
             <FontAwesomeIcon icon={faShield} />
-            Admin
+            Administration
           </NavLink>
         ) : null}
         {currentUser?.role === "coach" ? (

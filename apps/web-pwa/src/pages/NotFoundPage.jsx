@@ -6,10 +6,9 @@ export function NotFoundPage() {
       <section className="card">
         <h2>Page introuvable</h2>
         <Link className="primary-btn" to="/">
-          Retour accueil
+          Retour à l'accueil
         </Link>
       </section>
     </div>
   );
 }
-

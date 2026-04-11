@@ -20,7 +20,7 @@ function canLaunchSession(day) {
 function describeDay(day) {
   if (day.rest) return "Jour de repos";
   if (day.cardioOnly) return day.title ?? "Cardio";
-  return day.title ?? day.training ?? "Seance";
+  return day.title ?? day.training ?? "Séance";
 }
 
 export function WeekPage() {
@@ -53,13 +53,13 @@ export function WeekPage() {
       <section className="card">
         <h2>Sections de la semaine</h2>
         <p className="muted">
-          {days.length} jours visibles, {launchableCount} sessions de musculation lancables.
+          {days.length} jours visibles, {launchableCount} séances de musculation lançables.
         </p>
       </section>
 
       {days.length === 0 ? (
         <section className="card">
-          <p className="muted">Aucun jour trouve dans le plan actif.</p>
+          <p className="muted">Aucun jour trouvé dans le plan actif.</p>
         </section>
       ) : (
         <section className="week-grid">
@@ -73,7 +73,7 @@ export function WeekPage() {
                 </Link>
                 {canLaunchSession(day) ? (
                   <Link to={`/session/${day.id}`} className="ghost-btn">
-                    Lancer session
+                    Lancer la séance
                   </Link>
                 ) : null}
               </div>
