@@ -47,15 +47,15 @@ describe("App integration", () => {
     const user = await loginAsUser();
     await user.click(screen.getByRole("link", { name: "Voir la semaine" }));
 
-    await screen.findByRole("heading", { name: "Sections de la semaine" });
+    await screen.findByRole("heading", { name: "Séances de la semaine" });
 
     const mondayCard = screen.getByTestId("week-day-lundi");
     expect(within(mondayCard).getByRole("link", { name: "Visualiser" })).toHaveAttribute("href", "/jour/lundi");
-    expect(within(mondayCard).getByRole("link", { name: "Lancer la séance" })).toHaveAttribute("href", "/session/lundi");
+    expect(within(mondayCard).getByRole("link", { name: "Lancer" })).toHaveAttribute("href", "/session/lundi");
 
     const sundayCard = screen.getByTestId("week-day-dimanche");
     expect(within(sundayCard).getByRole("link", { name: "Visualiser" })).toHaveAttribute("href", "/jour/dimanche");
-    expect(within(sundayCard).queryByRole("link", { name: "Lancer la séance" })).not.toBeInTheDocument();
+    expect(within(sundayCard).getByRole("link", { name: "Lancer" })).toHaveAttribute("href", "/session/dimanche");
     expect(screen.queryByTestId("week-day-samedi")).not.toBeInTheDocument();
   });
 
