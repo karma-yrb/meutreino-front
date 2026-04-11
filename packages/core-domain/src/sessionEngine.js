@@ -218,3 +218,38 @@ export function validateCurrentSet(session, { nowMs = Date.now(), restSeconds } 
   return next;
 }
 
+export function restartCurrentExercise(session, { nowMs = Date.now() } = {}) {
+  const next = clone(session);
+  if (!next || next.status === "stopped") return next;
+
+  const exercise = next.exercises[next.currentExerciseIndex];
+  if (!exercise) return next;
+
+  const wasCompleted = exercise.status === "completed";
+
+  for (const set of exercise.sets) {
+    set.validated = false;
+    set.validatedAt = null;
+  }
+
+  exercise.status = "in_progress";
+  next.currentSetIndex = 0;
+
+  if (wasCompleted && next.completedExercisesCount > 0) {
+    next.completedExercisesCount -= 1;
+  }
+
+  next.rest.active = false;
+  next.rest.remainingSeconds = 0;
+  next.rest.endsAtMs = null;
+
+  if (next.status === "completed") {
+    next.status = "running";
+    next.endedAt = null;
+    if (next.globalTimer.runningSince === null) {
+      next.globalTimer.runningSince = nowMs;
+    }
+  }
+
+  return next;
+}

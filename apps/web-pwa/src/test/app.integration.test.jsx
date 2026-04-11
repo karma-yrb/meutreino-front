@@ -100,4 +100,47 @@ describe("App integration", () => {
     });
 
   });
+
+  test("run mode only accepts numeric values for repetitions and weight", async () => {
+    await loginAsUser();
+    await navigateTo("/session/lundi");
+    await screen.findByRole("heading", { name: /Session en cours/i });
+
+    const repsInput = screen.getByLabelText("Repetitions");
+    const loadInput = screen.getByLabelText("Poids");
+
+    fireEvent.change(repsInput, { target: { value: "12abc" } });
+    fireEvent.change(loadInput, { target: { value: "4kg" } });
+    expect(repsInput).toHaveValue("12");
+    expect(loadInput).toHaveValue("4");
+
+    fireEvent.change(loadInput, { target: { value: "4,5kg" } });
+    expect(loadInput).toHaveValue("4.5");
+  });
+
+  test("completed exercise keeps sets validated and can be restarted without resetting values", async () => {
+    const user = await loginAsUser();
+    await navigateTo("/session/lundi");
+    await screen.findByRole("heading", { name: /Session en cours/i });
+
+    fireEvent.change(screen.getByLabelText("Repetitions"), { target: { value: "14" } });
+    fireEvent.change(screen.getByLabelText("Poids"), { target: { value: "35" } });
+
+    await user.click(screen.getByRole("button", { name: "Valider la serie" }));
+    await user.click(screen.getByRole("button", { name: "Passer le timer" }));
+    await user.click(screen.getByRole("button", { name: "Valider la serie" }));
+    await user.click(screen.getByRole("button", { name: "Passer le timer" }));
+
+    const exerciseButtons = screen.getAllByRole("button", { name: /Focus exercice/i });
+    await user.click(exerciseButtons[0]);
+
+    const seriesList = screen.getByLabelText("Series");
+    expect(within(seriesList).queryByText("Série en cours")).not.toBeInTheDocument();
+    expect(within(seriesList).getAllByText("Validée").length).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole("button", { name: "Recommencer l exercice" }));
+    expect(screen.getByTestId("current-series-label")).toHaveTextContent("Serie 1/2");
+    expect(screen.getByLabelText("Repetitions")).toHaveValue("14");
+    expect(screen.getByLabelText("Poids")).toHaveValue("35");
+  });
 });

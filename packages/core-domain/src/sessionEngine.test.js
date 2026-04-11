@@ -4,6 +4,7 @@ import {
   buildSessionRun,
   getElapsedMs,
   pauseSession,
+  restartCurrentExercise,
   resumeSession,
   skipRestTimer,
   validateCurrentSet,
@@ -113,3 +114,32 @@ test("pauseSession and resumeSession keep elapsed timer coherent", () => {
   assert.equal(getElapsedMs(session, 11000), 8000);
 });
 
+test("restartCurrentExercise reopens exercise and keeps actual values", () => {
+  let session = buildSessionRun({
+    userId: "u1",
+    dayId: "lundi",
+    day: sampleDay(),
+    planVersion: "2026-04-v1",
+    nowMs: 1000,
+  });
+
+  session.exercises[0].sets[0].actualReps = "14";
+  session.exercises[0].sets[0].actualLoad = "35";
+  session = skipRestTimer(validateCurrentSet(session, { nowMs: 2000 }));
+  session = skipRestTimer(validateCurrentSet(session, { nowMs: 3000 }));
+
+  assert.equal(session.exercises[0].status, "completed");
+  assert.equal(session.completedExercisesCount, 1);
+
+  session.currentExerciseIndex = 0;
+  session.currentSetIndex = 1;
+  const restarted = restartCurrentExercise(session, { nowMs: 3500 });
+
+  assert.equal(restarted.exercises[0].status, "in_progress");
+  assert.equal(restarted.completedExercisesCount, 0);
+  assert.equal(restarted.currentSetIndex, 0);
+  assert.equal(restarted.exercises[0].sets[0].validated, false);
+  assert.equal(restarted.exercises[0].sets[1].validated, false);
+  assert.equal(restarted.exercises[0].sets[0].actualReps, "14");
+  assert.equal(restarted.exercises[0].sets[0].actualLoad, "35");
+});

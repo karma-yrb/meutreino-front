@@ -36,6 +36,7 @@ export {
   getElapsedMs,
   pauseSession,
   resumeSession,
+  restartCurrentExercise,
   skipRestTimer,
   stopSession,
   tickSession,

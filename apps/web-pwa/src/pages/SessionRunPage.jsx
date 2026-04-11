@@ -7,6 +7,7 @@ import {
   buildSessionRun,
   getElapsedMs,
   pauseSession,
+  restartCurrentExercise,
   resumeSession,
   skipRestTimer,
   stopSession,
@@ -106,6 +107,31 @@ function formatExerciseSetMetric(sets, key) {
 function cloneValue(value) {
   if (typeof structuredClone === "function") return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
+}
+
+function sanitizeNumericInput(value, { allowDecimal = false } = {}) {
+  const raw = String(value ?? "");
+  if (!allowDecimal) return raw.replace(/\D+/g, "");
+
+  const withDot = raw.replace(/,/g, ".");
+  const cleaned = withDot.replace(/[^0-9.]/g, "");
+  const firstDotIndex = cleaned.indexOf(".");
+  if (firstDotIndex === -1) return cleaned;
+
+  const integerPart = cleaned.slice(0, firstDotIndex);
+  const decimalPart = cleaned.slice(firstDotIndex + 1).replace(/\./g, "");
+  return `${integerPart || "0"}.${decimalPart}`;
+}
+
+function getSetMetricDisplayValue(set, field) {
+  if (field === "actualLoad") {
+    return sanitizeNumericInput(set?.actualLoad ?? set?.targetLoad ?? "", { allowDecimal: true }) || "-";
+  }
+  return sanitizeNumericInput(set?.actualReps ?? set?.targetReps ?? "") || "-";
+}
+
+function formatLoadWithUnit(loadValue) {
+  return loadValue === "-" ? "-" : `${loadValue} kg`;
 }
 
 export function SessionRunPage() {
@@ -236,6 +262,13 @@ export function SessionRunPage() {
   const currentSlides = useMemo(() => getSlides(currentExercise, uiLanguage), [currentExercise, uiLanguage]);
   const activeSlideIndex = currentSlides.length > 0 ? currentSlideIndex % currentSlides.length : 0;
   const activeSlide = currentSlides[activeSlideIndex] ?? currentSlides[0];
+  const repsInputValue = sanitizeNumericInput(currentSet?.actualReps ?? "");
+  const loadInputValue = sanitizeNumericInput(currentSet?.actualLoad ?? "", { allowDecimal: true });
+  const orderedSets = useMemo(() => currentExercise?.sets ?? [], [currentExercise]);
+  const canRestartCurrentExercise = useMemo(
+    () => orderedSets.some((set) => Boolean(set?.validated)),
+    [orderedSets],
+  );
 
   const elapsedLabel = formatDuration(session ? getElapsedMs(session, nowMs) : 0);
   const progressLabel = useMemo(() => {
@@ -252,10 +285,9 @@ export function SessionRunPage() {
     }
     return session?.exercises?.map((exercise) => exercise.id) ?? [];
   }, [day, dayId, session]);
-  const progressionExercises = useMemo(() => {
+  const orderedExercises = useMemo(() => {
     if (!session?.exercises?.length) return [];
     const hideCurrentExercise = session.status === "running" || session.status === "paused";
-    const focusedExerciseId = session.exercises[session.currentExerciseIndex]?.id;
     const byId = new Map(session.exercises.map((exercise, idx) => [exercise.id, { exercise, idx }]));
     const orderedIds = baseExerciseOrderIds.length
       ? baseExerciseOrderIds
@@ -264,22 +296,31 @@ export function SessionRunPage() {
     return orderedIds
       .map((id) => byId.get(id))
       .filter(Boolean)
-      .filter(({ exercise }) => !(hideCurrentExercise && exercise.id === focusedExerciseId));
+      .filter(({ idx }) => !(hideCurrentExercise && idx === session.currentExerciseIndex))
+      .map(({ exercise, idx }) => {
+        const state = (exercise?.status === "completed" || idx < session.currentExerciseIndex) ? "validated" : "inactive";
+        return { exercise, idx, state, order: idx + 1 };
+      });
   }, [session, baseExerciseOrderIds]);
 
   function setValue(field, value) {
+    const normalizedValue = field === "actualLoad"
+      ? sanitizeNumericInput(value, { allowDecimal: true })
+      : sanitizeNumericInput(value);
     setSession((prev) => {
       if (!prev) return prev;
-      return updateCurrentSetValues(prev, { [field]: value });
+      return updateCurrentSetValues(prev, { [field]: normalizedValue });
     });
   }
 
   function stepValue(field, delta) {
-    const raw = field === "actualReps" ? (currentSet?.actualReps ?? "") : (currentSet?.actualLoad ?? "");
+    const raw = field === "actualReps" ? repsInputValue : loadInputValue;
     const current = parseFloat(raw);
     const base = isNaN(current) ? 0 : current;
-    const next = Math.max(field === "actualReps" ? 1 : 0, base + delta);
-    const formatted = Number.isInteger(next) ? String(next) : next.toFixed(1);
+    const next = field === "actualReps"
+      ? Math.max(1, Math.round(base) + delta)
+      : Math.max(0, base + delta);
+    const formatted = field === "actualReps" || Number.isInteger(next) ? String(next) : next.toFixed(1);
     setValue(field, formatted);
   }
 
@@ -290,6 +331,14 @@ export function SessionRunPage() {
     });
     setJustValidated(true);
     setTimeout(() => setJustValidated(false), 700);
+  }
+
+  function onRestartExercise() {
+    setSession((prev) => {
+      if (!prev) return prev;
+      return restartCurrentExercise(prev, { nowMs: Date.now() });
+    });
+    setJustValidated(false);
   }
 
   function onPauseResume() {
@@ -502,68 +551,193 @@ export function SessionRunPage() {
           {currentExercise?.note && (
             <p className="exercise-note-readonly">{currentExercise.note}</p>
           )}
-          <div className="progress-badge">
-            <span>Ex. {session.currentExerciseIndex + 1}/{session.exercises.length}</span>
-            <span className="progress-sep">·</span>
-            <span data-testid="current-series-label">Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}</span>
+          <div
+            data-testid="current-series-label"
+            style={{
+              position: "absolute",
+              width: 1,
+              height: 1,
+              padding: 0,
+              margin: -1,
+              overflow: "hidden",
+              clip: "rect(0, 0, 0, 0)",
+              whiteSpace: "nowrap",
+              border: 0,
+            }}
+          >
+            Serie {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}
           </div>
 
-          {!session.rest.active && <div className="set-edit-grid">
-            <div className="set-stepper-group">
-              <span className="set-stepper-label">
-                <FontAwesomeIcon icon={faRepeat} size="sm" /> Rép.
-              </span>
-              <div className="set-stepper-row">
-                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                <input
-                  className="stepper-value-input"
-                  size={1}
-                  value={currentSet?.actualReps ?? ""}
-                  onChange={(e) => setValue("actualReps", e.target.value)}
-                  disabled={session.rest.active || session.status !== "running"}
-                />
-                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
-              </div>
-            </div>
-            <div className="set-stepper-group">
-              <span className="set-stepper-label">
-                <FontAwesomeIcon icon={faDumbbell} size="sm" /> Charge
-              </span>
-              <div className="set-stepper-row">
-                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                <input
-                  className="stepper-value-input"
-                  size={1}
-                  value={currentSet?.actualLoad ?? ""}
-                  onChange={(e) => setValue("actualLoad", e.target.value)}
-                  disabled={session.rest.active || session.status !== "running"}
-                />
-                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
-              </div>
-            </div>
-          </div>}
-
-          {session.rest.active ? (
-            <div className="rest-box" data-testid="rest-box">
-              <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
-              <div className="rest-countdown">{session.rest.remainingSeconds}</div>
-              <p className="rest-label">secondes</p>
-              <button className="ghost-btn" type="button" aria-label="Passer le timer" onClick={() => setSession((prev) => skipRestTimer(prev))} style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}>
-                <FontAwesomeIcon icon={faForward} size="xs" /> Passer
+          {canRestartCurrentExercise ? (
+            <div className="set-global-actions">
+              <button
+                className="ghost-btn set-restart-btn"
+                type="button"
+                aria-label="Recommencer l exercice"
+                onClick={onRestartExercise}
+              >
+                Recommencer l'exercice
               </button>
             </div>
-          ) : (
-            <button
-              className={`primary-btn${justValidated ? " validate-flash" : ""}`}
-              type="button"
-              aria-label="Valider la serie"
-              onClick={onValidateSet}
-              disabled={session.status !== "running"}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%" }}
-            >
-              <FontAwesomeIcon icon={faCheck} /> Valider la série
-            </button>
-          )}
+          ) : null}
+
+          <section className="set-ordered-list" aria-label="Series">
+            {orderedSets.map((set, idx) => {
+              const isActive = idx === session.currentSetIndex && !set?.validated;
+              const isValidated = Boolean(set?.validated);
+              const isInactive = !isActive && !isValidated;
+
+              if (isActive) {
+                return (
+                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--active">
+                    <div className="set-block-head">
+                      <h4 className="set-block-title">Série en cours</h4>
+                      <span className="set-block-meta">Série {idx + 1}/{currentExercise?.sets.length ?? 0}</span>
+                    </div>
+
+                    {!session.rest.active && (
+                      <div className="set-edit-inline-grid">
+                        <div className="set-edit-inline-label">
+                          <span className="set-stepper-icon" aria-hidden="true">
+                            <FontAwesomeIcon icon={faRepeat} size="sm" />
+                          </span>
+                          <span>Répétitions</span>
+                        </div>
+                        <div className="set-edit-inline-label with-divider">
+                          <span className="set-stepper-icon" aria-hidden="true">
+                            <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                          </span>
+                          <span>Poids</span>
+                        </div>
+                        <div className="set-edit-inline-label with-divider validate-label">
+                          <span className="set-stepper-icon" aria-hidden="true">
+                            <FontAwesomeIcon icon={faCheck} size="sm" />
+                          </span>
+                          <span>Valider</span>
+                        </div>
+                        <div className="set-edit-inline-control">
+                          <div className="set-stepper-row">
+                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                            <input
+                              className="stepper-value-input"
+                              size={1}
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              aria-label="Repetitions"
+                              value={repsInputValue}
+                              onChange={(e) => setValue("actualReps", e.target.value)}
+                              disabled={session.rest.active || session.status !== "running"}
+                            />
+                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                          </div>
+                        </div>
+                        <div className="set-edit-inline-control with-divider">
+                          <div className="set-stepper-row">
+                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                            <input
+                              className="stepper-value-input"
+                              size={1}
+                              inputMode="decimal"
+                              pattern="[0-9]*[.,]?[0-9]*"
+                              aria-label="Poids"
+                              value={loadInputValue}
+                              onChange={(e) => setValue("actualLoad", e.target.value)}
+                              disabled={session.rest.active || session.status !== "running"}
+                            />
+                            <span className="stepper-unit">kg</span>
+                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                          </div>
+                        </div>
+                        <button
+                          className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
+                          type="button"
+                          aria-label="Valider la serie"
+                          onClick={onValidateSet}
+                          disabled={session.status !== "running"}
+                        >
+                          <span>Valider la série</span>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                      </div>
+                    )}
+
+                    {session.rest.active ? (
+                      <div className="rest-box" data-testid="rest-box">
+                        <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
+                        <div className="rest-countdown">{session.rest.remainingSeconds}</div>
+                        <p className="rest-label">secondes</p>
+                        <button className="ghost-btn" type="button" aria-label="Passer le timer" onClick={() => setSession((prev) => skipRestTimer(prev))} style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}>
+                          <FontAwesomeIcon icon={faForward} size="xs" /> Passer
+                        </button>
+                      </div>
+                    ) : null}
+                  </article>
+                );
+              }
+
+              if (isValidated) {
+                return (
+                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--validated">
+                    <div className="set-block-head set-block-head--compact">
+                      <h4 className="set-block-title">Série {idx + 1}</h4>
+                      <span className="set-block-meta validated">Validée</span>
+                    </div>
+                    <div className="set-validated-values">
+                      <span>
+                        <FontAwesomeIcon icon={faRepeat} size="xs" /> {getSetMetricDisplayValue(set, "actualReps")}
+                      </span>
+                      <span>
+                        <FontAwesomeIcon icon={faDumbbell} size="xs" /> {formatLoadWithUnit(getSetMetricDisplayValue(set, "actualLoad"))}
+                      </span>
+                    </div>
+                  </article>
+                );
+              }
+
+              if (isInactive) {
+                return (
+                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--inactive">
+                    <div className="set-block-head">
+                      <h4 className="set-block-title">Série {idx + 1}</h4>
+                      <span className="set-block-meta inactive">Non active</span>
+                    </div>
+                    <div className="set-preview-grid">
+                      <div className="set-edit-inline-label">
+                        <span className="set-stepper-icon" aria-hidden="true">
+                          <FontAwesomeIcon icon={faRepeat} size="sm" />
+                        </span>
+                        <span>Répétitions</span>
+                      </div>
+                      <div className="set-edit-inline-label">
+                        <span className="set-stepper-icon" aria-hidden="true">
+                          <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                        </span>
+                        <span>Poids</span>
+                      </div>
+                      <div className="set-preview-control">
+                        <div className="set-stepper-row">
+                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                          <span className="stepper-value-static">{getSetMetricDisplayValue(set, "actualReps")}</span>
+                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                        </div>
+                      </div>
+                      <div className="set-preview-control">
+                        <div className="set-stepper-row">
+                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                          <span className="stepper-value-static">
+                            {getSetMetricDisplayValue(set, "actualLoad")} <span className="stepper-unit">kg</span>
+                          </span>
+                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              }
+
+              return null;
+            })}
+          </section>
         </section>
       ) : null}
 
@@ -627,19 +801,20 @@ export function SessionRunPage() {
       ) : null}
 
       <section className="card">
-        <h3>Prochains exercices</h3>
-        {progressionExercises.length === 0 ? (
-          <p className="session-progression-empty">Aucun autre exercice.</p>
+        <h3>Exercices</h3>
+        {orderedExercises.length === 0 ? (
+          <p className="session-progression-empty">Aucun exercice.</p>
         ) : (
           <div className="session-progression-grid">
-            {progressionExercises.map(({ exercise, idx }) => {
+            {orderedExercises.map(({ exercise, idx, state, order }) => {
               const previewImage = getExercisePreviewImage(exercise, uiLanguage);
               const reps = formatExerciseSetMetric(exercise.sets, "targetReps");
+              const stateLabel = state === "active" ? "En cours" : state === "validated" ? "Validé" : "Non actif";
 
               return (
                 <button
                   type="button"
-                  className="session-progression-item"
+                  className={`session-progression-item is-${state}`}
                   key={exercise.id}
                   onClick={() => focusExercise(idx)}
                   aria-label={`Focus exercice ${exercise.name}`}
@@ -654,7 +829,10 @@ export function SessionRunPage() {
                     )}
                   </div>
                   <div className="session-progression-body">
-                    <p className="session-progression-title">{exercise.name}</p>
+                    <div className="session-progression-topline">
+                      <p className="session-progression-title">Exercice {order} - {exercise.name}</p>
+                      <span className={`session-progression-state ${state}`}>{stateLabel}</span>
+                    </div>
                     <p className="session-progression-meta">
                       <span>{exercise.sets?.length ?? 0} series de {reps} Repetitions</span>
                     </p>

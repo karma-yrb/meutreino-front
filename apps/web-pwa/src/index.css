@@ -308,6 +308,162 @@ button {
   color: var(--muted);
 }
 
+.set-edit-inline-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+  row-gap: 8px;
+  margin-bottom: 12px;
+}
+
+.set-block {
+  background: linear-gradient(165deg, color-mix(in srgb, var(--surface-2) 84%, transparent), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 14px;
+  padding: 12px 10px;
+}
+
+.set-block--active {
+  border-color: color-mix(in srgb, var(--brand) 60%, var(--line));
+  box-shadow: 0 8px 20px rgba(0 0 0 / 0.18);
+}
+
+.set-block--inactive {
+  opacity: 0.82;
+}
+
+.set-block--validated {
+  opacity: 0.9;
+  padding: 8px 10px;
+  border-color: color-mix(in srgb, #2ecc71 45%, var(--line));
+  background: linear-gradient(165deg, color-mix(in srgb, #2ecc71 12%, var(--surface-2)), var(--surface));
+}
+
+.set-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.set-block-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.set-block-meta {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.set-block-meta.inactive {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.set-global-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+.set-restart-btn {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.set-ordered-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.set-block-meta.validated {
+  color: #2ecc71;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.set-block-head--compact {
+  margin-bottom: 4px;
+}
+
+.set-block--validated .set-block-title {
+  font-size: 13px;
+}
+
+.set-validated-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.set-validated-values {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.set-validated-values span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.set-upcoming-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.set-block .set-edit-inline-grid {
+  margin-bottom: 0;
+}
+
+.set-preview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 8px;
+}
+
+.set-preview-control {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.stepper-static {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.stepper-value-static {
+  min-width: 86px;
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .rest-box {
   background: var(--rest-bg);
   border: 1px solid var(--rest-border);
@@ -953,6 +1109,20 @@ button {
   border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
 }
 
+.session-progression-item.is-active {
+  border-color: color-mix(in srgb, var(--brand) 65%, var(--line));
+  box-shadow: 0 8px 18px rgba(0 0 0 / 0.18);
+}
+
+.session-progression-item.is-validated {
+  border-color: color-mix(in srgb, #2ecc71 45%, var(--line));
+  background: linear-gradient(165deg, color-mix(in srgb, #2ecc71 12%, var(--surface-2)), var(--surface));
+}
+
+.session-progression-item.is-inactive {
+  opacity: 0.82;
+}
+
 .session-progression-item:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--brand) 70%, #ffffff);
   outline-offset: 1px;
@@ -977,10 +1147,44 @@ button {
   min-width: 0;
 }
 
+.session-progression-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .session-progression-title {
   margin: 0;
   font-weight: 700;
   line-height: 1.2;
+}
+
+.session-progression-state {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.session-progression-state.active {
+  color: color-mix(in srgb, var(--brand) 85%, #ffffff);
+  border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
+}
+
+.session-progression-state.validated {
+  color: #2ecc71;
+  border-color: color-mix(in srgb, #2ecc71 45%, var(--line));
+}
+
+.session-progression-state.inactive {
+  color: var(--muted);
 }
 
 .session-progression-meta {
@@ -1175,6 +1379,15 @@ button {
   gap: 6px;
 }
 
+.set-stepper-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  width: 16px;
+  flex-shrink: 0;
+}
+
 .stepper-value-input {
   flex: 1;
   text-align: center;
@@ -1190,6 +1403,116 @@ button {
 
 .stepper-value-input:disabled {
   opacity: 0.5;
+}
+
+.set-edit-inline-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.set-edit-inline-control {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.set-edit-inline-control .set-stepper-row {
+  gap: 4px;
+  justify-content: center;
+}
+
+.set-edit-inline-grid .stepper-btn.stepper-lg {
+  width: 34px;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+.set-edit-inline-grid .stepper-value-input {
+  font-size: 18px;
+  line-height: 1;
+  padding: 6px 4px;
+  min-width: 0;
+}
+
+.set-edit-inline-grid .with-divider {
+  border-left: none;
+  padding-left: 0;
+}
+
+.set-edit-inline-grid .validate-label {
+  display: none;
+}
+
+.stepper-unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: lowercase;
+  min-width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.set-validate-btn {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 14px;
+  background: linear-gradient(130deg, var(--brand), #e86166);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.set-validate-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.set-edit-inline-grid > :nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.set-edit-inline-grid > :nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.set-edit-inline-grid > :nth-child(3) {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+.set-edit-inline-grid > :nth-child(4) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.set-edit-inline-grid > :nth-child(5) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.set-edit-inline-grid > :nth-child(6) {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+  justify-self: stretch;
 }
 
 /* ── Progress badge (Ex. X/Y · Série X/Y) ──────────── */
