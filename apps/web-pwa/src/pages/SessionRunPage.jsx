@@ -187,7 +187,7 @@ export function SessionRunPage() {
           dayId,
           day: dayForSession,
           planVersion: activePlan?.version ?? "unknown",
-          restSeconds: 0,
+          restSeconds: dayData.cardioOnly ? 0 : 60,
           nowMs: Date.now(),
         });
         setSession(run);
