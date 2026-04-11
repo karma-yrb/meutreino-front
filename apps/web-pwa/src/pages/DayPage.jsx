@@ -299,9 +299,11 @@ export function DayPage() {
         {(() => {
           const firstImg = hasExercises
             ? day.main.map((ex) => getExercisePreviewImage(ex, uiLanguage)).find(Boolean)
-            : null;
+            : day.cardioOnly
+              ? (getExerciseMedia(day.title, uiLanguage).imageUrl ?? getExerciseMedia("cardio", uiLanguage).imageUrl ?? null)
+              : null;
           return firstImg ? (
-            <img src={firstImg} alt={day.title ?? day.fullLabel} className="day-hero-img" />
+            <img src={firstImg} alt={day.title ?? day.fullLabel} className="day-hero-img day-hero-img--cover" />
           ) : (
             <div className="day-hero-placeholder" aria-hidden="true">
               <FontAwesomeIcon icon={faDumbbell} />
@@ -602,18 +604,55 @@ export function DayPage() {
             </div>
           </div>
         )}
+
+        {/* Cardio instructions */}
+        {day.cardioOnly && (() => {
+          const cardioDesc = getExerciseMedia(day.title, uiLanguage).description ?? getExerciseMedia("cardio", uiLanguage).description;
+          return cardioDesc ? (
+            <div className="day-accordion">
+              <div className="day-accordion-body">
+                <div className="cardio-guide">
+                  <h4 className="cardio-guide-title">
+                    <FontAwesomeIcon icon={faFire} />
+                    <span>Comment réaliser cette séance</span>
+                  </h4>
+                  <p className="cardio-guide-text">{cardioDesc}</p>
+                  <div className="cardio-guide-steps">
+                    <div className="cardio-step">
+                      <span className="cardio-step-num">01</span>
+                      <span>Échauffement — 5 min marche rapide / jogging léger</span>
+                    </div>
+                    <div className="cardio-step">
+                      <span className="cardio-step-num">02</span>
+                      <span>Zone 2 — 30 min effort modéré, allure conversationnelle (60–70 % FCmax)</span>
+                    </div>
+                    <div className="cardio-step">
+                      <span className="cardio-step-num">03</span>
+                      <span>Retour au calme — 5 min marche + étirements mollets &amp; hanches</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null;
+        })()}
       </div>
 
       {/* ── Sticky CTA ─────────────────────────────────── */}
-      {hasExercises && (
+      {(hasExercises || day.cardioOnly) && (
         <div className="day-cta-bar">
           <Link className="day-cta-btn" to={`/session/${day.id}`}>
             <FontAwesomeIcon icon={faFire} />
-            Commencer l&apos;entraînement
+            {day.cardioOnly ? "Démarrer le cardio" : "Commencer l'entraînement"}
           </Link>
-          {totalSeries > 0 && (
+          {!day.cardioOnly && totalSeries > 0 && (
             <span className="day-cta-badge">
               <FontAwesomeIcon icon={faRepeat} size="xs" /> {totalSeries} séries
+            </span>
+          )}
+          {day.cardioOnly && (
+            <span className="day-cta-badge">
+              <FontAwesomeIcon icon={faFire} size="xs" /> 40 min
             </span>
           )}
         </div>

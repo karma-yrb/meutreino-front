@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarWeek, faEye, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { DAY_IDS } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser } from "../services/storage/repositories/plansRepository";
@@ -13,7 +15,8 @@ function hasVisibleContent(day) {
 }
 
 function canLaunchSession(day) {
-  if (!day || day.rest || day.cardioOnly) return false;
+  if (!day || day.rest) return false;
+  if (day.cardioOnly) return true;
   return (day.main?.length ?? 0) > 0;
 }
 
@@ -40,10 +43,6 @@ export function WeekPage() {
     load();
   }, [currentUser]);
 
-  const launchableCount = useMemo(() => {
-    return days.reduce((count, day) => count + (canLaunchSession(day) ? 1 : 0), 0);
-  }, [days]);
-
   if (isLoading) {
     return <div className="page">Chargement de la semaine...</div>;
   }
@@ -51,10 +50,11 @@ export function WeekPage() {
   return (
     <div className="page">
       <section className="card">
-        <h2>Sections de la semaine</h2>
-        <p className="muted">
-          {days.length} jours visibles, {launchableCount} séances de musculation lançables.
-        </p>
+        <h2 className="section-title-with-icon">
+          <FontAwesomeIcon icon={faCalendarWeek} />
+          <span>Séances de la semaine</span>
+        </h2>
+        <p className="muted">5 séances d&apos;entrainement lançables.</p>
       </section>
 
       {days.length === 0 ? (
@@ -68,12 +68,14 @@ export function WeekPage() {
               <h3>{day.fullLabel}</h3>
               <p className="muted">{describeDay(day)}</p>
               <div className="btn-row">
-                <Link to={`/jour/${day.id}`} className="primary-btn">
-                  Visualiser
+                <Link to={`/jour/${day.id}`} className="primary-btn with-icon">
+                  <FontAwesomeIcon icon={faEye} />
+                  <span>Visualiser</span>
                 </Link>
                 {canLaunchSession(day) ? (
-                  <Link to={`/session/${day.id}`} className="ghost-btn">
-                    Lancer la séance
+                  <Link to={`/session/${day.id}`} className="ghost-btn with-icon">
+                    <FontAwesomeIcon icon={faPlay} />
+                    <span>Lancer</span>
                   </Link>
                 ) : null}
               </div>

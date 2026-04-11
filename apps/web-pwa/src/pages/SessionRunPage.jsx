@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark, faFlagCheckered, faFire } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import {
   buildSessionRun,
@@ -165,13 +165,29 @@ export function SessionRunPage() {
 
       setDay(dayData);
       const hasRunnableContent = (dayData?.main?.length ?? 0) > 0 || (dayData?.warmup?.length ?? 0) > 0;
-      if (!dayData?.rest && !dayData?.cardioOnly && hasRunnableContent) {
+      if (!dayData?.rest && (dayData?.cardioOnly || hasRunnableContent)) {
+        // For cardioOnly days, inject a synthetic exercise so the session has 1 item,
+        // the timer starts, and progress shows 0/1 → 1/1.
+        const dayForSession = dayData.cardioOnly
+          ? {
+              ...dayData,
+              warmup: [],
+              main: [{
+                id: `${dayId}-cardio`,
+                name: dayData.title ?? "Cardio",
+                note: null,
+                videoUrl: null,
+                previewImageUrl: null,
+                series: [{ reps: "-", load: "-", rest: "-", tempo: "-" }],
+              }],
+            }
+          : dayData;
         const run = buildSessionRun({
           userId: currentUser.id,
           dayId,
-          day: dayData,
+          day: dayForSession,
           planVersion: activePlan?.version ?? "unknown",
-          restSeconds: 60,
+          restSeconds: 0,
           nowMs: Date.now(),
         });
         setSession(run);
@@ -390,7 +406,7 @@ export function SessionRunPage() {
     return <div className="page">Chargement de la session...</div>;
   }
 
-  if (day.rest || day.cardioOnly || !session) {
+  if (day.rest || !session) {
     return (
       <div className="page">
         <section className="card">
@@ -425,20 +441,22 @@ export function SessionRunPage() {
         >
           {session.status}
         </span>
-        <div className="session-top-line">
+        <div className={`session-top-line${day.cardioOnly ? " session-top-line--cardio" : ""}`}>
           <div className="session-mini-block">
-            <strong>Temps global</strong>
+            <strong>{day.cardioOnly ? "Temps écoulé" : "Temps global"}</strong>
             <p>{elapsedLabel}</p>
           </div>
-          <div className="session-mini-block session-pizza-block">
-            <strong>Exercices finalisés</strong>
-            <div className="session-pizza" style={{ "--progress": `${exerciseProgressPercent}%` }}>
-              <span>{progressLabel}</span>
+          {!day.cardioOnly && (
+            <div className="session-mini-block session-pizza-block">
+              <strong>Exercices finalisés</strong>
+              <div className="session-pizza" style={{ "--progress": `${exerciseProgressPercent}%` }}>
+                <span>{progressLabel}</span>
+              </div>
             </div>
-          </div>
+          )}
           <div className="session-mini-block session-controls-block">
             <div className="session-control-row">
-              {session.status === "running" && (
+              {!day.cardioOnly && session.status === "running" && (
                 <button
                   className="ghost-btn session-icon-btn"
                   type="button"
@@ -449,7 +467,7 @@ export function SessionRunPage() {
                   <FontAwesomeIcon icon={faPause} />
                 </button>
               )}
-              {session.status === "paused" && (
+              {!day.cardioOnly && session.status === "paused" && (
                 <>
                   <button
                     className="ghost-btn session-icon-btn"
@@ -483,7 +501,7 @@ export function SessionRunPage() {
         </div>
       </section>
 
-      {session.status === "running" || session.status === "paused" ? (
+      {!day.cardioOnly && (session.status === "running" || session.status === "paused") ? (
         <section className="card">
           <h3>Exercice actuel</h3>
 
@@ -807,47 +825,94 @@ export function SessionRunPage() {
       ) : null}
 
       <section className="card">
-        <h3>Exercices</h3>
-        {orderedExercises.length === 0 ? (
-          <p className="session-progression-empty">Aucun exercice.</p>
+        {day.cardioOnly ? (
+          (() => {
+            const cardioMedia = getExerciseMedia(day.title, uiLanguage);
+            const cardioImg = cardioMedia.imageUrl ?? null;
+            const cardioDesc = cardioMedia.description ?? null;
+            return (
+              <>
+                {cardioImg && (
+                  <img
+                    src={cardioImg}
+                    alt={day.title}
+                    className="cardio-session-hero-img"
+                  />
+                )}
+                <h3 className="section-title-with-icon">
+                  <FontAwesomeIcon icon={faFire} />
+                  <span>Séance cardio — {day.title}</span>
+                </h3>
+                {cardioDesc && <p className="cardio-guide-text" style={{ marginTop: 0 }}>{cardioDesc}</p>}
+                {(session.status === "running" || session.status === "paused") && (
+                  <div className="cardio-session-actions">
+                    <p className="muted cardio-session-hint">Lancez votre activité cardio (tapis, vélo, elliptique…) et appuyez sur Terminer à la fin des 40 minutes.</p>
+                    <button
+                      type="button"
+                      className="primary-btn with-icon cardio-finish-btn"
+                      onClick={() => setSession((prev) => {
+                        if (!prev) return prev;
+                        // Works from both running and paused states
+                        const running = prev.status === "paused" ? resumeSession(prev, Date.now()) : prev;
+                        return validateCurrentSet(running, { nowMs: Date.now() });
+                      })}
+                    >
+                      <FontAwesomeIcon icon={faFlagCheckered} />
+                      <span>Terminer la séance</span>
+                    </button>
+                  </div>
+                )}
+                {(session.status === "completed" || session.status === "stopped") && (
+                  <p className="muted">Séance enregistrée. Bravo !</p>
+                )}
+              </>
+            );
+          })()
         ) : (
-          <div className="session-progression-grid">
-            {orderedExercises.map(({ exercise, idx, state, order }) => {
-              const previewImage = getExercisePreviewImage(exercise, uiLanguage);
-              const reps = formatExerciseSetMetric(exercise.sets, "targetReps");
-              const stateLabel = state === "active" ? "En cours" : state === "validated" ? "Validé" : "Non actif";
-              const itemLabel = exercise.phase === "warmup" ? "Échauffement" : "Exercice";
+          <>
+            <h3>Exercices</h3>
+            {orderedExercises.length === 0 ? (
+              <p className="session-progression-empty">Aucun exercice.</p>
+            ) : (
+              <div className="session-progression-grid">
+                {orderedExercises.map(({ exercise, idx, state, order }) => {
+                  const previewImage = getExercisePreviewImage(exercise, uiLanguage);
+                  const reps = formatExerciseSetMetric(exercise.sets, "targetReps");
+                  const stateLabel = state === "active" ? "En cours" : state === "validated" ? "Validé" : "Non actif";
+                  const itemLabel = exercise.phase === "warmup" ? "Échauffement" : "Exercice";
 
-              return (
-                <button
-                  type="button"
-                  className={`session-progression-item is-${state}`}
-                  key={exercise.id}
-                  onClick={() => focusExercise(idx)}
-                  aria-label={`Voir l'exercice ${exercise.name}`}
-                >
-                  <div className="session-progression-thumb">
-                    {previewImage ? (
-                      <img src={previewImage} alt={exercise.name} className="exercise-media-img" />
-                    ) : (
-                      <div className="exercise-media-placeholder">
-                        <FontAwesomeIcon icon={faDumbbell} size="lg" />
+                  return (
+                    <button
+                      type="button"
+                      className={`session-progression-item is-${state}`}
+                      key={exercise.id}
+                      onClick={() => focusExercise(idx)}
+                      aria-label={`Voir l'exercice ${exercise.name}`}
+                    >
+                      <div className="session-progression-thumb">
+                        {previewImage ? (
+                          <img src={previewImage} alt={exercise.name} className="exercise-media-img" />
+                        ) : (
+                          <div className="exercise-media-placeholder">
+                            <FontAwesomeIcon icon={faDumbbell} size="lg" />
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div className="session-progression-body">
-                    <div className="session-progression-topline">
-                      <p className="session-progression-title">{itemLabel} {order} - {exercise.name}</p>
-                      <span className={`session-progression-state ${state}`}>{stateLabel}</span>
-                    </div>
-                    <p className="session-progression-meta">
-                      <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                      <div className="session-progression-body">
+                        <div className="session-progression-topline">
+                          <p className="session-progression-title">{itemLabel} {order} - {exercise.name}</p>
+                          <span className={`session-progression-state ${state}`}>{stateLabel}</span>
+                        </div>
+                        <p className="session-progression-meta">
+                          <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>

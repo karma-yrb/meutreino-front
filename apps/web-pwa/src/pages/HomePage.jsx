@@ -51,6 +51,26 @@ function formatPlanLabel(version) {
   return `Programme en cours : ${normalizedMonthYear} (version ${iteration})`;
 }
 
+function formatSessionDuration(ms) {
+  const total = Math.max(0, Math.floor((ms ?? 0) / 1000));
+  if (total === 0) return "< 1 s";
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h} h ${m} min`;
+  if (m > 0) return s > 0 ? `${m} min ${s} s` : `${m} min`;
+  return `${s} s`;
+}
+
+function formatSessionMeta(session) {
+  const duration = formatSessionDuration(session.elapsedMs);
+  // Cardio-only sessions have 1 synthetic exercise — show duration only
+  if (session.completedExercisesCount <= 1 && session.dayId === "dimanche") {
+    return duration;
+  }
+  return `${duration} \u2014 ${session.completedExercisesCount} exos`;
+}
+
 export function HomePage() {
   const { currentUser } = useAuth();
   const [todayPlan, setTodayPlan] = useState(null);
@@ -94,17 +114,19 @@ export function HomePage() {
                 <span>Voir la semaine</span>
               </Link>
             </div>
-            <div className="btn-row">
-              <Link to={`/jour/${todayPlan.id}`} className="primary-btn with-icon">
-                <FontAwesomeIcon icon={faEye} />
-                <span>Visualiser</span>
-              </Link>
-              {!todayPlan.rest && !todayPlan.cardioOnly ? (
-                <Link to={`/session/${todayPlan.id}`} className="ghost-btn">
-                  Lancer la séance
+            {!todayPlan.rest && (
+              <div className="btn-row">
+                <Link to={`/jour/${todayPlan.id}`} className="primary-btn with-icon">
+                  <FontAwesomeIcon icon={faEye} />
+                  <span>Visualiser</span>
                 </Link>
-              ) : null}
-            </div>
+                {!todayPlan.cardioOnly ? (
+                  <Link to={`/session/${todayPlan.id}`} className="ghost-btn">
+                    Lancer la séance
+                  </Link>
+                ) : null}
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -140,7 +162,7 @@ export function HomePage() {
                 <span className="muted history-meta">
                   <FontAwesomeIcon icon={SESSION_STATUS_ICONS[session.status] ?? faClockRotateLeft} />
                   <span>
-                    {formatSessionStatusLabel(session.status)} - {Math.floor((session.elapsedMs ?? 0) / 60000)} min - {session.completedExercisesCount} exos
+                    {formatSessionStatusLabel(session.status)} - {formatSessionMeta(session)}
                   </span>
                 </span>
               </li>

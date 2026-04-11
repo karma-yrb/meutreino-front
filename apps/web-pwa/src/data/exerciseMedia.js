@@ -222,6 +222,18 @@ const EXERCISE_MEDIA = {
   "alongamento dos rotadores internos com bastante": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-YFWrYkJVBs" },
   "maior alongamento do mundo": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-CiWQ2IvY34" },
 
+  // ---------- Cardio ----------
+  "cardio 40 minutes": {
+    imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
+    videoUrl: null,
+    description: "Zone 2 cardiaque – 40 minutes. Commencez par 5 min d'échauffement à allure légère (marche rapide ou jogging tranquille). Enchaînez 30 min à intensité modérée : vous devez pouvoir parler en phrases courtes tout en sentant votre souffle s'accélérer — c'est la zone 2 (60–70 % de votre FCmax). Maintenez une posture droite, épaules relâchées, foulée ou pédalage détendu et régulier. Terminez par 5 min de retour au calme (marche + étirements mollets et hanches). La zone 2 améliore l'endurance aérobie, l'efficacité lipidique et favorise la récupération musculaire en fin de semaine d'entraînement.",
+  },
+  "cardio": {
+    imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
+    videoUrl: null,
+    description: "Séance cardio en zone 2. Adoptez un rythme modéré (60–70 % de votre FCmax) sur tapis, vélo, elliptique ou en extérieur. Respectez la durée indiquée et terminez par un retour au calme progressif.",
+  },
+
   // ---------- Alias legacy – compatibilité DB existante (anciens noms avant renommage) ----------
   // Membres inférieurs
   "mollets verticaux": { imageUrl: `${EK}/standing-calf-raises-using-machine-1.png`, videoUrl: "https://www.youtube.com/watch?v=SVtg-1loH4c" },

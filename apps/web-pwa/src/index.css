@@ -2054,6 +2054,10 @@ button {
   align-items: stretch;
 }
 
+.session-top-line--cardio {
+  grid-template-columns: 1fr 1fr;
+}
+
 .session-mini-block {
   min-width: 0;
   background: rgba(255 255 255 / 0.05);
@@ -2271,6 +2275,11 @@ button {
   background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
 }
 
+.day-hero-img--cover {
+  object-fit: cover;
+  padding: 0;
+}
+
 /* gradient fade at bottom of hero */
 .day-hero::after {
   content: "";
@@ -2285,21 +2294,23 @@ button {
 
 .back-btn {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 12px;
+  left: 12px;
   z-index: 2;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(0 0 0 / 0.55);
-  border: 1px solid rgba(255 255 255 / 0.15);
+  background: rgba(0 0 0 / 0.60);
+  border: 1px solid rgba(255 255 255 / 0.20);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 15px;
-  backdrop-filter: blur(6px);
+  font-size: 18px;
+  backdrop-filter: blur(8px);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* ── Sheet (slides up over hero) ─────────────────── */
@@ -2595,4 +2606,89 @@ button {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
+}
+
+/* ── Cardio guide ─────────────────────────────────── */
+.cardio-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 4px 0 8px;
+}
+
+.cardio-guide-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.cardio-guide-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text);
+}
+
+.cardio-guide-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.cardio-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.cardio-step-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Cardio session live UI ───────────────────────── */
+.cardio-session-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.cardio-session-hint {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cardio-finish-btn {
+  align-self: stretch;
+  justify-content: center;
+  font-size: 16px;
+  padding: 14px 20px;
+}
+
+.cardio-session-hero-img {
+  width: calc(100% + 32px);
+  margin: -16px -16px 16px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  display: block;
 }
