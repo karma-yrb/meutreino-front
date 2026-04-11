@@ -81,11 +81,19 @@ export function HomePage() {
       </section>
 
       <section className="card">
-        <h3>Séance du jour</h3>
         {todayPlan ? (
           <>
-            <p className="title-main">{todayPlan.fullLabel}</p>
-            <p>{todayPlan.rest ? "Jour de repos" : todayPlan.title}</p>
+            <div className="home-day-overview">
+              <div className="home-day-overview-text">
+                <h3>Séance du jour</h3>
+                <p className="title-main">{todayPlan.fullLabel}</p>
+                <p>{todayPlan.rest ? "Jour de repos" : todayPlan.title}</p>
+              </div>
+              <Link to="/semaine" className="ghost-btn with-icon home-week-btn">
+                <FontAwesomeIcon icon={faCalendarWeek} />
+                <span>Voir la semaine</span>
+              </Link>
+            </div>
             <div className="btn-row">
               <Link to={`/jour/${todayPlan.id}`} className="primary-btn with-icon">
                 <FontAwesomeIcon icon={faEye} />
@@ -99,14 +107,16 @@ export function HomePage() {
             </div>
           </>
         ) : (
-          <p className="muted">Pas de séance configurée pour aujourd&apos;hui.</p>
+          <>
+            <p className="muted">Pas de séance configurée pour aujourd&apos;hui.</p>
+            <div className="btn-row">
+              <Link to="/semaine" className="ghost-btn with-icon">
+                <FontAwesomeIcon icon={faCalendarWeek} />
+                <span>Voir la semaine</span>
+              </Link>
+            </div>
+          </>
         )}
-        <div className="btn-row">
-          <Link to="/semaine" className="ghost-btn with-icon">
-            <FontAwesomeIcon icon={faCalendarWeek} />
-            <span>Voir la semaine</span>
-          </Link>
-        </div>
       </section>
 
       <section className="card">

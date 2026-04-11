@@ -567,6 +567,41 @@ button {
   gap: 8px;
 }
 
+.home-day-overview {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.home-day-overview-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.home-day-overview .title-main {
+  margin-top: 0;
+}
+
+.home-week-btn {
+  flex: 0 0 auto;
+  white-space: normal;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+  font-size: 18px;
+  text-align: left;
+  max-width: 140px;
+}
+
+.home-week-btn svg {
+  flex-shrink: 0;
+  font-size: 28px;
+}
+
 .title-main {
   margin: 6px 0;
   font-size: 20px;
@@ -959,6 +994,15 @@ button {
 }
 
 @media (max-width: 360px) {
+  .home-day-overview {
+    flex-direction: column;
+  }
+
+  .home-week-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
   .profile-stepper-input {
     font-size: 28px;
   }
