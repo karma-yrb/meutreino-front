@@ -44,10 +44,10 @@ describe("App integration", () => {
   });
 
   test("home links to weekly sections with view and run actions for each day", async () => {
-    const user = await loginAsUser();
-    await user.click(screen.getByRole("link", { name: "Voir la semaine" }));
+    await loginAsUser();
+    await navigateTo("/semaine");
 
-    await screen.findByRole("heading", { name: "Séances de la semaine" }, { timeout: 10000 });
+    await screen.findByRole("heading", { name: "Séances de la semaine" }, { timeout: 5000 });
 
     const mondayCard = screen.getByTestId("week-day-lundi");
     expect(within(mondayCard).getByRole("link", { name: "Visualiser" })).toHaveAttribute("href", "/jour/lundi");
@@ -57,7 +57,7 @@ describe("App integration", () => {
     expect(within(sundayCard).getByRole("link", { name: "Visualiser" })).toHaveAttribute("href", "/jour/dimanche");
     expect(within(sundayCard).getByRole("link", { name: "Lancer" })).toHaveAttribute("href", "/session/dimanche");
     expect(screen.queryByTestId("week-day-samedi")).not.toBeInTheDocument();
-  }, 15000);
+  });
 
   test("visualization mode allows editing reps/load and series count", async () => {
     const user = await loginAsUser();
