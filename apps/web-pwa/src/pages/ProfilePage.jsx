@@ -262,9 +262,6 @@ export function ProfilePage() {
     <div className="page">
       <section className="card profile-card">
         <h2>Profil utilisateur</h2>
-        <p className="muted">
-          {firstName || currentUser?.firstName} {lastName || currentUser?.lastName}
-        </p>
 
         <form onSubmit={onSave} className="form-stack profile-form">
           <div className="profile-inline-grid profile-inline-grid--2">
