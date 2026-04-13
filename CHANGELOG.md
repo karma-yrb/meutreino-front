@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/karma-yrb/meutreino-front/compare/v1.3.15...v1.4.0) (2026-04-13)
+
+
+### Features
+
+* **session:** adapt UI for warmup exercises with Consigne block ([abdfad6](https://github.com/karma-yrb/meutreino-front/commit/abdfad64a1be91b546d48e3b15f2f027245aab39))
+
 ### [1.3.16](https://github.com/karma-yrb/meutreino-front/compare/v1.3.15...v1.3.16) (2026-04-13)
 
 ### [1.3.15](https://github.com/karma-yrb/meutreino-front/compare/v1.3.14...v1.3.15) (2026-04-13)
