@@ -101,9 +101,13 @@ describe("App integration", () => {
     await screen.findByRole("heading", { name: /Session en cours/i });
     expect(screen.getByTestId("current-series-label")).toHaveTextContent("Série 1/");
 
-    for (let i = 0; i < 12; i += 1) {
+    for (let i = 0; i < 20; i += 1) {
       if (screen.queryByTestId("rest-box")) break;
-      await user.click(screen.getByRole("button", { name: "Valider la série" }));
+      const validateBtn =
+        screen.queryByRole("button", { name: "Valider la série" }) ??
+        screen.getByRole("button", { name: /Valider l.échauffement/i });
+      await user.click(validateBtn);
+      if (screen.queryByTestId("rest-box")) break;
     }
 
     await screen.findByTestId("rest-box");
@@ -116,9 +120,17 @@ describe("App integration", () => {
   });
 
   test("run mode only accepts numeric values for repetitions and weight", async () => {
-    await loginAsUser();
+    const user = await loginAsUser();
     await navigateTo("/session/lundi");
     await screen.findByRole("heading", { name: /Session en cours/i });
+
+    // Skip warmup exercises until we reach a main exercise with reps/weight inputs
+    for (let i = 0; i < 20; i += 1) {
+      if (screen.queryByLabelText("Répétitions")) break;
+      const warmupBtn = screen.queryByRole("button", { name: /Valider l.échauffement/i });
+      if (!warmupBtn) break;
+      await user.click(warmupBtn);
+    }
 
     const repsInput = screen.getByLabelText("Répétitions");
     const loadInput = screen.getByLabelText("Poids");
@@ -143,7 +155,10 @@ describe("App integration", () => {
       if (restBox) {
         await user.click(within(restBox).getByRole("button", { name: "Passer le timer" }));
       } else {
-        await user.click(screen.getByRole("button", { name: "Valider la série" }));
+        const validateBtn =
+          screen.queryByRole("button", { name: "Valider la série" }) ??
+          screen.getByRole("button", { name: /Valider l.échauffement/i });
+        await user.click(validateBtn);
       }
     }
 

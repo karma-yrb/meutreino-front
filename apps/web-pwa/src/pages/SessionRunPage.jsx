@@ -569,7 +569,9 @@ export function SessionRunPage() {
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
           {(() => {
-            const desc = currentExercise?.description || currentMedia.description;
+            const desc = currentExercise?.phase === "warmup"
+              ? currentMedia.description
+              : (currentExercise?.description || currentMedia.description);
             return desc ? <p className="exercise-description">{desc}</p> : null;
           })()}
           {currentExercise?.note && (
@@ -592,7 +594,7 @@ export function SessionRunPage() {
             Série {session.currentSetIndex + 1}/{currentExercise?.sets.length ?? 0}
           </div>
 
-          {canRestartCurrentExercise ? (
+          {canRestartCurrentExercise && currentExercise?.phase !== "warmup" ? (
             <div className="set-global-actions">
               <button
                 className="ghost-btn set-restart-btn"
@@ -612,149 +614,184 @@ export function SessionRunPage() {
               const isInactive = !isActive && !isValidated;
 
               if (isActive) {
+                const isWarmup = currentExercise?.phase === "warmup";
                 return (
                   <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--active">
                     <div className="set-block-head">
-                      <h4 className="set-block-title">Série en cours</h4>
-                      <span className="set-block-meta">Série {idx + 1}/{currentExercise?.sets.length ?? 0}</span>
+                      <h4 className="set-block-title">{isWarmup ? "Consigne" : "Série en cours"}</h4>
+                      {!isWarmup && <span className="set-block-meta">Série {idx + 1}/{currentExercise?.sets.length ?? 0}</span>}
                     </div>
 
-                    {!session.rest.active && (
-                      <div className="set-edit-inline-grid">
+                    {isWarmup ? (
+                      <>
+                        {currentExercise.description && (
+                          <div className="warmup-consigne-box">
+                            <p className="warmup-consigne-text">{currentExercise.description}</p>
+                          </div>
+                        )}
+                        <button
+                          className={`set-validate-btn${justValidated ? " validate-flash" : ""}`}
+                          type="button"
+                          aria-label="Valider l'échauffement"
+                          onClick={onValidateSet}
+                          disabled={session.status !== "running"}
+                        >
+                          <span>Valider l'échauffement</span>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {!session.rest.active && (
+                          <div className="set-edit-inline-grid">
+                            <div className="set-edit-inline-label">
+                              <span className="set-stepper-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faRepeat} size="sm" />
+                              </span>
+                              <span>Répétitions</span>
+                            </div>
+                            <div className="set-edit-inline-label with-divider">
+                              <span className="set-stepper-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                              </span>
+                              <span>Poids</span>
+                            </div>
+                            <div className="set-edit-inline-label with-divider validate-label">
+                              <span className="set-stepper-icon" aria-hidden="true">
+                                <FontAwesomeIcon icon={faCheck} size="sm" />
+                              </span>
+                              <span>Valider</span>
+                            </div>
+                            <div className="set-edit-inline-control">
+                              <div className="set-stepper-row">
+                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                                <input
+                                  className="stepper-value-input"
+                                  size={1}
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                  aria-label="Répétitions"
+                                  value={repsInputValue}
+                                  onChange={(e) => setValue("actualReps", e.target.value)}
+                                  disabled={session.rest.active || session.status !== "running"}
+                                />
+                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                              </div>
+                            </div>
+                            <div className="set-edit-inline-control with-divider">
+                              <div className="set-stepper-row">
+                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                                <input
+                                  className="stepper-value-input"
+                                  size={1}
+                                  inputMode="decimal"
+                                  pattern="[0-9]*[.,]?[0-9]*"
+                                  aria-label="Poids"
+                                  value={loadInputValue}
+                                  onChange={(e) => setValue("actualLoad", e.target.value)}
+                                  disabled={session.rest.active || session.status !== "running"}
+                                />
+                                <span className="stepper-unit">kg</span>
+                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                              </div>
+                            </div>
+                            <button
+                              className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
+                              type="button"
+                              aria-label="Valider la série"
+                              onClick={onValidateSet}
+                              disabled={session.status !== "running"}
+                            >
+                              <span>Valider la série</span>
+                              <FontAwesomeIcon icon={faCheck} />
+                            </button>
+                          </div>
+                        )}
+
+                        {session.rest.active ? (
+                          <div className="rest-box" data-testid="rest-box">
+                            <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
+                            <div className="rest-countdown">{session.rest.remainingSeconds}</div>
+                            <p className="rest-label">secondes</p>
+                            <button className="ghost-btn" type="button" aria-label="Passer le timer" onClick={() => setSession((prev) => skipRestTimer(prev))} style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}>
+                              <FontAwesomeIcon icon={faForward} size="xs" /> Passer
+                            </button>
+                          </div>
+                        ) : null}
+                      </>
+                    )}
+                  </article>
+                );
+              }
+
+              if (isValidated) {
+                const isWarmup = currentExercise?.phase === "warmup";
+                return (
+                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--validated">
+                    <div className="set-block-head set-block-head--compact">
+                      <h4 className="set-block-title">{isWarmup ? "Consigne" : `Série ${idx + 1}`}</h4>
+                      <span className="set-block-meta validated">Validée</span>
+                    </div>
+                    {!isWarmup && (
+                      <div className="set-validated-values">
+                        <span>
+                          <FontAwesomeIcon icon={faRepeat} size="xs" /> {getSetMetricDisplayValue(set, "actualReps")}
+                        </span>
+                        <span>
+                          <FontAwesomeIcon icon={faDumbbell} size="xs" /> {formatLoadWithUnit(getSetMetricDisplayValue(set, "actualLoad"))}
+                        </span>
+                      </div>
+                    )}
+                  </article>
+                );
+              }
+
+              if (isInactive) {
+                const isWarmup = currentExercise?.phase === "warmup";
+                return (
+                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--inactive">
+                    <div className="set-block-head">
+                      <h4 className="set-block-title">{isWarmup ? "Consigne" : `Série ${idx + 1}`}</h4>
+                      <span className="set-block-meta inactive">Non active</span>
+                    </div>
+                    {isWarmup ? (
+                      currentExercise.description ? (
+                        <div className="warmup-consigne-box">
+                          <p className="warmup-consigne-text">{currentExercise.description}</p>
+                        </div>
+                      ) : null
+                    ) : (
+                      <div className="set-preview-grid">
                         <div className="set-edit-inline-label">
                           <span className="set-stepper-icon" aria-hidden="true">
                             <FontAwesomeIcon icon={faRepeat} size="sm" />
                           </span>
                           <span>Répétitions</span>
                         </div>
-                        <div className="set-edit-inline-label with-divider">
+                        <div className="set-edit-inline-label">
                           <span className="set-stepper-icon" aria-hidden="true">
                             <FontAwesomeIcon icon={faDumbbell} size="sm" />
                           </span>
                           <span>Poids</span>
                         </div>
-                        <div className="set-edit-inline-label with-divider validate-label">
-                          <span className="set-stepper-icon" aria-hidden="true">
-                            <FontAwesomeIcon icon={faCheck} size="sm" />
-                          </span>
-                          <span>Valider</span>
-                        </div>
-                        <div className="set-edit-inline-control">
+                        <div className="set-preview-control">
                           <div className="set-stepper-row">
-                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                            <input
-                              className="stepper-value-input"
-                              size={1}
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              aria-label="Répétitions"
-                              value={repsInputValue}
-                              onChange={(e) => setValue("actualReps", e.target.value)}
-                              disabled={session.rest.active || session.status !== "running"}
-                            />
-                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                            <span className="stepper-value-static">{getSetMetricDisplayValue(set, "actualReps")}</span>
+                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
                           </div>
                         </div>
-                        <div className="set-edit-inline-control with-divider">
+                        <div className="set-preview-control">
                           <div className="set-stepper-row">
-                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                            <input
-                              className="stepper-value-input"
-                              size={1}
-                              inputMode="decimal"
-                              pattern="[0-9]*[.,]?[0-9]*"
-                              aria-label="Poids"
-                              value={loadInputValue}
-                              onChange={(e) => setValue("actualLoad", e.target.value)}
-                              disabled={session.rest.active || session.status !== "running"}
-                            />
-                            <span className="stepper-unit">kg</span>
-                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                            <span className="stepper-value-static">
+                              {getSetMetricDisplayValue(set, "actualLoad")} <span className="stepper-unit">kg</span>
+                            </span>
+                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
                           </div>
                         </div>
-                        <button
-                          className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
-                          type="button"
-                          aria-label="Valider la série"
-                          onClick={onValidateSet}
-                          disabled={session.status !== "running"}
-                        >
-                          <span>Valider la série</span>
-                          <FontAwesomeIcon icon={faCheck} />
-                        </button>
                       </div>
                     )}
-
-                    {session.rest.active ? (
-                      <div className="rest-box" data-testid="rest-box">
-                        <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 600, color: "var(--muted)", textAlign: "center" }}>Récupération</p>
-                        <div className="rest-countdown">{session.rest.remainingSeconds}</div>
-                        <p className="rest-label">secondes</p>
-                        <button className="ghost-btn" type="button" aria-label="Passer le timer" onClick={() => setSession((prev) => skipRestTimer(prev))} style={{ display: "flex", alignItems: "center", gap: 6, margin: "0 auto" }}>
-                          <FontAwesomeIcon icon={faForward} size="xs" /> Passer
-                        </button>
-                      </div>
-                    ) : null}
-                  </article>
-                );
-              }
-
-              if (isValidated) {
-                return (
-                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--validated">
-                    <div className="set-block-head set-block-head--compact">
-                      <h4 className="set-block-title">Série {idx + 1}</h4>
-                      <span className="set-block-meta validated">Validée</span>
-                    </div>
-                    <div className="set-validated-values">
-                      <span>
-                        <FontAwesomeIcon icon={faRepeat} size="xs" /> {getSetMetricDisplayValue(set, "actualReps")}
-                      </span>
-                      <span>
-                        <FontAwesomeIcon icon={faDumbbell} size="xs" /> {formatLoadWithUnit(getSetMetricDisplayValue(set, "actualLoad"))}
-                      </span>
-                    </div>
-                  </article>
-                );
-              }
-
-              if (isInactive) {
-                return (
-                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--inactive">
-                    <div className="set-block-head">
-                      <h4 className="set-block-title">Série {idx + 1}</h4>
-                      <span className="set-block-meta inactive">Non active</span>
-                    </div>
-                    <div className="set-preview-grid">
-                      <div className="set-edit-inline-label">
-                        <span className="set-stepper-icon" aria-hidden="true">
-                          <FontAwesomeIcon icon={faRepeat} size="sm" />
-                        </span>
-                        <span>Répétitions</span>
-                      </div>
-                      <div className="set-edit-inline-label">
-                        <span className="set-stepper-icon" aria-hidden="true">
-                          <FontAwesomeIcon icon={faDumbbell} size="sm" />
-                        </span>
-                        <span>Poids</span>
-                      </div>
-                      <div className="set-preview-control">
-                        <div className="set-stepper-row">
-                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
-                          <span className="stepper-value-static">{getSetMetricDisplayValue(set, "actualReps")}</span>
-                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
-                        </div>
-                      </div>
-                      <div className="set-preview-control">
-                        <div className="set-stepper-row">
-                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
-                          <span className="stepper-value-static">
-                            {getSetMetricDisplayValue(set, "actualLoad")} <span className="stepper-unit">kg</span>
-                          </span>
-                          <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
-                        </div>
-                      </div>
-                    </div>
                   </article>
                 );
               }
@@ -904,7 +941,10 @@ export function SessionRunPage() {
                           <span className={`session-progression-state ${state}`}>{stateLabel}</span>
                         </div>
                         <p className="session-progression-meta">
-                          <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
+                          {exercise.phase === "warmup"
+                            ? <span>{exercise.description ?? ""}</span>
+                            : <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
+                          }
                         </p>
                       </div>
                     </button>

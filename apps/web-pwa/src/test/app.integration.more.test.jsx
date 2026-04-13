@@ -31,7 +31,10 @@ describe("App integration additional", () => {
     await user.click(screen.getByRole("button", { name: "Pause" }));
     expect(screen.getByRole("button", { name: "Reprendre" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Arrêter la séance" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Valider la série" })).toBeDisabled();
+    const pausedValidateBtn =
+      screen.queryByRole("button", { name: "Valider la série" }) ??
+      screen.getByRole("button", { name: /Valider l.échauffement/i });
+    expect(pausedValidateBtn).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "Reprendre" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
@@ -64,7 +67,9 @@ describe("App integration additional", () => {
       if (restBox) {
         await user.click(within(restBox).getByRole("button", { name: "Passer le timer" }));
       } else {
-        const validateBtn = screen.queryByRole("button", { name: "Valider la série" });
+        const validateBtn =
+          screen.queryByRole("button", { name: "Valider la série" }) ??
+          screen.queryByRole("button", { name: /Valider l.échauffement/i });
         if (validateBtn) {
           await user.click(validateBtn);
         }
