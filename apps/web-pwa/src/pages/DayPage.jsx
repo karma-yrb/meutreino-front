@@ -155,60 +155,6 @@ export function DayPage() {
     });
   }
 
-  function handleVideoUrlChange(exIndex, value) {
-    if (!currentUser || !dayId) return;
-    const nextValue = value.trim() ? value.trim() : null;
-    setDay((prev) => {
-      if (!prev) return prev;
-      const nextMain = prev.main.map((exercise, i) =>
-        i !== exIndex ? exercise : { ...exercise, videoUrl: nextValue }
-      );
-      return { ...prev, main: nextMain };
-    });
-    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
-      const nextMain = draftDay.main.map((exercise, i) =>
-        i !== exIndex ? exercise : { ...exercise, videoUrl: nextValue }
-      );
-      return { ...draftDay, main: nextMain };
-    });
-  }
-
-  function handlePreviewImageUrlChange(exIndex, value) {
-    if (!currentUser || !dayId) return;
-    const nextValue = value.trim() ? value.trim() : null;
-    setDay((prev) => {
-      if (!prev) return prev;
-      const nextMain = prev.main.map((exercise, i) =>
-        i !== exIndex ? exercise : { ...exercise, previewImageUrl: nextValue }
-      );
-      return { ...prev, main: nextMain };
-    });
-    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
-      const nextMain = draftDay.main.map((exercise, i) =>
-        i !== exIndex ? exercise : { ...exercise, previewImageUrl: nextValue }
-      );
-      return { ...draftDay, main: nextMain };
-    });
-  }
-
-  function handleWarmupMediaChange(warmupIndex, field, value) {
-    if (!currentUser || !dayId) return;
-    const nextValue = value.trim() ? value.trim() : null;
-    setDay((prev) => {
-      if (!prev) return prev;
-      const nextWarmup = (prev.warmup ?? []).map((item, i) =>
-        i !== warmupIndex ? item : { ...item, [field]: nextValue }
-      );
-      return { ...prev, warmup: nextWarmup };
-    });
-    updateUserPlanDay(currentUser.id, dayId, (draftDay) => {
-      const nextWarmup = (draftDay.warmup ?? []).map((item, i) =>
-        i !== warmupIndex ? item : { ...item, [field]: nextValue }
-      );
-      return { ...draftDay, warmup: nextWarmup };
-    });
-  }
-
   useEffect(() => {
     function onKey(e) { if (e.key === "Escape") closeModal(); }
     if (mediaModal !== null || warmupVideoModal !== null) window.addEventListener("keydown", onKey);
@@ -391,22 +337,7 @@ export function DayPage() {
                         <div className="warmup-main">
                           <span>{item.name}</span>
                           <span className="warmup-detail">{item.detail}</span>
-                          <input
-                            className="warmup-media-input"
-                            type="url"
-                            value={item.videoUrl ?? ""}
-                            onChange={(e) => handleWarmupMediaChange(i, "videoUrl", e.target.value)}
-                            placeholder="Lien vidéo d'échauffement (YouTube)"
-                            aria-label={`Lien vidéo d'échauffement ${item.name}`}
-                          />
-                          <input
-                            className="warmup-media-input"
-                            type="url"
-                            value={item.previewImageUrl ?? ""}
-                            onChange={(e) => handleWarmupMediaChange(i, "previewImageUrl", e.target.value)}
-                            placeholder="Miniature image (URL)"
-                            aria-label={`Miniature d'échauffement ${item.name}`}
-                          />
+
                         </div>
                         {warmupVideoUrl ? (
                           <button
@@ -532,22 +463,7 @@ export function DayPage() {
                             rows={2}
                             aria-label="Note de l'exercice"
                           />
-                          <input
-                            className="exercise-video-input"
-                            type="url"
-                            value={exercise.videoUrl ?? ""}
-                            onChange={(e) => handleVideoUrlChange(exIndex, e.target.value)}
-                            placeholder="Lien vidéo personnalisé (YouTube)"
-                            aria-label="Lien vidéo de l'exercice"
-                          />
-                          <input
-                            className="exercise-video-input"
-                            type="url"
-                            value={exercise.previewImageUrl ?? ""}
-                            onChange={(e) => handlePreviewImageUrlChange(exIndex, e.target.value)}
-                            placeholder="Miniature personnalisée (URL)"
-                            aria-label="Miniature de l'exercice"
-                          />
+
                           <div className="series-grid">
                             {exercise.series.map((serie, setIndex) => (
                               <div key={setIndex} className="series-grid-row">

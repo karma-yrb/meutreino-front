@@ -150,7 +150,7 @@ const EXERCISE_MEDIA = {
   },
   "etirement dynamique ischio": {
     imageUrl: null,
-    videoUrl: "https://www.youtube.com/watch?v=nSUfsT3D2rQ",
+    videoUrl: "https://www.youtube.com/watch?v=wtXwCkB6OBs",
     description: "Mouvement dynamique pour mobiliser les ischio-jambiers avant le travail principal."
   },
   "mobilite hanche 90/90": {
