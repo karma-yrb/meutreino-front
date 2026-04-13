@@ -73,7 +73,7 @@ describe("App integration additional", () => {
 
     expect(screen.getByTestId("session-status")).toHaveTextContent("completed");
     expect(screen.getByRole("button", { name: "Retour à l'accueil" })).toBeInTheDocument();
-    expect(screen.getByText("10/10")).toBeInTheDocument();
+    expect(screen.getByText("11/11")).toBeInTheDocument();
   }, 20000);
 
   test("role navigation and guard behavior for admin and coach", async () => {

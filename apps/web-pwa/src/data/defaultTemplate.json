@@ -1,0 +1,405 @@
+{
+  "id": "template-mois-2",
+  "name": "Modèle Mois 2",
+  "monthLabel": "2026-03",
+  "createdByAdminId": "admin-1",
+  "days": [
+    {
+      "id": "lundi",
+      "label": "LUN",
+      "fullLabel": "Lundi",
+      "training": "Séance A",
+      "title": "Membres inférieurs A",
+      "warmup": [
+        { "name": "Étirement fessier", "detail": "30 s de chaque côté" },
+        { "name": "Étirement dynamique ischio", "detail": "30 s de chaque côté" },
+        { "name": "Mobilité hanche 90/90", "detail": "12 rép. de chaque côté" },
+        { "name": "Étirement mollet", "detail": "30 s de chaque côté" },
+        { "name": "Mobilité cheville", "detail": "15 rép. de chaque côté" }
+      ],
+      "main": [
+        {
+          "id": "lun-ex-1",
+          "name": "Leg Extension",
+          "tag": "Activation",
+          "tagColor": "#f5a623",
+          "series": [
+            { "reps": "15", "load": "70 kg", "rest": "-", "tempo": "2020" },
+            { "reps": "15", "load": "70 kg", "rest": "-", "tempo": "2020" }
+          ],
+          "note": null
+        },
+        {
+          "id": "lun-ex-2",
+          "name": "Leg Extension",
+          "tag": "Principal",
+          "tagColor": "#e53935",
+          "series": [
+            { "reps": "12", "load": "70 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "12", "load": "70 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "12 + série dégressive", "load": "70 kg -> -30%", "rest": "-", "tempo": "3020" }
+          ],
+          "note": "Dernière série: série dégressive"
+        },
+        {
+          "id": "lun-ex-3",
+          "name": "Squat barre libre",
+          "tag": null,
+          "series": [
+            { "reps": "10", "load": "40 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "10", "load": "40 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "10", "load": "40 kg", "rest": "-", "tempo": "3020" }
+          ],
+          "note": null
+        },
+        {
+          "id": "lun-ex-4",
+          "name": "Soulevé de terre jambes tendues",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "30 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "12", "load": "30 kg", "rest": "-", "tempo": "3020" },
+            { "reps": "12", "load": "30 kg", "rest": "-", "tempo": "3020" }
+          ],
+          "note": null
+        },
+        {
+          "id": "lun-ex-5",
+          "name": "Mollets debout",
+          "tag": "Pyramide",
+          "tagColor": "#8e44ad",
+          "series": [
+            { "reps": "20", "load": "Charge légère", "rest": "60 s", "tempo": "3020" },
+            { "reps": "15", "load": "Charge moyenne", "rest": "60 s", "tempo": "3020" },
+            { "reps": "12", "load": "Charge lourde", "rest": "60 s", "tempo": "3020" }
+          ],
+          "note": null
+        },
+        {
+          "id": "lun-ex-6",
+          "name": "Abdos ciseaux + Abdos canif",
+          "tag": "Superset",
+          "tagColor": "#1abc9c",
+          "series": [
+            { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
+            { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
+            { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" }
+          ],
+          "note": "10 abdos ciseaux + 30 s abdos canif par série"
+        }
+      ]
+    },
+    {
+      "id": "mardi",
+      "label": "MAR",
+      "fullLabel": "Mardi",
+      "training": "Séance B",
+      "title": "Dorsaux + biceps",
+      "warmup": [
+        { "name": "Étirement pectoraux bilatéral", "detail": "1 série" },
+        { "name": "Mobilité colonne thoracique", "detail": "1 série" },
+        { "name": "Étirement unilatéral latéral tronc", "detail": "1 série" },
+        { "name": "Grand étirement du monde", "detail": "30 s de chaque côté" }
+      ],
+      "main": [
+        {
+          "id": "mar-ex-1",
+          "name": "Tirage vertical",
+          "tag": "Activation",
+          "tagColor": "#f5a623",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mar-ex-2",
+          "name": "Tirage vertical",
+          "tag": "Principal",
+          "tagColor": "#e53935",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mar-ex-3",
+          "name": "Rowing assis poulie basse",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mar-ex-4",
+          "name": "Tirage barre penché",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mar-ex-5",
+          "name": "Extension lombaire",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mar-ex-6",
+          "name": "Cardio post-entraînement",
+          "tag": "Cardio",
+          "tagColor": "#2196f3",
+          "series": [
+            { "reps": "21 min", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": "HIIT : 2 min intensité modérée/haute + 1 min basse intensité. Commencer par 3-4 min d'échauffement."
+        }
+      ]
+    },
+    {
+      "id": "mercredi",
+      "label": "MER",
+      "fullLabel": "Mercredi",
+      "training": "Séance C",
+      "title": "Triceps + biceps",
+      "warmup": [
+        { "name": "Étirement pectoraux unilatéral", "detail": "1 série" },
+        { "name": "Étirement latéral tronc", "detail": "1 série" },
+        { "name": "Mobilité YTW", "detail": "1 série" },
+        { "name": "Mobilité colonne thoracique au sol", "detail": "12 rép. de chaque côté" }
+      ],
+      "main": [
+        {
+          "id": "mer-ex-1",
+          "name": "Triceps corde poulie haute",
+          "tag": "Activation",
+          "tagColor": "#f5a623",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mer-ex-2",
+          "name": "Triceps corde + Curl 21",
+          "tag": "Superset",
+          "tagColor": "#1abc9c",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mer-ex-3",
+          "name": "Triceps français + Curl poulie",
+          "tag": "Superset",
+          "tagColor": "#1abc9c",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "mer-ex-4",
+          "name": "Cardio post-entraînement",
+          "tag": "Cardio",
+          "tagColor": "#2196f3",
+          "series": [
+            { "reps": "21 min", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": "HIIT : 2 min intensité modérée/haute + 1 min basse intensité. Commencer par 3-4 min d'échauffement."
+        }
+      ]
+    },
+    {
+      "id": "jeudi",
+      "label": "JEU",
+      "fullLabel": "Jeudi",
+      "training": "Séance D",
+      "title": "Membres inférieurs D",
+      "warmup": [
+        { "name": "Étirement quadriceps unilatéral", "detail": "30 s de chaque côté" },
+        { "name": "Étirement dynamique ischio", "detail": "30 s de chaque côté" },
+        { "name": "Mobilité hanche 90/90", "detail": "12 rép. de chaque côté" },
+        { "name": "Étirement mollet", "detail": "30 s de chaque côté" },
+        { "name": "Mobilité cheville", "detail": "15 rép. de chaque côté" }
+      ],
+      "main": [
+        {
+          "id": "jeu-ex-1",
+          "name": "Leg Curl assis",
+          "tag": "Activation",
+          "tagColor": "#f5a623",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "jeu-ex-2",
+          "name": "Leg Curl assis",
+          "tag": "Principal",
+          "tagColor": "#e53935",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "jeu-ex-3",
+          "name": "Abduction hanche penché",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "jeu-ex-4",
+          "name": "Leg Press 45",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "jeu-ex-5",
+          "name": "Mollets presse 45°",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "jeu-ex-6",
+          "name": "Abdos inférieurs + Abdos canif",
+          "tag": "Superset",
+          "tagColor": "#1abc9c",
+          "series": [
+            { "reps": "12 + 15", "load": "0 / 0", "rest": "-", "tempo": "3020" },
+            { "reps": "12 + 15", "load": "0 / 0", "rest": "-", "tempo": "3020" }
+          ],
+          "note": "12 abdos inférieurs + 15 abdos canif par série"
+        }
+      ]
+    },
+    {
+      "id": "vendredi",
+      "label": "VEN",
+      "fullLabel": "Vendredi",
+      "training": "Séance E",
+      "title": "Pectoraux + épaules",
+      "warmup": [
+        { "name": "Étirement pectoraux bilatéral", "detail": "1 série" },
+        { "name": "Étirement rotateurs internes", "detail": "1 série" },
+        { "name": "Mobilité YTW", "detail": "10 rép." },
+        { "name": "Grand étirement du monde", "detail": "10 rép. de chaque côté" }
+      ],
+      "main": [
+        {
+          "id": "ven-ex-1",
+          "name": "Développé incliné",
+          "tag": "Activation",
+          "tagColor": "#f5a623",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "ven-ex-2",
+          "name": "Développé incliné",
+          "tag": "Principal",
+          "tagColor": "#e53935",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "ven-ex-3",
+          "name": "Pec deck",
+          "tag": null,
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "ven-ex-4",
+          "name": "Développé militaire + Élévation latérale",
+          "tag": "Superset",
+          "tagColor": "#1abc9c",
+          "series": [
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
+            { "reps": "12", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": null
+        },
+        {
+          "id": "ven-ex-5",
+          "name": "Cardio post-entraînement",
+          "tag": "Cardio",
+          "tagColor": "#2196f3",
+          "series": [
+            { "reps": "21 min", "load": "-", "rest": "-", "tempo": "-" }
+          ],
+          "note": "HIIT : 2 min intensité modérée/haute + 1 min basse intensité. Commencer par 3-4 min d'échauffement."
+        }
+      ]
+    },
+    {
+      "id": "samedi",
+      "label": "SAM",
+      "fullLabel": "Samedi",
+      "rest": true
+    },
+    {
+      "id": "dimanche",
+      "label": "DIM",
+      "fullLabel": "Dimanche",
+      "training": "Cardio",
+      "title": "Cardio 40 minutes",
+      "cardioOnly": true
+    }
+  ]
+}

@@ -208,6 +208,16 @@ const EXERCISE_MEDIA = {
     videoUrl: "https://www.youtube.com/watch?v=-YFWrYkJVBs",
     description: "Mobilité d'épaule en rotation interne avec serviette."
   },
+  "grand étirement du monde": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=-CiWQ2IvY34",
+    description: "Grand étirement dynamique au sol. En fente avant, placez la main du côté avant au niveau du pied, ouvrez le coude vers le sol puis tournez le buste en direction du genou avant en levant le bras opposé vers le plafond. Alternez les côtés en contrôlant la rotation thoracique.",
+  },
+  "mobilité colonne thoracique au sol": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=hhvHpsxKjXw",
+    description: "Allongé sur le côté, genoux fléchis à 90° et bras tendus devant soi. Faites pivoter le bras supérieur vers l'arrière en ouvrant la poitrine, en cherchant à poser l'épaule au sol. Maintenez les genoux groupés pour isoler la rotation à la colonne thoracique.",
+  },
   // Alias PT-BR fréquents des captures/imports
   "alongamento do gluteo (piriforme)": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=mT-3b4rgRzg" },
   "alongamento dinamico da posterior da coxa": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=nSUfsT3D2rQ" },
@@ -222,6 +232,18 @@ const EXERCISE_MEDIA = {
   "alongamento dos rotadores internos com bastante": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-YFWrYkJVBs" },
   "maior alongamento do mundo": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-CiWQ2IvY34" },
 
+  // ---------- Abdominaux ----------
+  "abdos ciseaux + abdos canif": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48",
+    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternatiés en amplitude courte, talons ne touchant pas le sol. Abdos canif : allongé sur le dos, levez simultanément les jambes tendues et le buste vers le centre en formant un V, puis contrôlez la descente.",
+  },
+  "abdos inférieurs + abdos canif": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=Tj7O4-GEI7Y",
+    description: "Superset sans repos. Abdos inférieurs : allongé sur le dos, mains sous les lombaires, montée lente des jambes tendues de l'horizontal à la verticale puis redescente contrôlée sans toucher le sol. Abdos canif : simultaniment buste et jambes vers le centre en V, contrôler la descente.",
+  },
+
   // ---------- Cardio ----------
   "cardio 40 minutes": {
     imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
@@ -232,8 +254,11 @@ const EXERCISE_MEDIA = {
     imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
     videoUrl: null,
     description: "Séance cardio en zone 2. Adoptez un rythme modéré (60–70 % de votre FCmax) sur tapis, vélo, elliptique ou en extérieur. Respectez la durée indiquée et terminez par un retour au calme progressif.",
+  },  "cardio post-entraînement": {
+    imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
+    videoUrl: null,
+    description: "HIIT post-entraînement. Commencez par 3 à 4 minutes à basse intensité pour préparer le corps. Enchaînez 21 minutes de HIIT : 2 min à intensité modérée/haute (essoufflement marqué, difficile de parler) + 1 min à basse intensité pour récupérer. Réalisable sur tapis, vélo, elliptique, escalier ou en extérieur.",
   },
-
   // ---------- Alias legacy – compatibilité DB existante (anciens noms avant renommage) ----------
   // Membres inférieurs
   "mollets verticaux": { imageUrl: `${EK}/standing-calf-raises-using-machine-1.png`, videoUrl: "https://www.youtube.com/watch?v=SVtg-1loH4c" },
