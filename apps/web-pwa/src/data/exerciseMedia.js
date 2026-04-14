@@ -64,7 +64,7 @@ const EXERCISE_MEDIA = {
   // ---------- Dos ----------
   "tirage vertical": {
     imageUrl: `${EK}/wide-grip-lat-pull-down-1.png`,
-    videoUrl: "https://www.youtube.com/watch?v=ML8zIabU038",
+    videoUrl: "https://www.youtube.com/watch?v=TDQ2G4jmx40",
     description: "Assis à la machine de tirage, genoux bloqués sous le rembourrage, prise large en pronation, légèrement au-delà de la largeur d'épaules. Tirez la barre vers le haut du sternum en ramenant les coudes vers les hanches et en ouvrant la poitrine, sans cambrer excessivement. Contrôlez la remontée jusqu'à l'extension quasi complète, bras presque tendus.",
   },
   "rowing assis poulie basse": {
@@ -266,7 +266,7 @@ const EXERCISE_MEDIA = {
   "leg press 45° pieds écartés": { imageUrl: `${EK}/leg-press-1.png`, videoUrl: "https://www.youtube.com/watch?v=JvdmoQh27HU" },
   "abducteur tronc penché en avant": { imageUrl: `${EK}/thigh-abductor-1.png`, videoUrl: "https://www.youtube.com/watch?v=zU6X_LO362s" },
   // Dos
-  "tirage frontal": { imageUrl: `${EK}/wide-grip-lat-pull-down-1.png`, videoUrl: "https://www.youtube.com/watch?v=ML8zIabU038" },
+  "tirage frontal": { imageUrl: `${EK}/wide-grip-lat-pull-down-1.png`, videoUrl: "https://www.youtube.com/watch?v=TDQ2G4jmx40" },
   "rowing penché en pronation (barre)": { imageUrl: `${EK}/reverse-grips-bent-over-barbell-rows-1.png`, videoUrl: "https://www.youtube.com/watch?v=3BhIn8rdA4o" },
   "extension du tronc (hyperextension)": { imageUrl: `${EK}/hyperextensions-1.png`, videoUrl: "https://www.youtube.com/watch?v=C2rPJj53HNQ" },
   // Bras (séparateur "•" legacy)
