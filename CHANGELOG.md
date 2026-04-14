@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.4](https://github.com/karma-yrb/meutreino-front/compare/v1.5.2...v1.5.4) (2026-04-14)
+
+
+### Bug Fixes
+
+* **data:** correct video URL for tirage vertical (puxada frontal) ([c5f06c3](https://github.com/karma-yrb/meutreino-front/commit/c5f06c35234dcf3767134e3d3acdece0a9b8133e))
+
 ### [1.5.3](https://github.com/karma-yrb/meutreino-front/compare/v1.5.2...v1.5.3) (2026-04-14)
 
 ### [1.5.2](https://github.com/karma-yrb/meutreino-front/compare/v1.5.0...v1.5.2) (2026-04-14)
