@@ -320,7 +320,7 @@ export function SessionRunPage() {
       .filter(Boolean)
       .filter(({ idx }) => !(hideCurrentExercise && idx === session.currentExerciseIndex))
       .map(({ exercise, idx }) => {
-        const state = (exercise?.status === "completed" || idx < session.currentExerciseIndex) ? "validated" : "inactive";
+        const state = exercise?.status === "completed" ? "validated" : "inactive";
         return { exercise, idx, state, order: idx + 1 };
       });
   }, [session, baseExerciseOrderIds]);
@@ -391,6 +391,10 @@ export function SessionRunPage() {
       const targetExercise = next.exercises[exerciseIndex];
       const nextSetIndex = targetExercise.sets.findIndex((set) => !set.validated);
       next.currentSetIndex = nextSetIndex >= 0 ? nextSetIndex : Math.max(0, targetExercise.sets.length - 1);
+
+      if (targetExercise.status === "pending") {
+        targetExercise.status = "in_progress";
+      }
 
       // Switching exercise exits rest mode to let the user continue immediately.
       next.rest.active = false;
