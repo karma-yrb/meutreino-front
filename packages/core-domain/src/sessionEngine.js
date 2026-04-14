@@ -290,3 +290,45 @@ export function restartCurrentExercise(session, { nowMs = Date.now() } = {}) {
 
   return next;
 }
+
+/**
+ * Extract the actual values from a completed/stopped session and return
+ * an updater function that writes them back into a day plan's series.
+ * This makes the user's last-used reps/load the new defaults for next time.
+ *
+ * Only main-phase exercises are written back (warmup has no series).
+ */
+export function buildPlanDayUpdaterFromSession(session) {
+  if (!session || (session.status !== "completed" && session.status !== "stopped")) {
+    return null;
+  }
+
+  const mainExercises = session.exercises.filter((ex) => ex.phase === "main");
+  if (!mainExercises.length) return null;
+
+  // Build a map exerciseId → updated series values
+  const exerciseUpdates = new Map();
+  for (const exercise of mainExercises) {
+    exerciseUpdates.set(exercise.id, exercise.sets.map((set) => ({
+      reps: set.actualReps ?? set.targetReps,
+      load: set.actualLoad ?? set.targetLoad,
+    })));
+  }
+
+  return function updateDay(day) {
+    const nextMain = (day.main ?? []).map((exercise) => {
+      const updates = exerciseUpdates.get(exercise.id);
+      if (!updates) return exercise;
+
+      const nextSeries = (exercise.series ?? []).map((serie, idx) => {
+        const update = updates[idx];
+        if (!update) return serie;
+        return { ...serie, reps: update.reps, load: update.load };
+      });
+
+      return { ...exercise, series: nextSeries };
+    });
+
+    return { ...day, main: nextMain };
+  };
+}

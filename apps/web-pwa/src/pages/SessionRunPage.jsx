@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark, faFlagCheckered, faFire } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import {
+  buildPlanDayUpdaterFromSession,
   buildSessionRun,
   getElapsedMs,
   pauseSession,
@@ -16,8 +17,8 @@ import {
   validateCurrentSet,
 } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
-import { getActivePlanForUser, getDayPlanForUser } from "../services/storage/repositories/plansRepository";
-import { saveSessionRun } from "../services/storage/repositories/sessionsRepository";
+import { getActivePlanForUser, getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
+import { getActiveSessionForDay, saveSessionRun } from "../services/storage/repositories/sessionsRepository";
 import { getExerciseMedia } from "../data/exerciseMedia";
 
 function formatDuration(ms) {
@@ -185,6 +186,15 @@ export function SessionRunPage() {
       ]);
 
       setDay(dayData);
+
+      // Try to resume an in-progress session (< 2h old)
+      const existing = await getActiveSessionForDay(currentUser.id, dayId);
+      if (existing) {
+        setSession(existing);
+        persistedRef.current = false;
+        return;
+      }
+
       const hasRunnableContent = (dayData?.main?.length ?? 0) > 0 || (dayData?.warmup?.length ?? 0) > 0;
       if (!dayData?.rest && (dayData?.cardioOnly || hasRunnableContent)) {
         // For cardioOnly days, inject a synthetic exercise so the session has 1 item,
@@ -237,6 +247,23 @@ export function SessionRunPage() {
     return undefined;
   }, [mediaModalOpen]);
 
+  // Incremental save: persist session to DB on every set validation, pause, or resume
+  // so that closing/reloading the browser does not lose progress.
+  const lastSavedJsonRef = useRef(null);
+  useEffect(() => {
+    if (!session || !currentUser) return;
+    // Skip tick-only updates (only rest timer changes) to avoid writes every 500ms
+    const snapshot = JSON.stringify({
+      status: session.status,
+      currentExerciseIndex: session.currentExerciseIndex,
+      currentSetIndex: session.currentSetIndex,
+      exercises: session.exercises,
+    });
+    if (snapshot === lastSavedJsonRef.current) return;
+    lastSavedJsonRef.current = snapshot;
+    saveSessionRun({ ...session, elapsedMs: getElapsedMs(session, Date.now()) });
+  }, [session, currentUser]);
+
   useEffect(() => {
     async function persistIfFinalized() {
       if (!session || persistedRef.current) return;
@@ -247,10 +274,17 @@ export function SessionRunPage() {
         elapsedMs: getElapsedMs(session, Date.now()),
       };
       await saveSessionRun(payload);
+
+      // Write back actual values (reps/load) to the plan as new defaults
+      const updater = buildPlanDayUpdaterFromSession(payload);
+      if (updater && currentUser) {
+        await updateUserPlanDay(currentUser.id, session.dayId, updater);
+      }
+
       persistedRef.current = true;
     }
     persistIfFinalized();
-  }, [session]);
+  }, [session, currentUser]);
 
   useEffect(() => {
     const topOffset = 8;

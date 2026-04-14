@@ -32,6 +32,7 @@ export function getWeekKey(date = new Date()) {
 }
 
 export {
+  buildPlanDayUpdaterFromSession,
   buildSessionRun,
   getElapsedMs,
   pauseSession,

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildPlanDayUpdaterFromSession,
   buildSessionRun,
   getElapsedMs,
   pauseSession,
@@ -183,4 +184,76 @@ test("buildSessionRun includes warmup steps before main and skips warmup rest", 
   assert.equal(session.currentSetIndex, 1);
   assert.equal(session.rest.active, true);
   assert.equal(session.rest.remainingSeconds, 60);
+});
+
+test("buildPlanDayUpdaterFromSession returns null for non-finalized sessions", () => {
+  const session = buildSessionRun({
+    userId: "u1",
+    dayId: "lundi",
+    day: sampleDay(),
+    planVersion: "2026-04-v1",
+    nowMs: 1000,
+  });
+
+  assert.equal(buildPlanDayUpdaterFromSession(session), null);
+  assert.equal(buildPlanDayUpdaterFromSession(null), null);
+});
+
+test("buildPlanDayUpdaterFromSession writes actual values back to day plan series", () => {
+  let session = buildSessionRun({
+    userId: "u1",
+    dayId: "lundi",
+    day: sampleDay(),
+    planVersion: "2026-04-v1",
+    nowMs: 1000,
+  });
+
+  // Modify actual values for first exercise, first set
+  session.exercises[0].sets[0].actualReps = "14";
+  session.exercises[0].sets[0].actualLoad = "25kg";
+
+  // Complete the session
+  session = skipRestTimer(validateCurrentSet(session, { nowMs: 2000 }));
+  session = skipRestTimer(validateCurrentSet(session, { nowMs: 3000 }));
+  session = validateCurrentSet(session, { nowMs: 4000 });
+  assert.equal(session.status, "completed");
+
+  const updater = buildPlanDayUpdaterFromSession(session);
+  assert.ok(updater);
+
+  const originalDay = sampleDay();
+  const updatedDay = updater(originalDay);
+
+  // First exercise, first set should have new values
+  assert.equal(updatedDay.main[0].series[0].reps, "14");
+  assert.equal(updatedDay.main[0].series[0].load, "25kg");
+  // First exercise, second set keeps actual (defaulted from target)
+  assert.equal(updatedDay.main[0].series[1].reps, "12");
+  assert.equal(updatedDay.main[0].series[1].load, "20kg");
+  // Second exercise keeps actual (defaulted from target)
+  assert.equal(updatedDay.main[1].series[0].reps, "8");
+  assert.equal(updatedDay.main[1].series[0].load, "30kg");
+});
+
+test("buildPlanDayUpdaterFromSession works with stopped sessions", () => {
+  let session = buildSessionRun({
+    userId: "u1",
+    dayId: "lundi",
+    day: sampleDay(),
+    planVersion: "2026-04-v1",
+    nowMs: 1000,
+  });
+
+  session.exercises[0].sets[0].actualReps = "15";
+  session = skipRestTimer(validateCurrentSet(session, { nowMs: 2000 }));
+
+  // Import stopSession indirectly — it's already tested, just set status
+  session.status = "stopped";
+  session.endedAt = new Date(5000).toISOString();
+
+  const updater = buildPlanDayUpdaterFromSession(session);
+  assert.ok(updater);
+
+  const updatedDay = updater(sampleDay());
+  assert.equal(updatedDay.main[0].series[0].reps, "15");
 });
