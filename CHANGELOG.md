@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.3](https://github.com/karma-yrb/meutreino-front/compare/v1.4.0...v1.4.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* **data:** correct video URL for ischio stretch; remove per-user media inputs ([eb8d050](https://github.com/karma-yrb/meutreino-front/commit/eb8d0500ca0bff213cba866937b7733db738b61b))
+
 ### [1.4.2](https://github.com/karma-yrb/meutreino-front/compare/v1.4.0...v1.4.2) (2026-04-13)
 
 ### [1.4.1](https://github.com/karma-yrb/meutreino-front/compare/v1.4.0...v1.4.1) (2026-04-13)
