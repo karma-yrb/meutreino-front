@@ -905,6 +905,105 @@ button {
   line-height: 1;
 }
 
+/* ── Superset set editor ─────────────────────────────────────── */
+.superset-set-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.superset-sub-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
+}
+
+.superset-sub-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.superset-sub-fields {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.superset-sub-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.superset-field-label {
+  color: var(--muted);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.superset-timed-input {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.superset-validate-btn {
+  margin-top: 2px;
+}
+
+/* Superset validated display */
+.superset-validated-values {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.superset-validated-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.superset-sub-name-sm {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 70px;
+  flex-shrink: 0;
+}
+
+/* Superset inactive rows */
+.superset-inactive-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.superset-inactive-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.superset-inactive-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+}
+
 .rest-box {
   background: var(--rest-bg);
   border: 1px solid var(--rest-border);

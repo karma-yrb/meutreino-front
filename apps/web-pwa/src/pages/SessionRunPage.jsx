@@ -137,6 +137,25 @@ function formatLoadWithUnit(loadValue) {
   return loadValue === "-" ? "-" : `${loadValue} kg`;
 }
 
+function isSupersetExercise(exercise) {
+  return typeof exercise?.name === "string" && exercise.name.includes(" + ");
+}
+
+function getSupersetSubNames(exercise) {
+  return (exercise?.name ?? "").split(/\s*\+\s*/);
+}
+
+function parseSupersetSubParts(combinedStr, separator, count) {
+  if (!combinedStr || combinedStr === "-") return Array(count).fill("-");
+  const parts = combinedStr.split(separator).map((p) => p.trim());
+  while (parts.length < count) parts.push("-");
+  return parts.slice(0, count);
+}
+
+function isTimedValue(str) {
+  return typeof str === "string" && /[a-zA-Z]/.test(str) && str !== "-";
+}
+
 export function SessionRunPage() {
   const { dayId } = useParams();
   const { i18n } = useTranslation();
@@ -344,6 +363,46 @@ export function SessionRunPage() {
       : Math.max(0, base + delta);
     const formatted = field === "actualReps" || Number.isInteger(next) ? String(next) : next.toFixed(1);
     setValue(field, formatted);
+  }
+
+  function setSupersetPartValue(field, partIndex, value, subCount) {
+    const separator = field === "actualReps" ? " + " : " / ";
+    const currentStr = field === "actualReps"
+      ? (currentSet?.actualReps ?? currentSet?.targetReps ?? "")
+      : (currentSet?.actualLoad ?? currentSet?.targetLoad ?? "");
+    const parts = parseSupersetSubParts(currentStr, separator, subCount);
+    const partIsTimed = isTimedValue(parts[partIndex]);
+    parts[partIndex] = partIsTimed
+      ? String(value ?? "")
+      : (field === "actualLoad"
+          ? sanitizeNumericInput(value, { allowDecimal: true })
+          : sanitizeNumericInput(value));
+    const joined = parts.join(separator);
+    setSession((prev) => {
+      if (!prev) return prev;
+      return updateCurrentSetValues(prev, { [field]: joined });
+    });
+  }
+
+  function stepSupersetPartValue(field, partIndex, delta, subCount) {
+    const separator = field === "actualReps" ? " + " : " / ";
+    const currentStr = field === "actualReps"
+      ? (currentSet?.actualReps ?? currentSet?.targetReps ?? "")
+      : (currentSet?.actualLoad ?? currentSet?.targetLoad ?? "");
+    const parts = parseSupersetSubParts(currentStr, separator, subCount);
+    const raw = sanitizeNumericInput(parts[partIndex], { allowDecimal: field === "actualLoad" });
+    const base = parseFloat(raw);
+    const current = isNaN(base) ? 0 : base;
+    const next = field === "actualReps"
+      ? Math.max(1, Math.round(current) + delta)
+      : Math.max(0, current + delta);
+    const formatted = field === "actualReps" || Number.isInteger(next) ? String(next) : next.toFixed(1);
+    parts[partIndex] = formatted;
+    const joined = parts.join(separator);
+    setSession((prev) => {
+      if (!prev) return prev;
+      return updateCurrentSetValues(prev, { [field]: joined });
+    });
   }
 
   function onValidateSet() {
@@ -647,69 +706,155 @@ export function SessionRunPage() {
                     ) : (
                       <>
                         {!session.rest.active && (
-                          <div className="set-edit-inline-grid">
-                            <div className="set-edit-inline-label">
-                              <span className="set-stepper-icon" aria-hidden="true">
-                                <FontAwesomeIcon icon={faRepeat} size="sm" />
-                              </span>
-                              <span>Répétitions</span>
-                            </div>
-                            <div className="set-edit-inline-label with-divider">
-                              <span className="set-stepper-icon" aria-hidden="true">
-                                <FontAwesomeIcon icon={faDumbbell} size="sm" />
-                              </span>
-                              <span>Poids</span>
-                            </div>
-                            <div className="set-edit-inline-label with-divider validate-label">
-                              <span className="set-stepper-icon" aria-hidden="true">
-                                <FontAwesomeIcon icon={faCheck} size="sm" />
-                              </span>
-                              <span>Valider</span>
-                            </div>
-                            <div className="set-edit-inline-control">
-                              <div className="set-stepper-row">
-                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                                <input
-                                  className="stepper-value-input"
-                                  size={1}
-                                  inputMode="numeric"
-                                  pattern="[0-9]*"
-                                  aria-label="Répétitions"
-                                  value={repsInputValue}
-                                  onChange={(e) => setValue("actualReps", e.target.value)}
-                                  disabled={session.rest.active || session.status !== "running"}
-                                />
-                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                          isSupersetExercise(currentExercise) ? (() => {
+                            const subNames = getSupersetSubNames(currentExercise);
+                            const repsParts = parseSupersetSubParts(
+                              currentSet?.actualReps ?? currentSet?.targetReps ?? "",
+                              " + ",
+                              subNames.length
+                            );
+                            const loadParts = parseSupersetSubParts(
+                              currentSet?.actualLoad ?? currentSet?.targetLoad ?? "",
+                              " / ",
+                              subNames.length
+                            );
+                            const disabled = session.status !== "running";
+                            return (
+                              <div className="superset-set-editor">
+                                {subNames.map((subName, i) => {
+                                  const repsVal = repsParts[i] ?? "-";
+                                  const loadVal = loadParts[i] ?? "-";
+                                  const timedReps = isTimedValue(repsVal);
+                                  return (
+                                    <div key={i} className="superset-sub-row">
+                                      <span className="superset-sub-name">{subName}</span>
+                                      <div className="superset-sub-fields">
+                                        <div className="superset-sub-field">
+                                          <span className="superset-field-label"><FontAwesomeIcon icon={faRepeat} size="xs" /></span>
+                                          {timedReps ? (
+                                            <input
+                                              className="stepper-value-input superset-timed-input"
+                                              aria-label={`Répétitions ${subName}`}
+                                              value={repsVal === "-" ? "" : repsVal}
+                                              onChange={(e) => setSupersetPartValue("actualReps", i, e.target.value, subNames.length)}
+                                              disabled={disabled}
+                                            />
+                                          ) : (
+                                            <div className="set-stepper-row">
+                                              <button type="button" className="stepper-btn stepper-lg" onClick={() => stepSupersetPartValue("actualReps", i, -1, subNames.length)} disabled={disabled}>−</button>
+                                              <input
+                                                className="stepper-value-input"
+                                                size={1}
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                aria-label={`Répétitions ${subName}`}
+                                                value={repsVal === "-" ? "" : repsVal}
+                                                onChange={(e) => setSupersetPartValue("actualReps", i, e.target.value, subNames.length)}
+                                                disabled={disabled}
+                                              />
+                                              <button type="button" className="stepper-btn stepper-lg" onClick={() => stepSupersetPartValue("actualReps", i, 1, subNames.length)} disabled={disabled}>+</button>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="superset-sub-field">
+                                          <span className="superset-field-label"><FontAwesomeIcon icon={faDumbbell} size="xs" /></span>
+                                          <div className="set-stepper-row">
+                                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepSupersetPartValue("actualLoad", i, -1, subNames.length)} disabled={disabled}>−</button>
+                                            <input
+                                              className="stepper-value-input"
+                                              size={1}
+                                              inputMode="decimal"
+                                              pattern="[0-9]*[.,]?[0-9]*"
+                                              aria-label={`Poids ${subName}`}
+                                              value={loadVal === "-" ? "" : loadVal}
+                                              onChange={(e) => setSupersetPartValue("actualLoad", i, e.target.value, subNames.length)}
+                                              disabled={disabled}
+                                            />
+                                            <span className="stepper-unit">kg</span>
+                                            <button type="button" className="stepper-btn stepper-lg" onClick={() => stepSupersetPartValue("actualLoad", i, 1, subNames.length)} disabled={disabled}>+</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                <button
+                                  className={`set-validate-btn superset-validate-btn${justValidated ? " validate-flash" : ""}`}
+                                  type="button"
+                                  aria-label="Valider la série"
+                                  onClick={onValidateSet}
+                                  disabled={session.status !== "running"}
+                                >
+                                  <span>Valider la série</span>
+                                  <FontAwesomeIcon icon={faCheck} />
+                                </button>
                               </div>
-                            </div>
-                            <div className="set-edit-inline-control with-divider">
-                              <div className="set-stepper-row">
-                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
-                                <input
-                                  className="stepper-value-input"
-                                  size={1}
-                                  inputMode="decimal"
-                                  pattern="[0-9]*[.,]?[0-9]*"
-                                  aria-label="Poids"
-                                  value={loadInputValue}
-                                  onChange={(e) => setValue("actualLoad", e.target.value)}
-                                  disabled={session.rest.active || session.status !== "running"}
-                                />
-                                <span className="stepper-unit">kg</span>
-                                <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                            );
+                          })() : (
+                            <div className="set-edit-inline-grid">
+                              <div className="set-edit-inline-label">
+                                <span className="set-stepper-icon" aria-hidden="true">
+                                  <FontAwesomeIcon icon={faRepeat} size="sm" />
+                                </span>
+                                <span>Répétitions</span>
                               </div>
+                              <div className="set-edit-inline-label with-divider">
+                                <span className="set-stepper-icon" aria-hidden="true">
+                                  <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                                </span>
+                                <span>Poids</span>
+                              </div>
+                              <div className="set-edit-inline-label with-divider validate-label">
+                                <span className="set-stepper-icon" aria-hidden="true">
+                                  <FontAwesomeIcon icon={faCheck} size="sm" />
+                                </span>
+                                <span>Valider</span>
+                              </div>
+                              <div className="set-edit-inline-control">
+                                <div className="set-stepper-row">
+                                  <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                                  <input
+                                    className="stepper-value-input"
+                                    size={1}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    aria-label="Répétitions"
+                                    value={repsInputValue}
+                                    onChange={(e) => setValue("actualReps", e.target.value)}
+                                    disabled={session.rest.active || session.status !== "running"}
+                                  />
+                                  <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualReps", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                                </div>
+                              </div>
+                              <div className="set-edit-inline-control with-divider">
+                                <div className="set-stepper-row">
+                                  <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", -1)} disabled={session.rest.active || session.status !== "running"}>−</button>
+                                  <input
+                                    className="stepper-value-input"
+                                    size={1}
+                                    inputMode="decimal"
+                                    pattern="[0-9]*[.,]?[0-9]*"
+                                    aria-label="Poids"
+                                    value={loadInputValue}
+                                    onChange={(e) => setValue("actualLoad", e.target.value)}
+                                    disabled={session.rest.active || session.status !== "running"}
+                                  />
+                                  <span className="stepper-unit">kg</span>
+                                  <button type="button" className="stepper-btn stepper-lg" onClick={() => stepValue("actualLoad", 1)} disabled={session.rest.active || session.status !== "running"}>+</button>
+                                </div>
+                              </div>
+                              <button
+                                className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
+                                type="button"
+                                aria-label="Valider la série"
+                                onClick={onValidateSet}
+                                disabled={session.status !== "running"}
+                              >
+                                <span>Valider la série</span>
+                                <FontAwesomeIcon icon={faCheck} />
+                              </button>
                             </div>
-                            <button
-                              className={`set-validate-btn with-divider${justValidated ? " validate-flash" : ""}`}
-                              type="button"
-                              aria-label="Valider la série"
-                              onClick={onValidateSet}
-                              disabled={session.status !== "running"}
-                            >
-                              <span>Valider la série</span>
-                              <FontAwesomeIcon icon={faCheck} />
-                            </button>
-                          </div>
+                          )
                         )}
 
                         {session.rest.active ? (
@@ -737,14 +882,31 @@ export function SessionRunPage() {
                       <span className="set-block-meta validated">Validée</span>
                     </div>
                     {!isWarmup && (
-                      <div className="set-validated-values">
-                        <span>
-                          <FontAwesomeIcon icon={faRepeat} size="xs" /> {getSetMetricDisplayValue(set, "actualReps")}
-                        </span>
-                        <span>
-                          <FontAwesomeIcon icon={faDumbbell} size="xs" /> {formatLoadWithUnit(getSetMetricDisplayValue(set, "actualLoad"))}
-                        </span>
-                      </div>
+                      isSupersetExercise(currentExercise) ? (() => {
+                        const subNames = getSupersetSubNames(currentExercise);
+                        const repsParts = parseSupersetSubParts(set.actualReps ?? set.targetReps ?? "", " + ", subNames.length);
+                        const loadParts = parseSupersetSubParts(set.actualLoad ?? set.targetLoad ?? "", " / ", subNames.length);
+                        return (
+                          <div className="set-validated-values superset-validated-values">
+                            {subNames.map((subName, i) => (
+                              <div key={i} className="superset-validated-row">
+                                <span className="superset-sub-name-sm">{subName}</span>
+                                <span><FontAwesomeIcon icon={faRepeat} size="xs" /> {repsParts[i] ?? "-"}</span>
+                                <span><FontAwesomeIcon icon={faDumbbell} size="xs" /> {(loadParts[i] ?? "-") !== "-" ? `${loadParts[i]} kg` : "-"}</span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })() : (
+                        <div className="set-validated-values">
+                          <span>
+                            <FontAwesomeIcon icon={faRepeat} size="xs" /> {getSetMetricDisplayValue(set, "actualReps")}
+                          </span>
+                          <span>
+                            <FontAwesomeIcon icon={faDumbbell} size="xs" /> {formatLoadWithUnit(getSetMetricDisplayValue(set, "actualLoad"))}
+                          </span>
+                        </div>
+                      )
                     )}
                   </article>
                 );
@@ -765,36 +927,57 @@ export function SessionRunPage() {
                         </div>
                       ) : null
                     ) : (
-                      <div className="set-preview-grid">
-                        <div className="set-edit-inline-label">
-                          <span className="set-stepper-icon" aria-hidden="true">
-                            <FontAwesomeIcon icon={faRepeat} size="sm" />
-                          </span>
-                          <span>Répétitions</span>
-                        </div>
-                        <div className="set-edit-inline-label">
-                          <span className="set-stepper-icon" aria-hidden="true">
-                            <FontAwesomeIcon icon={faDumbbell} size="sm" />
-                          </span>
-                          <span>Poids</span>
-                        </div>
-                        <div className="set-preview-control">
-                          <div className="set-stepper-row">
-                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
-                            <span className="stepper-value-static">{getSetMetricDisplayValue(set, "actualReps")}</span>
-                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                      isSupersetExercise(currentExercise) ? (() => {
+                        const subNames = getSupersetSubNames(currentExercise);
+                        const repsParts = parseSupersetSubParts(set.targetReps ?? "", " + ", subNames.length);
+                        const loadParts = parseSupersetSubParts(set.targetLoad ?? "", " / ", subNames.length);
+                        return (
+                          <div className="superset-inactive-list">
+                            {subNames.map((subName, i) => (
+                              <div key={i} className="superset-inactive-row">
+                                <span className="superset-sub-name-sm">{subName}</span>
+                                <span className="superset-inactive-meta">
+                                  <FontAwesomeIcon icon={faRepeat} size="xs" /> {repsParts[i] ?? "-"}
+                                  {" · "}
+                                  <FontAwesomeIcon icon={faDumbbell} size="xs" /> {(loadParts[i] ?? "-") !== "-" ? `${loadParts[i]} kg` : "-"}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                        </div>
-                        <div className="set-preview-control">
-                          <div className="set-stepper-row">
-                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
-                            <span className="stepper-value-static">
-                              {getSetMetricDisplayValue(set, "actualLoad")} <span className="stepper-unit">kg</span>
+                        );
+                      })() : (
+                        <div className="set-preview-grid">
+                          <div className="set-edit-inline-label">
+                            <span className="set-stepper-icon" aria-hidden="true">
+                              <FontAwesomeIcon icon={faRepeat} size="sm" />
                             </span>
-                            <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                            <span>Répétitions</span>
+                          </div>
+                          <div className="set-edit-inline-label">
+                            <span className="set-stepper-icon" aria-hidden="true">
+                              <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                            </span>
+                            <span>Poids</span>
+                          </div>
+                          <div className="set-preview-control">
+                            <div className="set-stepper-row">
+                              <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                              <span className="stepper-value-static">{getSetMetricDisplayValue(set, "actualReps")}</span>
+                              <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                            </div>
+                          </div>
+                          <div className="set-preview-control">
+                            <div className="set-stepper-row">
+                              <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">−</span>
+                              <span className="stepper-value-static">
+                                {getSetMetricDisplayValue(set, "actualLoad")} <span className="stepper-unit">kg</span>
+                              </span>
+                              <span className="stepper-btn stepper-lg stepper-static" aria-hidden="true">+</span>
+                            </div>
+
                           </div>
                         </div>
-                      </div>
+                      )
                     )}
                   </article>
                 );
