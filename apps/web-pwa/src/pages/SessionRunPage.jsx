@@ -728,11 +728,19 @@ export function SessionRunPage() {
                                   const loadVal = loadParts[i] ?? "-";
                                   const timedReps = isTimedValue(repsVal);
                                   return (
-                                    <div key={i} className="superset-sub-row">
-                                      <span className="superset-sub-name">{subName}</span>
-                                      <div className="superset-sub-fields">
-                                        <div className="superset-sub-field">
-                                          <span className="superset-field-label"><FontAwesomeIcon icon={faRepeat} size="xs" /></span>
+                                    <div key={i} className="superset-sub-block">
+                                      <p className="superset-sub-label">{subName}</p>
+                                      <div className="set-edit-inline-grid superset-sub-grid">
+                                        <div className="set-edit-inline-label">
+                                          <FontAwesomeIcon icon={faRepeat} size="sm" />
+                                          <span>Répétitions</span>
+                                        </div>
+                                        <div className="set-edit-inline-label with-divider">
+                                          <FontAwesomeIcon icon={faDumbbell} size="sm" />
+                                          <span>Poids</span>
+                                        </div>
+                                        <div className="set-edit-inline-label with-divider validate-label" aria-hidden="true" />
+                                        <div className="set-edit-inline-control">
                                           {timedReps ? (
                                             <input
                                               className="stepper-value-input superset-timed-input"
@@ -758,8 +766,7 @@ export function SessionRunPage() {
                                             </div>
                                           )}
                                         </div>
-                                        <div className="superset-sub-field">
-                                          <span className="superset-field-label"><FontAwesomeIcon icon={faDumbbell} size="xs" /></span>
+                                        <div className="set-edit-inline-control with-divider">
                                           <div className="set-stepper-row">
                                             <button type="button" className="stepper-btn stepper-lg" onClick={() => stepSupersetPartValue("actualLoad", i, -1, subNames.length)} disabled={disabled}>−</button>
                                             <input
@@ -781,7 +788,7 @@ export function SessionRunPage() {
                                   );
                                 })}
                                 <button
-                                  className={`set-validate-btn superset-validate-btn${justValidated ? " validate-flash" : ""}`}
+                                  className={`set-validate-btn${justValidated ? " validate-flash" : ""}`}
                                   type="button"
                                   aria-label="Valider la série"
                                   onClick={onValidateSet}

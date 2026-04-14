@@ -909,53 +909,30 @@ button {
 .superset-set-editor {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 0;
 }
 
-.superset-sub-row {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  background: var(--surface-2);
-  border-radius: 10px;
-  border-left: 3px solid var(--accent);
+.superset-sub-block {
+  margin-bottom: 4px;
 }
 
-.superset-sub-name {
-  font-size: 13px;
+.superset-sub-label {
+  font-size: 12px;
   font-weight: 700;
-  color: var(--text);
-}
-
-.superset-sub-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.superset-sub-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.superset-field-label {
   color: var(--muted);
-  font-size: 13px;
-  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 8px 0 2px;
+}
+
+.superset-sub-grid {
+  margin-bottom: 0;
 }
 
 .superset-timed-input {
   flex: 1;
   min-width: 0;
   text-align: center;
-}
-
-.superset-validate-btn {
-  margin-top: 2px;
 }
 
 /* Superset validated display */
