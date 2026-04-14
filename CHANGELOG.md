@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/karma-yrb/meutreino-front/compare/v1.5.0...v1.5.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* **pwa:** improve manifest installability for Android Chrome ([96bca47](https://github.com/karma-yrb/meutreino-front/commit/96bca4719e6d144fd8eeed25ef5585f1e903e590))
+
 ### [1.5.1](https://github.com/karma-yrb/meutreino-front/compare/v1.5.0...v1.5.1) (2026-04-14)
 
 ## [1.5.0](https://github.com/karma-yrb/meutreino-front/compare/v1.4.4...v1.5.0) (2026-04-14)
