@@ -865,6 +865,25 @@ button {
   justify-content: center;
 }
 
+.set-preview-control .set-stepper-row {
+  gap: 4px;
+  justify-content: center;
+}
+
+.set-preview-control .stepper-btn.stepper-lg {
+  width: 34px;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+.set-preview-control .stepper-value-static {
+  min-width: 0;
+  flex: 1;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
 .stepper-static {
   pointer-events: none;
   opacity: 0.5;
