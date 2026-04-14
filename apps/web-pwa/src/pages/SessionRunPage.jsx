@@ -148,6 +148,8 @@ function getSupersetSubNames(exercise) {
 function parseSupersetSubParts(combinedStr, separator, count) {
   if (!combinedStr || combinedStr === "-") return Array(count).fill("-");
   const parts = combinedStr.split(separator).map((p) => p.trim());
+  // Single value → same for all sub-exercises (e.g. reps: "12")
+  if (parts.length === 1) return Array(count).fill(parts[0]);
   while (parts.length < count) parts.push("-");
   return parts.slice(0, count);
 }

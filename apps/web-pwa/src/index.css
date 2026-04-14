@@ -931,15 +931,14 @@ button {
 
 .superset-sub-fields {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .superset-sub-field {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex: 1;
+  gap: 8px;
   min-width: 0;
 }
 
