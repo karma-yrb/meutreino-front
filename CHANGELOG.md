@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/karma-yrb/meutreino-front/compare/v1.5.4...v1.7.0) (2026-04-14)
+
+
+### Features
+
+* **session:** persist session state incrementally and write back reps/load to plan ([21ce4b2](https://github.com/karma-yrb/meutreino-front/commit/21ce4b2426a014a591d6a9bf4676bd93cdc1c7f3))
+
 ## [1.6.0](https://github.com/karma-yrb/meutreino-front/compare/v1.5.4...v1.6.0) (2026-04-14)
 
 ### [1.5.4](https://github.com/karma-yrb/meutreino-front/compare/v1.5.2...v1.5.4) (2026-04-14)
