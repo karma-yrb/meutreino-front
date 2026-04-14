@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/karma-yrb/meutreino-front/compare/v1.4.4...v1.5.0) (2026-04-14)
+
+
+### Features
+
+* **session:** superset UI with one row per sub-exercise ([7d22e8c](https://github.com/karma-yrb/meutreino-front/commit/7d22e8c459d101f72731ff83fa726358ce5b9f40))
+
+
+### Bug Fixes
+
+* **session:** harmonize superset UI with simple exercise grid layout ([46b4f17](https://github.com/karma-yrb/meutreino-front/commit/46b4f1726829a44214425f8859a670a38edf49f8))
+* **session:** superset layout vertical + broadcast single reps value ([9cd3777](https://github.com/karma-yrb/meutreino-front/commit/9cd37773b2230c2ae6479dd8b4b6a44314d2fbf6))
+
 ### [1.4.7](https://github.com/karma-yrb/meutreino-front/compare/v1.4.4...v1.4.7) (2026-04-14)
 
 
