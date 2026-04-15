@@ -2432,6 +2432,21 @@ button {
   padding-left: 10px;
 }
 
+.session-compact-day {
+  display: none;
+}
+
+.session-header-card.compact .session-compact-day {
+  display: block;
+  font-size: 10px;
+  color: #7b849e;
+  line-height: 1;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .session-header-card.compact .session-mini-block p {
   font-size: 18px;
   line-height: 1;

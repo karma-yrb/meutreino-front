@@ -181,6 +181,8 @@ export function SessionRunPage() {
   const stickyActivationYRef = useRef(null);
   const pinnedRef = useRef(false);
   const [isHeaderPinned, setIsHeaderPinned] = useState(false);
+  const audioCtxRef = useRef(null);
+  const prevRestSecondsRef = useRef(null);
 
   useEffect(() => {
     async function load() {
@@ -251,6 +253,45 @@ export function SessionRunPage() {
     }
     return undefined;
   }, [mediaModalOpen]);
+
+  // Audio alarm: beep on the last 3 seconds of rest timer
+  useEffect(() => {
+    const active = session?.rest?.active;
+    const remaining = session?.rest?.remainingSeconds;
+
+    if (!active) {
+      prevRestSecondsRef.current = null;
+      return;
+    }
+
+    const prev = prevRestSecondsRef.current;
+    prevRestSecondsRef.current = remaining;
+
+    if (prev === null || remaining === prev) return;
+    if (remaining <= 0 || remaining > 3) return;
+
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === "suspended") ctx.resume();
+      const isLast = remaining === 1;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      oscillator.frequency.value = isLast ? 1100 : 880;
+      oscillator.type = "sine";
+      const now = ctx.currentTime;
+      gainNode.gain.setValueAtTime(0.4, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isLast ? 0.35 : 0.18));
+      oscillator.start(now);
+      oscillator.stop(now + (isLast ? 0.35 : 0.18));
+    } catch {
+      // Audio not supported
+    }
+  }, [session?.rest?.active, session?.rest?.remainingSeconds]);
 
   // Incremental save: persist session to DB on every set validation, pause, or resume
   // so that closing/reloading the browser does not lose progress.
@@ -550,6 +591,7 @@ export function SessionRunPage() {
           <div className="session-mini-block">
             <strong>{day.cardioOnly ? "Temps écoulé" : "Temps global"}</strong>
             <p>{elapsedLabel}</p>
+            <span className="session-compact-day">{day.fullLabel}</span>
           </div>
           {!day.cardioOnly && (
             <div className="session-mini-block session-pizza-block">
