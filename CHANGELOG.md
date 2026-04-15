@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/karma-yrb/meutreino-front/compare/v1.7.0...v1.8.0) (2026-04-15)
+
+
+### Features
+
+* **session:** auto-compute activation warm-up loads and reps before session start ([bdd7b4c](https://github.com/karma-yrb/meutreino-front/commit/bdd7b4c0e7ebad1b9096a708eb3912b6a486c542))
+
 ### [1.7.1](https://github.com/karma-yrb/meutreino-front/compare/v1.7.0...v1.7.1) (2026-04-15)
 
 ## [1.7.0](https://github.com/karma-yrb/meutreino-front/compare/v1.5.4...v1.7.0) (2026-04-14)
