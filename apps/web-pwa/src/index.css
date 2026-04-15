@@ -2750,16 +2750,12 @@ button {
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  white-space: nowrap;
 }
 
 .day-meta-value {
   font-size: 12px;
   font-weight: 700;
   color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* ── Accordion sections ─────────────────────────── */

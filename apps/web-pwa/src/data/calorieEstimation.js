@@ -40,8 +40,8 @@ const MET_MAP = {
   "extension lombaire": 3.5,
 
   // ── Cardio ──────────────────────────────────────
-  "cardio post-entraînement": 7.0,
-  "cardio": 7.0,
+  "cardio post-entraînement": 9.5,
+  "cardio": 8.0,
 
   // ── Warmup / stretches (not scored at exercise level) ──
   "étirement": 2.3,
@@ -77,17 +77,61 @@ function getExerciseMet(name) {
 }
 
 /**
+ * Parse a reps value that may contain a duration string like "21 min" or "30 s".
+ * Returns duration in seconds, or 0 if it's a normal rep count.
+ */
+function parseRepsDuration(repsValue) {
+  if (!repsValue || typeof repsValue !== "string") return 0;
+  const minMatch = repsValue.match(/(\d+)\s*min/i);
+  if (minMatch) return parseInt(minMatch[1], 10) * 60;
+  const secMatch = repsValue.match(/(\d+)\s*s(?:ec)?/i);
+  if (secMatch) return parseInt(secMatch[1], 10);
+  return 0;
+}
+
+/**
+ * Parse tempo string (e.g. "3020") to get time-under-tension per rep in seconds.
+ * Tempo format: eccentric / pause bottom / concentric / pause top.
+ */
+function parseTempo(tempo) {
+  if (!tempo || typeof tempo !== "string") return 4; // default ~4s/rep
+  const digits = tempo.replace(/\D/g, "");
+  if (digits.length < 4) return 4;
+  return [...digits].slice(0, 4).reduce((sum, d) => sum + parseInt(d, 10), 0) || 4;
+}
+
+/**
  * Estimate duration (in hours) of a single exercise based on its series.
- * Uses a heuristic: ~40s per set + rest time per set.
+ * Accounts for:
+ * - Cardio exercises with duration in reps field (e.g. "21 min")
+ * - Time under tension from tempo × reps
+ * - Rest periods between sets
  */
 function estimateExerciseDurationHours(series) {
   if (!Array.isArray(series) || series.length === 0) return 0;
-  const SECONDS_PER_SET = 40;
   let totalSeconds = 0;
+
   for (const set of series) {
-    totalSeconds += SECONDS_PER_SET;
+    // Check if reps is actually a duration (cardio)
+    const repsDuration = parseRepsDuration(set.reps);
+    if (repsDuration > 0) {
+      totalSeconds += repsDuration;
+      continue;
+    }
+
+    // Musculation: estimate from reps × tempo + rest
+    const reps = parseInt(set.reps, 10) || 10;
+    const tempoSeconds = parseTempo(set.tempo);
+    const setDuration = reps * tempoSeconds;
+    totalSeconds += setDuration;
+
     const rest = parseFloat(set.rest);
-    if (!isNaN(rest) && rest > 0) totalSeconds += rest;
+    if (!isNaN(rest) && rest > 0) {
+      totalSeconds += rest;
+    } else {
+      // When rest is "-" or unspecified, assume ~60s default rest
+      totalSeconds += 60;
+    }
   }
   return totalSeconds / 3600;
 }
