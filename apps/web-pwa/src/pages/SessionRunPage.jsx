@@ -596,7 +596,7 @@ export function SessionRunPage() {
                   )}
                 </>
               )}
-              {(session.status === "completed" || session.status === "stopped") && (
+              {(session.status === "completed" || session.status === "stopped") && !showCompletionModal && (
                 <button className="primary-btn session-return-btn" type="button" onClick={() => navigate("/")}>
                   Retour à l'accueil
                 </button>
