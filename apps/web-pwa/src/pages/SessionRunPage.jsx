@@ -667,6 +667,11 @@ export function SessionRunPage() {
           </div>
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
+          {currentExercise?.phase === "main" && currentExercise?.tag && (
+            <span className="exercise-tag" style={{ color: currentExercise.tagColor ?? "var(--muted)" }}>
+              {currentExercise.tag}
+            </span>
+          )}
           {(() => {
             const desc = currentExercise?.phase === "warmup"
               ? currentMedia.description

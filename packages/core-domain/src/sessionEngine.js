@@ -33,6 +33,21 @@ export function getElapsedMs(session, nowMs = Date.now()) {
   return session.globalTimer.accumulatedMs + (nowMs - session.globalTimer.runningSince);
 }
 
+function parseKg(loadStr) {
+  if (!loadStr || loadStr === "-") return NaN;
+  const match = String(loadStr).match(/^(\d+(?:[.,]\d+)?)/)
+  return match ? parseFloat(match[1].replace(",", ".")) : NaN;
+}
+
+function roundTo2_5(kg) {
+  return Math.round(kg / 2.5) * 2.5;
+}
+
+function formatLoad(kg) {
+  const rounded = roundTo2_5(kg);
+  return Number.isInteger(rounded) ? `${rounded} kg` : `${rounded.toFixed(1)} kg`;
+}
+
 export function buildSessionRun({
   userId,
   dayId,
@@ -65,6 +80,8 @@ export function buildSessionRun({
   const mainExercises = (day?.main ?? []).map((exercise, exerciseIndex) => ({
     id: exercise.id ?? `${dayId}-ex-${exerciseIndex + 1}`,
     name: exercise.name,
+    tag: exercise.tag ?? null,
+    tagColor: exercise.tagColor ?? null,
     description: exercise.description ?? null,
     note: exercise.note ?? null,
     videoUrl: exercise.videoUrl ?? null,
@@ -83,6 +100,36 @@ export function buildSessionRun({
       restSeconds,
     })),
   }));
+
+  // Auto-compute warm-up loads for Activation exercises:
+  // When an exercise with tag "Activation" is immediately followed by one with the same name,
+  // pre-fill its sets at 50% (set 1) and 75% (set 2) of the next exercise's first set load.
+  for (let i = 0; i < mainExercises.length - 1; i++) {
+    const act = mainExercises[i];
+    const principal = mainExercises[i + 1];
+    if (
+      act.tag === "Activation" &&
+      act.name.trim() === principal.name.trim()
+    ) {
+      const refKg = parseKg(principal.sets[0]?.targetLoad);
+      if (!isNaN(refKg)) {
+        if (act.sets[0]) {
+          const load = formatLoad(refKg * 0.5);
+          act.sets[0].targetLoad = load;
+          act.sets[0].actualLoad = load;
+          act.sets[0].targetReps = "15";
+          act.sets[0].actualReps = "15";
+        }
+        if (act.sets[1]) {
+          const load = formatLoad(refKg * 0.75);
+          act.sets[1].targetLoad = load;
+          act.sets[1].actualLoad = load;
+          act.sets[1].targetReps = "15";
+          act.sets[1].actualReps = "15";
+        }
+      }
+    }
+  }
 
   const exercises = [...warmupExercises, ...mainExercises];
 
