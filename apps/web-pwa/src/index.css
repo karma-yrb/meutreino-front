@@ -2042,6 +2042,37 @@ button {
   background: var(--surface);
 }
 
+/* ── Superset series layout ─────────────────────────── */
+.series-grid-row--superset {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+}
+
+.superset-series-parts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.superset-series-part {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.superset-sub-label-sm {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.superset-series-part .set-pill {
+  background: var(--surface);
+}
+
 /* ── Exercise action bar (icons + video) ─────────────── */
 .exercise-actions {
   display: flex;

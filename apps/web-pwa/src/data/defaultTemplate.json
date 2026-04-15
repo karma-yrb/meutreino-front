@@ -77,10 +77,10 @@
         },
         {
           "id": "lun-ex-6",
-          "name": "Abdos ciseaux + Abdos V-sit",
+          "name": "Abdos ciseaux + Abdos inférieurs",
           "tag": "Superset",
           "tagColor": "#1abc9c",
-          "description": "10 abdos ciseaux + 30 s abdos v-sit par série",
+          "description": "10 abdos ciseaux + 30 s abdos inférieurs par série",
           "series": [
             { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
             { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
@@ -248,7 +248,7 @@
       "main": [
         {
           "id": "jeu-ex-1",
-          "name": "Leg Curl assis",
+          "name": "Flexion ischio-jambiers assis",
           "tag": "Activation",
           "tagColor": "#f5a623",
           "series": [
@@ -259,7 +259,7 @@
         },
         {
           "id": "jeu-ex-2",
-          "name": "Leg Curl assis",
+          "name": "Flexion ischio-jambiers assis",
           "tag": "Principal",
           "tagColor": "#e53935",
           "series": [
@@ -271,7 +271,7 @@
         },
         {
           "id": "jeu-ex-3",
-          "name": "Abduction hanche penché",
+          "name": "Abducteurs machine tronc penché",
           "tag": null,
           "series": [
             { "reps": "12", "load": "-", "rest": "-", "tempo": "-" },
@@ -305,14 +305,14 @@
         },
         {
           "id": "jeu-ex-6",
-          "name": "Abdos inférieurs + Abdos canif",
+          "name": "Abdos inférieurs + Abdos V-sit",
           "tag": "Superset",
           "tagColor": "#1abc9c",
           "series": [
             { "reps": "12 + 15", "load": "0 / 0", "rest": "-", "tempo": "3020" },
             { "reps": "12 + 15", "load": "0 / 0", "rest": "-", "tempo": "3020" }
           ],
-          "note": "12 abdos inférieurs + 15 abdos canif par série"
+          "note": "12 abdos inférieurs + 15 abdos V-sit par série"
         }
       ]
     },

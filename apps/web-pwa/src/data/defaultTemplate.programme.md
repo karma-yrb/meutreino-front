@@ -60,7 +60,7 @@
 | 2 | 15 | Charge moyenne | 60 s | 3020 |
 | 3 | 12 | Charge lourde | 60 s | 3020 |
 
-#### lun-ex-6 · Abdos ciseaux + Abdos V-sit `Superset`
+#### lun-ex-6 · Abdos ciseaux + Abdos inférieurs `Superset`
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
@@ -68,7 +68,7 @@
 | 2 | 10 + 30 s | 0 / 0 | - | 3020 |
 | 3 | 10 + 30 s | 0 / 0 | - | 3020 |
 
-> Note : 10 abdos ciseaux + 30 s abdos v-sit par série
+> Note : 10 abdos ciseaux + 30 s abdos inférieurs par série
 
 ---
 
@@ -195,14 +195,14 @@
 
 ### Exercices principaux
 
-#### jeu-ex-1 · Leg Curl assis `Activation`
+#### jeu-ex-1 · Flexion ischio-jambiers assis `Activation`
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
 | 1 | 12 | - | - | - |
 | 2 | 12 | - | - | - |
 
-#### jeu-ex-2 · Leg Curl assis `Principal`
+#### jeu-ex-2 · Flexion ischio-jambiers assis `Principal`
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
@@ -210,7 +210,7 @@
 | 2 | 12 | - | - | - |
 | 3 | 12 | - | - | - |
 
-#### jeu-ex-3 · Abduction hanche penché
+#### jeu-ex-3 · Abducteurs machine tronc penché
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
@@ -235,14 +235,14 @@
 | 3 | 12 | - | - | - |
 | 4 | 12 | - | - | - |
 
-#### jeu-ex-6 · Abdos inférieurs + Abdos canif `Superset`
+#### jeu-ex-6 · Abdos inférieurs + Abdos V-sit `Superset`
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
 | 1 | 12 + 15 | 0 / 0 | - | 3020 |
 | 2 | 12 + 15 | 0 / 0 | - | 3020 |
 
-> Note : 12 abdos inférieurs + 15 abdos canif par série
+> Note : 12 abdos inférieurs + 15 abdos V-sit par série
 
 ---
 

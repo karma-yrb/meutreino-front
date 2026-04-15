@@ -40,15 +40,25 @@ const EXERCISE_MEDIA = {
     videoUrl: "https://www.youtube.com/watch?v=SVtg-1loH4c",
     description: "Debout sur le bord d'une marche ou d'une plateforme, talons dans le vide, épaules sous les appuis de la machine. Descendez les talons sous la ligne de la plateforme pour étirer les mollets, puis montez sur la pointe des pieds en contractant les soléaires et les gastrocnémiens. Maintenez un bref instant en haut avant de redescendre sous contrôle.",
   },
+  "flexion ischio-jambiers assis": {
+    imageUrl: `${EK}/seated-leg-curl-1.png`,
+    videoUrl: "https://www.youtube.com/watch?v=eOt-l7DQmaQ",
+    description: "Assis sur la machine, dos droit contre le dossier, rembourrage positionné juste au-dessus des talons et contre le haut des genoux. Fléchissez les jambes en ramenant les talons vers les fessiers, en contractant activement les ischio-jambiers. Contrôlez le retour à la position initiale sans laisser tomber le poids.",
+  },
   "leg curl assis": {
     imageUrl: `${EK}/seated-leg-curl-1.png`,
-    videoUrl: "https://www.youtube.com/watch?v=sWSm1pWb3lw",
+    videoUrl: "https://www.youtube.com/watch?v=eOt-l7DQmaQ",
     description: "Assis sur la machine, dos droit contre le dossier, rembourrage positionné juste au-dessus des talons et contre le haut des genoux. Fléchissez les jambes en ramenant les talons vers les fessiers, en contractant activement les ischio-jambiers. Contrôlez le retour à la position initiale sans laisser tomber le poids.",
+  },
+  "abducteurs machine tronc penché": {
+    imageUrl: `${EK}/thigh-abductor-1.png`,
+    videoUrl: "https://www.youtube.com/watch?v=iN1AlYptk1A",
+    description: "Assis sur la machine abducteurs avec le tronc incliné vers l'avant, fessiers en appui sur le siège. Écartez les cuisses contre les rembourrrages en contractant le moyen fessier, sans rotation du bassin. Contrôlez le retour sans laisser les genoux se rapprocher brusquement.",
   },
   "abduction hanche penché": {
     imageUrl: `${EK}/thigh-abductor-1.png`,
-    videoUrl: "https://www.youtube.com/watch?v=zU6X_LO362s",
-    description: "Corps incliné vers l'avant, appuis stables sur les avant-bras ou une barre. Écartez la jambe de travail latéralement et légèrement vers l'arrière en contractant le moyen fessier, sans rotation du bassin ni compensation lombaire. Maintenez un instant en position haute, puis redescendez sous contrôle.",
+    videoUrl: "https://www.youtube.com/watch?v=iN1AlYptk1A",
+    description: "Assis sur la machine abducteurs avec le tronc incliné vers l'avant, fessiers en appui sur le siège. Écartez les cuisses contre les rembourrages en contractant le moyen fessier, sans rotation du bassin. Contrôlez le retour sans laisser les genoux se rapprocher brusquement.",
   },
   "leg press 45": {
     imageUrl: `${EK}/leg-press-1.png`,
@@ -85,6 +95,11 @@ const EXERCISE_MEDIA = {
 
   // ---------- Bras ----------
   "triceps corde poulie haute": {
+    imageUrl: `${EK}/triceps-pushdown-with-rope-and-cable-1.png`,
+    videoUrl: "https://www.youtube.com/watch?v=_w-HpW70nSQ",
+    description: "Debout face à la poulie haute, corde saisie à deux mains, prise en prise neutre. Coudes collés aux flancs et fixes pendant tout le mouvement. Dépliez les avant-bras vers le bas en poussant les deux extrémités de la corde légèrement vers l'extérieur en fin de mouvement pour maximiser la contraction des triceps.",
+  },
+  "triceps corde": {
     imageUrl: `${EK}/triceps-pushdown-with-rope-and-cable-1.png`,
     videoUrl: "https://www.youtube.com/watch?v=_w-HpW70nSQ",
     description: "Debout face à la poulie haute, corde saisie à deux mains, prise en prise neutre. Coudes collés aux flancs et fixes pendant tout le mouvement. Dépliez les avant-bras vers le bas en poussant les deux extrémités de la corde légèrement vers l'extérieur en fin de mouvement pour maximiser la contraction des triceps.",
@@ -243,15 +258,30 @@ const EXERCISE_MEDIA = {
     videoUrl: "https://www.youtube.com/watch?v=LPsepk-C-d4",
     description: "Allongé sur le dos, bras le long du corps. Levez simultanément les jambes tendues et le buste vers le centre en formant un V, en contractant fortement les abdominaux. Contrôlez la descente sans laisser ni les jambes ni le buste toucher le sol entre les répétitions.",
   },
+  "abdos ciseaux + abdos inférieurs": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48",
+    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternés en amplitude courte, talons ne touchant pas le sol. Abdos inférieurs : montez lentement les jambes tendues de l'horizontal à la verticale, puis redescendez de manière contrôlée sans toucher le sol.",
+  },
   "abdos ciseaux + abdos v-sit": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48",
-    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternatiés en amplitude courte, talons ne touchant pas le sol. Abdos V-sit : levez simultanément les jambes tendues et le buste vers le centre en formant un V, puis contrôlez la descente.",
+    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternés en amplitude courte, talons ne touchant pas le sol. Abdos V-sit : levez simultanément les jambes tendues et le buste vers le centre en formant un V, puis contrôlez la descente.",
+  },
+  "abdos inférieurs": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=Y5pB0u0PLNc",
+    description: "Allongé sur le dos, mains sous les lombaires. Jambes tendues, montez-les lentement de l'horizontal à la verticale en contractant les abdominaux bas. Redescendez de manière contrôlée sans laisser les talons toucher le sol.",
+  },
+  "abdos inférieurs + abdos v-sit": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=Tj7O4-GEI7Y",
+    description: "Superset sans repos. Abdos inférieurs : allongé sur le dos, mains sous les lombaires, montée lente des jambes tendues de l'horizontal à la verticale puis redescente contrôlée sans toucher le sol. Abdos V-sit : levez simultanément buste et jambes tendues vers le centre en V, contrôlez la descente.",
   },
   "abdos inférieurs + abdos canif": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=Tj7O4-GEI7Y",
-    description: "Superset sans repos. Abdos inférieurs : allongé sur le dos, mains sous les lombaires, montée lente des jambes tendues de l'horizontal à la verticale puis redescente contrôlée sans toucher le sol. Abdos canif : simultaniment buste et jambes vers le centre en V, contrôler la descente.",
+    description: "Superset sans repos. Abdos inférieurs : allongé sur le dos, mains sous les lombaires, montée lente des jambes tendues de l'horizontal à la verticale puis redescente contrôlée sans toucher le sol. Abdos V-sit : levez simultanément buste et jambes tendues vers le centre en V, contrôlez la descente.",
   },
 
   // ---------- Cardio ----------

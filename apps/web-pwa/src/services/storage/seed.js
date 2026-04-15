@@ -1,7 +1,7 @@
 import { buildDefaultTemplate } from "../../data/defaultTemplate";
 import { db } from "./db";
 
-const SEED_VERSION = "4";
+const SEED_VERSION = "8";
 
 function createUserPlanFromTemplate(userId, template) {
   return {

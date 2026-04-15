@@ -235,6 +235,33 @@ export function DayPage() {
     handleFieldChange(exIndex, setIndex, field, formatted);
   }
 
+  function parseSupersetSubParts(combinedStr, separator, count) {
+    if (!combinedStr || combinedStr === "-") return Array(count).fill("-");
+    const parts = combinedStr.split(separator).map((p) => p.trim());
+    if (parts.length === 1) return Array(count).fill(parts[0]);
+    while (parts.length < count) parts.push("-");
+    return parts.slice(0, count);
+  }
+
+  function handleSupersetFieldChange(exIndex, setIndex, field, partIndex, value, subCount) {
+    const separator = field === "reps" ? " + " : " / ";
+    const serie = day.main[exIndex].series[setIndex];
+    const parts = parseSupersetSubParts(serie[field] ?? "-", separator, subCount);
+    parts[partIndex] = value;
+    handleFieldChange(exIndex, setIndex, field, parts.join(separator));
+  }
+
+  function handleSupersetStep(exIndex, setIndex, field, partIndex, delta, subCount) {
+    const separator = field === "reps" ? " + " : " / ";
+    const serie = day.main[exIndex].series[setIndex];
+    const parts = parseSupersetSubParts(serie[field] ?? "-", separator, subCount);
+    const current = parseFloat(parts[partIndex]);
+    const base = isNaN(current) ? 0 : current;
+    const next = Math.max(field === "reps" ? 1 : 0, base + delta);
+    parts[partIndex] = Number.isInteger(next) ? String(next) : next.toFixed(1);
+    handleFieldChange(exIndex, setIndex, field, parts.join(separator));
+  }
+
   function toggleSection(key) {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }
@@ -512,33 +539,77 @@ export function DayPage() {
                               {!isCardio && (
                                 <>
                                   <div className="series-grid">
-                                    {exercise.series.map((serie, setIndex) => (
-                                      <div key={setIndex} className="series-grid-row">
-                                        <span className="set-pill-num">{setIndex + 1}</span>
-                                        <span className="set-pill">
-                                          <FontAwesomeIcon icon={faRepeat} size="xs" />
-                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", -1)}>−</button>
-                                          <input
-                                            className="set-pill-input reps-input"
-                                            value={serie.reps}
-                                            onChange={(e) => handleFieldChange(exIndex, setIndex, "reps", e.target.value)}
-                                            aria-label="Répétitions"
-                                          />
-                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", 1)}>+</button>
-                                        </span>
-                                        <span className="set-pill">
-                                          <FontAwesomeIcon icon={faDumbbell} size="xs" />
-                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", -1)}>−</button>
-                                          <input
-                                            className="set-pill-input load-input"
-                                            value={serie.load}
-                                            onChange={(e) => handleFieldChange(exIndex, setIndex, "load", e.target.value)}
-                                            aria-label="Charge"
-                                          />
-                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", 1)}>+</button>
-                                        </span>
-                                      </div>
-                                    ))}
+                                    {exercise.series.map((serie, setIndex) => {
+                                      const isSuperset = exercise.name.includes(" + ");
+                                      if (isSuperset) {
+                                        const subNames = exercise.name.split(/\s*\+\s*/);
+                                        const repsParts = parseSupersetSubParts(serie.reps ?? "-", " + ", subNames.length);
+                                        const loadParts = parseSupersetSubParts(serie.load ?? "-", " / ", subNames.length);
+                                        return (
+                                          <div key={setIndex} className="series-grid-row series-grid-row--superset">
+                                            <span className="set-pill-num">{setIndex + 1}</span>
+                                            <div className="superset-series-parts">
+                                              {subNames.map((subName, i) => (
+                                                <div key={i} className="superset-series-part">
+                                                  <span className="superset-sub-label-sm">{subName}</span>
+                                                  <span className="set-pill">
+                                                    <FontAwesomeIcon icon={faRepeat} size="xs" />
+                                                    <button type="button" className="stepper-btn" onClick={() => handleSupersetStep(exIndex, setIndex, "reps", i, -1, subNames.length)}>−</button>
+                                                    <input
+                                                      className="set-pill-input reps-input"
+                                                      value={repsParts[i] === "-" ? "" : repsParts[i]}
+                                                      placeholder="-"
+                                                      onChange={(e) => handleSupersetFieldChange(exIndex, setIndex, "reps", i, e.target.value, subNames.length)}
+                                                      aria-label={`Répétitions ${subName}`}
+                                                    />
+                                                    <button type="button" className="stepper-btn" onClick={() => handleSupersetStep(exIndex, setIndex, "reps", i, 1, subNames.length)}>+</button>
+                                                  </span>
+                                                  <span className="set-pill">
+                                                    <FontAwesomeIcon icon={faDumbbell} size="xs" />
+                                                    <button type="button" className="stepper-btn" onClick={() => handleSupersetStep(exIndex, setIndex, "load", i, -1, subNames.length)}>−</button>
+                                                    <input
+                                                      className="set-pill-input load-input"
+                                                      value={loadParts[i] === "-" ? "" : loadParts[i]}
+                                                      placeholder="-"
+                                                      onChange={(e) => handleSupersetFieldChange(exIndex, setIndex, "load", i, e.target.value, subNames.length)}
+                                                      aria-label={`Charge ${subName}`}
+                                                    />
+                                                    <button type="button" className="stepper-btn" onClick={() => handleSupersetStep(exIndex, setIndex, "load", i, 1, subNames.length)}>+</button>
+                                                  </span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        );
+                                      }
+                                      return (
+                                        <div key={setIndex} className="series-grid-row">
+                                          <span className="set-pill-num">{setIndex + 1}</span>
+                                          <span className="set-pill">
+                                            <FontAwesomeIcon icon={faRepeat} size="xs" />
+                                            <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", -1)}>−</button>
+                                            <input
+                                              className="set-pill-input reps-input"
+                                              value={serie.reps}
+                                              onChange={(e) => handleFieldChange(exIndex, setIndex, "reps", e.target.value)}
+                                              aria-label="Répétitions"
+                                            />
+                                            <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", 1)}>+</button>
+                                          </span>
+                                          <span className="set-pill">
+                                            <FontAwesomeIcon icon={faDumbbell} size="xs" />
+                                            <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", -1)}>−</button>
+                                            <input
+                                              className="set-pill-input load-input"
+                                              value={serie.load}
+                                              onChange={(e) => handleFieldChange(exIndex, setIndex, "load", e.target.value)}
+                                              aria-label="Charge"
+                                            />
+                                            <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", 1)}>+</button>
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
 
                                   <div className="exercise-actions">
