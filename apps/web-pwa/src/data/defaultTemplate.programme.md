@@ -60,7 +60,7 @@
 | 2 | 15 | Charge moyenne | 60 s | 3020 |
 | 3 | 12 | Charge lourde | 60 s | 3020 |
 
-#### lun-ex-6 · Abdos ciseaux + Abdos canif `Superset`
+#### lun-ex-6 · Abdos ciseaux + Abdos V-sit `Superset`
 
 | Série | Reps | Charge | Repos | Tempo |
 |---|---|---|---|---|
@@ -68,7 +68,7 @@
 | 2 | 10 + 30 s | 0 / 0 | - | 3020 |
 | 3 | 10 + 30 s | 0 / 0 | - | 3020 |
 
-> Note : 10 abdos ciseaux + 30 s abdos canif par série
+> Note : 10 abdos ciseaux + 30 s abdos v-sit par série
 
 ---
 

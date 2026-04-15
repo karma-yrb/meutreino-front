@@ -77,15 +77,16 @@
         },
         {
           "id": "lun-ex-6",
-          "name": "Abdos ciseaux + Abdos canif",
+          "name": "Abdos ciseaux + Abdos V-sit",
           "tag": "Superset",
           "tagColor": "#1abc9c",
+          "description": "10 abdos ciseaux + 30 s abdos v-sit par série",
           "series": [
             { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
             { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" },
             { "reps": "10 + 30 s", "load": "0 / 0", "rest": "-", "tempo": "3020" }
           ],
-          "note": "10 abdos ciseaux + 30 s abdos canif par série"
+          "note": null
         }
       ]
     },

@@ -233,10 +233,20 @@ const EXERCISE_MEDIA = {
   "maior alongamento do mundo": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-CiWQ2IvY34" },
 
   // ---------- Abdominaux ----------
-  "abdos ciseaux + abdos canif": {
+  "abdos ciseaux": {
     imageUrl: null,
     videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48",
-    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternatiés en amplitude courte, talons ne touchant pas le sol. Abdos canif : allongé sur le dos, levez simultanément les jambes tendues et le buste vers le centre en formant un V, puis contrôlez la descente.",
+    description: "Allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol. Croisez les jambes en alternance en amplitude courte, talons ne touchant jamais le sol. Gardez le bas du dos plaqué au sol et le menton légèrement rentré.",
+  },
+  "abdos v-sit": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=LPsepk-C-d4",
+    description: "Allongé sur le dos, bras le long du corps. Levez simultanément les jambes tendues et le buste vers le centre en formant un V, en contractant fortement les abdominaux. Contrôlez la descente sans laisser ni les jambes ni le buste toucher le sol entre les répétitions.",
+  },
+  "abdos ciseaux + abdos v-sit": {
+    imageUrl: null,
+    videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48",
+    description: "Superset sans repos. Abdos ciseaux : allongé sur le dos, mains sous les lombaires, jambes tendues légèrement décollées du sol — croisements alternatiés en amplitude courte, talons ne touchant pas le sol. Abdos V-sit : levez simultanément les jambes tendues et le buste vers le centre en formant un V, puis contrôlez la descente.",
   },
   "abdos inférieurs + abdos canif": {
     imageUrl: null,
@@ -284,6 +294,9 @@ const EXERCISE_MEDIA = {
   "développé frontal haltères • superset • élévation latérale assis": { imageUrl: `${EK}/seated-military-press-1.png`, videoUrl: "https://www.youtube.com/watch?v=4iy1yoGRPz4" },
   "développé frontal + élévation latérale": { imageUrl: `${EK}/seated-military-press-1.png`, videoUrl: "https://www.youtube.com/watch?v=4iy1yoGRPz4" },
   "développé frontal": { imageUrl: `${EK}/seated-military-press-1.png`, videoUrl: "https://www.youtube.com/watch?v=4iy1yoGRPz4" },
+  // Abdominaux (anciens noms)
+  "abdos canif": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=LPsepk-C-d4" },
+  "abdos ciseaux + abdos canif": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=XyLTb8ZTh48" },
 };
 
 const LANGUAGE_VIDEO_FALLBACKS = {
