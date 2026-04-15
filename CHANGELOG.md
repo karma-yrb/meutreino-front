@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.2](https://github.com/karma-yrb/meutreino-front/compare/v1.14.0...v1.14.2) (2026-04-15)
+
+
+### Bug Fixes
+
+* **calories:** fix MET values, tempo-based duration and default rest for accurate estimates ([16e5a31](https://github.com/karma-yrb/meutreino-front/commit/16e5a31a479e7dddcf36ad811631fa6645b512cf))
+
 ### [1.14.1](https://github.com/karma-yrb/meutreino-front/compare/v1.14.0...v1.14.1) (2026-04-15)
 
 ## [1.14.0](https://github.com/karma-yrb/meutreino-front/compare/v1.11.0...v1.14.0) (2026-04-15)
