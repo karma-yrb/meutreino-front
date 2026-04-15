@@ -611,6 +611,27 @@ button {
   margin-top: 0;
 }
 
+.btn-row .with-icon {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.btn-row .primary-btn {
+  background: linear-gradient(130deg, #2979ff, #448aff);
+}
+
+.btn-row .ghost-btn {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+[data-theme="dark"] .btn-row .ghost-btn {
+  background: #1b3a1e;
+  color: #81c784;
+  border-color: #2e7d32;
+}
+
 .home-day-day {
   margin: 0;
   font-size: 32px;

@@ -9,6 +9,7 @@ import {
   faDumbbell,
   faEye,
   faHourglassHalf,
+  faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentDayId } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
@@ -123,8 +124,9 @@ export function HomePage() {
                     <span>Visualiser</span>
                   </Link>
                   {!todayPlan.cardioOnly ? (
-                    <Link to={`/session/${todayPlan.id}`} className="ghost-btn">
-                      Lancer la séance
+                    <Link to={`/session/${todayPlan.id}`} className="ghost-btn with-icon">
+                      <FontAwesomeIcon icon={faPlay} />
+                      <span>Démarrer</span>
                     </Link>
                   ) : null}
                 </div>
