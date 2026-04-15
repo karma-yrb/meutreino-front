@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSun, faMoon, faHouse, faUser, faShield, faUserTie, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faSun, faMoon, faHouse, faUser, faShield, faUserTie, faRightFromBracket, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../features/auth/useAuth";
 import { useTheme } from "../features/theme/useTheme";
 
@@ -34,6 +34,10 @@ export function AppShell() {
         <NavLink to="/" end>
           <FontAwesomeIcon icon={faHouse} />
           Accueil
+        </NavLink>
+        <NavLink to="/progres">
+          <FontAwesomeIcon icon={faChartLine} />
+          Progrès
         </NavLink>
         <NavLink to="/profil">
           <FontAwesomeIcon icon={faUser} />

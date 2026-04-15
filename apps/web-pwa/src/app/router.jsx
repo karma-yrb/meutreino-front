@@ -10,6 +10,7 @@ import { ProfilePage } from "../pages/ProfilePage";
 import { AdminTemplatesPage } from "../pages/AdminTemplatesPage";
 import { CoachUsersPage } from "../pages/CoachUsersPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { ProgressPage } from "../pages/ProgressPage";
 
 export function AppRouter() {
   const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
@@ -32,6 +33,7 @@ export function AppRouter() {
           <Route path="jour/:dayId" element={<DayPage />} />
           <Route path="session/:dayId" element={<SessionRunPage />} />
           <Route path="semaine" element={<WeekPage />} />
+          <Route path="progres" element={<ProgressPage />} />
           <Route path="profil" element={<ProfilePage />} />
           <Route
             path="admin/templates"
