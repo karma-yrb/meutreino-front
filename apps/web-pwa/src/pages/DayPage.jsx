@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronRight, faChevronUp, faChevronDown, faFire, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faClock, faRepeat, faPlay, faPlus, faMinus, faChevronLeft, faChevronRight, faChevronUp, faChevronDown, faFire, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 
 function getYoutubeVideoId(url) {
@@ -377,140 +377,169 @@ export function DayPage() {
               <div className="day-accordion-body">
                 <div className="exercise-list">
                   {day.main.map((exercise, exIndex) => {
+                    const isCardio = exercise.tag?.toLowerCase() === "cardio";
+                    const cardioTime = isCardio ? (exercise.series?.[0]?.reps ?? null) : null;
+                    const mediaDesc = getExerciseMedia(exercise.name, uiLanguage).description ?? "";
+                    const effectiveDesc = exercise.description || mediaDesc;
                     return (
-                      <article
-                        data-testid={`exercise-${exIndex}`}
-                        key={exercise.id ?? `${exercise.name}-${exIndex}`}
-                        className="exercise-item"
-                      >
-                        <div className="exercise-item-header">
-                          {(() => {
-                            const slides = getSlides(exercise, uiLanguage);
-                            const rawSlideIdx = slideIndices[exIndex] ?? 0;
-                            const slideIdx = slides.length > 0 ? rawSlideIdx % slides.length : 0;
-                            const slide = slides[slideIdx] ?? slides[0];
-                            return (
-                              <button
-                                type="button"
-                                className="exercise-media-thumb"
-                                onClick={() => openModal(exIndex)}
-                                aria-label={`Agrandir – diapositive ${slideIdx + 1} sur ${slides.length}`}
-                              >
-                                {slide.type === "image" ? (
-                                  slide.url ? (
-                                    <img src={slide.url} alt={slide.label} className="exercise-media-img" />
-                                  ) : (
-                                    <div className="exercise-media-placeholder">
-                                      <FontAwesomeIcon icon={faDumbbell} size="2x" />
-                                    </div>
-                                  )
-                                ) : (
-                                  slide.url ? (
-                                    slide.thumbnailUrl ? (
-                                      <div className="exercise-media-video-thumb">
-                                        <img src={slide.thumbnailUrl} alt={slide.label} className="exercise-media-img" />
-                                        <span className="exercise-media-play-badge">
+                          <article
+                            data-testid={`exercise-${exIndex}`}
+                            key={exercise.id ?? `${exercise.name}-${exIndex}`}
+                            className="exercise-item"
+                          >
+                            <div className="exercise-item-header">
+                              {isCardio ? (() => {
+                                const imgUrl = getExerciseMedia(exercise.name, uiLanguage).imageUrl ?? null;
+                                return (
+                                  <div className="exercise-media-thumb exercise-media-thumb--static">
+                                    {imgUrl ? (
+                                      <img src={imgUrl} alt={exercise.name} className="exercise-media-img" />
+                                    ) : (
+                                      <div className="exercise-media-placeholder">
+                                        <FontAwesomeIcon icon={faFire} size="2x" />
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })() : (() => {
+                                const slides = getSlides(exercise, uiLanguage);
+                                const rawSlideIdx = slideIndices[exIndex] ?? 0;
+                                const slideIdx = slides.length > 0 ? rawSlideIdx % slides.length : 0;
+                                const slide = slides[slideIdx] ?? slides[0];
+                                return (
+                                  <button
+                                    type="button"
+                                    className="exercise-media-thumb"
+                                    onClick={() => openModal(exIndex)}
+                                    aria-label={`Agrandir – diapositive ${slideIdx + 1} sur ${slides.length}`}
+                                  >
+                                    {slide.type === "image" ? (
+                                      slide.url ? (
+                                        <img src={slide.url} alt={slide.label} className="exercise-media-img" />
+                                      ) : (
+                                        <div className="exercise-media-placeholder">
+                                          <FontAwesomeIcon icon={faDumbbell} size="2x" />
+                                        </div>
+                                      )
+                                    ) : (
+                                      slide.url ? (
+                                        slide.thumbnailUrl ? (
+                                          <div className="exercise-media-video-thumb">
+                                            <img src={slide.thumbnailUrl} alt={slide.label} className="exercise-media-img" />
+                                            <span className="exercise-media-play-badge">
+                                              <FontAwesomeIcon icon={faPlay} size="2x" />
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <div className="exercise-media-placeholder video">
+                                            <FontAwesomeIcon icon={faPlay} size="2x" />
+                                          </div>
+                                        )
+                                      ) : (
+                                        <div className="exercise-media-placeholder video">
                                           <FontAwesomeIcon icon={faPlay} size="2x" />
+                                          <span>Vidéo à venir</span>
+                                        </div>
+                                      )
+                                    )}
+                                    <div className="media-slide-dots">
+                                      {slides.map((_, i) => (
+                                        <span key={i} className={`media-dot${i === slideIdx ? " active" : ""}`} />
+                                      ))}
+                                    </div>
+                                  </button>
+                                );
+                              })()}
+                              <div className="exercise-item-info">
+                                <h4>{exercise.name}</h4>
+                                {exercise.tag && (
+                                  <span className="exercise-tag" style={{ color: exercise.tagColor ?? "var(--muted)" }}>
+                                    {exercise.tag}
+                                  </span>
+                                )}
+                                {isCardio && cardioTime ? (
+                                  <p className="exercise-cardio-time" data-testid={`exercise-${exIndex}-cardio-time`}>
+                                    <FontAwesomeIcon icon={faClock} size="xs" /> {cardioTime}
+                                  </p>
+                                ) : (
+                                  <p className="muted" style={{ margin: "2px 0 0", fontSize: 13 }} data-testid={`exercise-${exIndex}-series-count`}>
+                                    {exercise.series.length} série{exercise.series.length > 1 ? "s" : ""}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="exercise-item-body">
+                              {isCardio ? (
+                                effectiveDesc ? (
+                                  <p className="exercise-description-readonly">{effectiveDesc}</p>
+                                ) : null
+                              ) : (() => {
+                                const descRows = Math.max(3, Math.ceil(effectiveDesc.length / 50));
+                                return (
+                                  <textarea
+                                    className="exercise-description-input"
+                                    value={effectiveDesc}
+                                    onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
+                                    placeholder="Description de l'exercice, posture, conseils…"
+                                    rows={descRows}
+                                    aria-label="Description de l'exercice"
+                                  />
+                                );
+                              })()}
+                              <textarea
+                                className="exercise-note-input"
+                                value={exercise.note ?? ""}
+                                onChange={(e) => handleNoteChange(exIndex, e.target.value)}
+                                placeholder="Notes personnelles…"
+                                rows={2}
+                                aria-label="Note de l'exercice"
+                              />
+
+                              {!isCardio && (
+                                <>
+                                  <div className="series-grid">
+                                    {exercise.series.map((serie, setIndex) => (
+                                      <div key={setIndex} className="series-grid-row">
+                                        <span className="set-pill-num">{setIndex + 1}</span>
+                                        <span className="set-pill">
+                                          <FontAwesomeIcon icon={faRepeat} size="xs" />
+                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", -1)}>−</button>
+                                          <input
+                                            className="set-pill-input reps-input"
+                                            value={serie.reps}
+                                            onChange={(e) => handleFieldChange(exIndex, setIndex, "reps", e.target.value)}
+                                            aria-label="Répétitions"
+                                          />
+                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", 1)}>+</button>
+                                        </span>
+                                        <span className="set-pill">
+                                          <FontAwesomeIcon icon={faDumbbell} size="xs" />
+                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", -1)}>−</button>
+                                          <input
+                                            className="set-pill-input load-input"
+                                            value={serie.load}
+                                            onChange={(e) => handleFieldChange(exIndex, setIndex, "load", e.target.value)}
+                                            aria-label="Charge"
+                                          />
+                                          <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", 1)}>+</button>
                                         </span>
                                       </div>
-                                    ) : (
-                                      <div className="exercise-media-placeholder video">
-                                        <FontAwesomeIcon icon={faPlay} size="2x" />
-                                      </div>
-                                    )
-                                  ) : (
-                                    <div className="exercise-media-placeholder video">
-                                      <FontAwesomeIcon icon={faPlay} size="2x" />
-                                      <span>Vidéo à venir</span>
-                                    </div>
-                                  )
-                                )}
-                                <div className="media-slide-dots">
-                                  {slides.map((_, i) => (
-                                    <span key={i} className={`media-dot${i === slideIdx ? " active" : ""}`} />
-                                  ))}
-                                </div>
-                              </button>
-                            );
-                          })()}
-                          <div className="exercise-item-info">
-                            <h4>{exercise.name}</h4>
-                            {exercise.tag && (
-                              <span className="exercise-tag" style={{ color: exercise.tagColor ?? "var(--muted)" }}>
-                                {exercise.tag}
-                              </span>
-                            )}
-                            <p className="muted" style={{ margin: "2px 0 0", fontSize: 13 }} data-testid={`exercise-${exIndex}-series-count`}>
-                              {exercise.series.length} série{exercise.series.length > 1 ? "s" : ""}
-                            </p>
-                          </div>
-                        </div>
+                                    ))}
+                                  </div>
 
-                        <div className="exercise-item-body">
-                          {(() => {
-                            const mediaDesc = getExerciseMedia(exercise.name, uiLanguage).description ?? "";
-                            const effectiveDesc = exercise.description ?? mediaDesc;
-                            const descRows = Math.max(3, Math.ceil(effectiveDesc.length / 50));
-                            return (
-                              <textarea
-                                className="exercise-description-input"
-                                value={effectiveDesc}
-                                onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
-                                placeholder="Description de l'exercice, posture, conseils…"
-                                rows={descRows}
-                                aria-label="Description de l'exercice"
-                              />
-                            );
-                          })()}
-                          <textarea
-                            className="exercise-note-input"
-                            value={exercise.note ?? ""}
-                            onChange={(e) => handleNoteChange(exIndex, e.target.value)}
-                            placeholder="Notes personnelles…"
-                            rows={2}
-                            aria-label="Note de l'exercice"
-                          />
-
-                          <div className="series-grid">
-                            {exercise.series.map((serie, setIndex) => (
-                              <div key={setIndex} className="series-grid-row">
-                                <span className="set-pill-num">{setIndex + 1}</span>
-                                <span className="set-pill">
-                                  <FontAwesomeIcon icon={faRepeat} size="xs" />
-                                  <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", -1)}>−</button>
-                                  <input
-                                    className="set-pill-input reps-input"
-                                    value={serie.reps}
-                                    onChange={(e) => handleFieldChange(exIndex, setIndex, "reps", e.target.value)}
-                                    aria-label="Répétitions"
-                                  />
-                                  <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "reps", 1)}>+</button>
-                                </span>
-                                <span className="set-pill">
-                                  <FontAwesomeIcon icon={faDumbbell} size="xs" />
-                                  <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", -1)}>−</button>
-                                  <input
-                                    className="set-pill-input load-input"
-                                    value={serie.load}
-                                    onChange={(e) => handleFieldChange(exIndex, setIndex, "load", e.target.value)}
-                                    aria-label="Charge"
-                                  />
-                                  <button type="button" className="stepper-btn" onClick={() => handleStep(exIndex, setIndex, "load", 1)}>+</button>
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="exercise-actions">
-                            <button type="button" className="serie-action-btn serie-add" aria-label="+ Série" onClick={() => handleSeriesCountChange(exIndex, 1)}>
-                              <FontAwesomeIcon icon={faPlus} /> Ajouter une série
-                            </button>
-                            <button type="button" className="serie-action-btn serie-remove" aria-label="- Série" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1}>
-                              <FontAwesomeIcon icon={faMinus} /> Retirer une série
-                            </button>
-                          </div>
-                        </div>
-                      </article>
+                                  <div className="exercise-actions">
+                                    <button type="button" className="serie-action-btn serie-add" aria-label="+ Série" onClick={() => handleSeriesCountChange(exIndex, 1)}>
+                                      <FontAwesomeIcon icon={faPlus} /> Ajouter une série
+                                    </button>
+                                    <button type="button" className="serie-action-btn serie-remove" aria-label="- Série" onClick={() => handleSeriesCountChange(exIndex, -1)} disabled={exercise.series.length <= 1}>
+                                      <FontAwesomeIcon icon={faMinus} /> Retirer une série
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </article>
                     );
                   })}
                 </div>

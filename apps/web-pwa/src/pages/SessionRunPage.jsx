@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark, faFlagCheckered, faFire } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faRepeat, faPlay, faPause, faStop, faCheck, faForward, faChevronLeft, faChevronRight, faXmark, faFlagCheckered, faFire, faClock } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import {
   buildPlanDayUpdaterFromSession,
@@ -142,6 +142,10 @@ function isSupersetExercise(exercise) {
   return typeof exercise?.name === "string" && exercise.name.includes(" + ");
 }
 
+function isCardioExercise(exercise) {
+  return typeof exercise?.tag === "string" && exercise.tag.toLowerCase() === "cardio";
+}
+
 function getSupersetSubNames(exercise) {
   return (exercise?.name ?? "").split(/\s*\+\s*/);
 }
@@ -171,6 +175,7 @@ export function SessionRunPage() {
   const [justValidated, setJustValidated] = useState(false);
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [completionDismissed, setCompletionDismissed] = useState(false);
   const persistedRef = useRef(false);
   const headerCardRef = useRef(null);
   const stickyActivationYRef = useRef(null);
@@ -331,6 +336,7 @@ export function SessionRunPage() {
     };
   }, []);
 
+  const showCompletionModal = session?.status === "completed" && !completionDismissed;
   const currentExercise = session?.exercises?.[session.currentExerciseIndex] ?? null;
   const currentSet = currentExercise?.sets?.[session.currentSetIndex] ?? null;
   const currentMedia = useMemo(() => getExerciseMedia(currentExercise?.name, uiLanguage), [currentExercise?.name, uiLanguage]);
@@ -604,67 +610,84 @@ export function SessionRunPage() {
         <section className="card">
           <h3>Exercice actuel</h3>
 
-          <div className="session-media-top">
-            <button
-              type="button"
-              className="session-media-thumb"
-              onClick={() => setMediaModalOpen(true)}
-              aria-label={`Agrandir - diapositive ${activeSlideIndex + 1} sur ${currentSlides.length}`}
-            >
-              {activeSlide?.type === "image" ? (
-                activeSlide?.url ? (
-                  <img src={activeSlide.url} alt={activeSlide.label} className="exercise-media-img" />
-                ) : (
-                  <div className="exercise-media-placeholder">
-                    <FontAwesomeIcon icon={faDumbbell} size="2x" />
-                  </div>
-                )
-              ) : (
-                activeSlide?.url ? (
-                  activeSlide.thumbnailUrl ? (
-                    <div className="exercise-media-video-thumb">
-                      <img src={activeSlide.thumbnailUrl} alt={activeSlide.label} className="exercise-media-img" />
-                      <span className="exercise-media-play-badge">
-                        <FontAwesomeIcon icon={faPlay} size="2x" />
-                      </span>
-                    </div>
+          {isCardioExercise(currentExercise) ? (() => {
+            const cardioImgUrl = currentMedia.imageUrl ?? null;
+            return (
+              <div className="session-media-top">
+                <div className="session-media-thumb session-media-thumb--static">
+                  {cardioImgUrl ? (
+                    <img src={cardioImgUrl} alt={currentExercise?.name ?? "Cardio"} className="exercise-media-img" />
                   ) : (
-                    <div className="exercise-media-placeholder video">
-                      <FontAwesomeIcon icon={faPlay} size="2x" />
+                    <div className="exercise-media-placeholder">
+                      <FontAwesomeIcon icon={faFire} size="2x" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })() : (
+            <div className="session-media-top">
+              <button
+                type="button"
+                className="session-media-thumb"
+                onClick={() => setMediaModalOpen(true)}
+                aria-label={`Agrandir - diapositive ${activeSlideIndex + 1} sur ${currentSlides.length}`}
+              >
+                {activeSlide?.type === "image" ? (
+                  activeSlide?.url ? (
+                    <img src={activeSlide.url} alt={activeSlide.label} className="exercise-media-img" />
+                  ) : (
+                    <div className="exercise-media-placeholder">
+                      <FontAwesomeIcon icon={faDumbbell} size="2x" />
                     </div>
                   )
                 ) : (
-                  <div className="exercise-media-placeholder video">
-                    <FontAwesomeIcon icon={faPlay} size="2x" />
-                    <span>Vidéo à venir</span>
-                  </div>
-                )
-              )}
-            </button>
-            <div className="session-media-controls">
-              {currentSlides.length > 1 && (
-                <>
-                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(-1)} aria-label="Diapositive précédente">
-                    <FontAwesomeIcon icon={faChevronLeft} />
-                  </button>
-                  <div className="session-media-dots">
-                    {currentSlides.map((_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
-                        aria-label={`Diapositive ${i + 1}`}
-                        onClick={() => setCurrentSlideIndex(i)}
-                      />
-                    ))}
-                  </div>
-                  <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(1)} aria-label="Diapositive suivante">
-                    <FontAwesomeIcon icon={faChevronRight} />
-                  </button>
-                </>
-              )}
+                  activeSlide?.url ? (
+                    activeSlide.thumbnailUrl ? (
+                      <div className="exercise-media-video-thumb">
+                        <img src={activeSlide.thumbnailUrl} alt={activeSlide.label} className="exercise-media-img" />
+                        <span className="exercise-media-play-badge">
+                          <FontAwesomeIcon icon={faPlay} size="2x" />
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="exercise-media-placeholder video">
+                        <FontAwesomeIcon icon={faPlay} size="2x" />
+                      </div>
+                    )
+                  ) : (
+                    <div className="exercise-media-placeholder video">
+                      <FontAwesomeIcon icon={faPlay} size="2x" />
+                      <span>Vidéo à venir</span>
+                    </div>
+                  )
+                )}
+              </button>
+              <div className="session-media-controls">
+                {currentSlides.length > 1 && (
+                  <>
+                    <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(-1)} aria-label="Diapositive précédente">
+                      <FontAwesomeIcon icon={faChevronLeft} />
+                    </button>
+                    <div className="session-media-dots">
+                      {currentSlides.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={`media-dot${i === activeSlideIndex ? " active" : ""}`}
+                          aria-label={`Diapositive ${i + 1}`}
+                          onClick={() => setCurrentSlideIndex(i)}
+                        />
+                      ))}
+                    </div>
+                    <button type="button" className="ghost-btn session-media-nav-btn" onClick={() => cycleSlide(1)} aria-label="Diapositive suivante">
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <p className="title-main">{currentExercise?.name ?? "-"}</p>
           {currentExercise?.phase === "main" && currentExercise?.tag && (
@@ -719,12 +742,16 @@ export function SessionRunPage() {
 
               if (isActive) {
                 const isWarmup = currentExercise?.phase === "warmup";
+                const isCardio = isCardioExercise(currentExercise);
+                const cardioTime = isCardio ? (set?.targetReps ?? set?.actualReps ?? null) : null;
                 return (
-                  <article key={set.id ?? `set-${idx + 1}`} className="set-block set-block--active">
-                    <div className="set-block-head">
-                      <h4 className="set-block-title">{isWarmup ? "Consigne" : "Série en cours"}</h4>
-                      {!isWarmup && <span className="set-block-meta">Série {idx + 1}/{currentExercise?.sets.length ?? 0}</span>}
-                    </div>
+                  <article key={set.id ?? `set-${idx + 1}`} className={`set-block set-block--active${isCardio ? " set-block--cardio" : ""}`}>
+                    {!isCardio && (
+                      <div className="set-block-head">
+                        <h4 className="set-block-title">{isWarmup ? "Consigne" : "Série en cours"}</h4>
+                        {!isWarmup && <span className="set-block-meta">Série {idx + 1}/{currentExercise?.sets.length ?? 0}</span>}
+                      </div>
+                    )}
 
                     {isWarmup ? (
                       <>
@@ -747,7 +774,26 @@ export function SessionRunPage() {
                     ) : (
                       <>
                         {!session.rest.active && (
-                          isSupersetExercise(currentExercise) ? (() => {
+                          isCardioExercise(currentExercise) ? (
+                            <>
+                              {cardioTime && cardioTime !== "-" && (
+                                <div className="cardio-time-display">
+                                  <FontAwesomeIcon icon={faClock} />
+                                  <span>{cardioTime}</span>
+                                </div>
+                              )}
+                              <button
+                                className={`set-validate-btn${justValidated ? " validate-flash" : ""}`}
+                                type="button"
+                                aria-label="Terminer l'exercice"
+                                onClick={onValidateSet}
+                                disabled={session.status !== "running"}
+                              >
+                                <span>Terminer l'exercice</span>
+                                <FontAwesomeIcon icon={faCheck} />
+                              </button>
+                            </>
+                          ) : isSupersetExercise(currentExercise) ? (() => {
                             const subNames = getSupersetSubNames(currentExercise);
                             const repsParts = parseSupersetSubParts(
                               currentSet?.actualReps ?? currentSet?.targetReps ?? "",
@@ -929,7 +975,7 @@ export function SessionRunPage() {
                       <h4 className="set-block-title">{isWarmup ? "Consigne" : `Série ${idx + 1}`}</h4>
                       <span className="set-block-meta validated">Validée</span>
                     </div>
-                    {!isWarmup && (
+                    {!isWarmup && !isCardioExercise(currentExercise) && (
                       isSupersetExercise(currentExercise) ? (() => {
                         const subNames = getSupersetSubNames(currentExercise);
                         const repsParts = parseSupersetSubParts(set.actualReps ?? set.targetReps ?? "", " + ", subNames.length);
@@ -974,7 +1020,7 @@ export function SessionRunPage() {
                           <p className="warmup-consigne-text">{currentExercise.description}</p>
                         </div>
                       ) : null
-                    ) : (
+                    ) : isCardioExercise(currentExercise) ? null : (
                       isSupersetExercise(currentExercise) ? (() => {
                         const subNames = getSupersetSubNames(currentExercise);
                         const repsParts = parseSupersetSubParts(set.targetReps ?? "", " + ", subNames.length);
@@ -1035,6 +1081,29 @@ export function SessionRunPage() {
             })}
           </section>
         </section>
+      ) : null}
+
+      {showCompletionModal ? (
+        <div className="completion-modal-overlay" role="dialog" aria-modal="true" aria-label="Séance terminée">
+          <div className="completion-modal-content">
+            <div className="completion-modal-icon" aria-hidden="true">
+              <FontAwesomeIcon icon={faFlagCheckered} size="3x" />
+            </div>
+            <h2 className="completion-modal-title">Séance terminée&nbsp;!</h2>
+            <p className="completion-modal-subtitle">Bravo, vous avez terminé votre entraînement.</p>
+            <div className="completion-modal-stat">
+              <span className="completion-modal-stat-label">Durée totale</span>
+              <span className="completion-modal-stat-value">{elapsedLabel}</span>
+            </div>
+            <button
+              className="primary-btn completion-modal-btn"
+              type="button"
+              onClick={() => { setCompletionDismissed(true); navigate("/"); }}
+            >
+              Retour à l'accueil
+            </button>
+          </div>
+        </div>
       ) : null}
 
       {mediaModalOpen && activeSlide ? (

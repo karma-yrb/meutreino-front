@@ -751,6 +751,66 @@ button {
   box-shadow: 0 8px 20px rgba(0 0 0 / 0.18);
 }
 
+.set-block--cardio {
+  padding-top: 16px;
+}
+
+/* ── Cardio time display (non-editable) ─────────────── */
+.cardio-time-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 8px 0 14px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--brand);
+}
+
+.cardio-time-display svg {
+  font-size: 22px;
+}
+
+/* ── Cardio time badge in exercise info ─────────────── */
+.exercise-cardio-time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+/* ── Read-only description for cardio exercises ─────── */
+.exercise-description-readonly {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  border-left: 3px solid color-mix(in srgb, var(--brand) 50%, transparent);
+}
+
+/* ── Static media thumb (no button, no pointer) ─────── */
+.exercise-media-thumb--static {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.session-media-thumb--static {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  max-height: 200px;
+}
+
 .set-block--inactive {
   opacity: 0.82;
 }
@@ -1282,6 +1342,88 @@ button {
 
 .media-dot.active {
   background: var(--brand);
+}
+
+/* ── Completion Modal (séance terminée) ─────────────── */
+.completion-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.completion-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.completion-modal-icon {
+  color: var(--primary, #e63946);
+  background: rgba(230 57 70 / 0.12);
+  border-radius: 50%;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completion-modal-title {
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.completion-modal-subtitle {
+  color: rgba(255 255 255 / 0.7);
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.completion-modal-stat {
+  background: rgba(255 255 255 / 0.08);
+  border-radius: 14px;
+  padding: 16px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.completion-modal-stat-label {
+  color: rgba(255 255 255 / 0.55);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.completion-modal-stat-value {
+  color: #fff;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.completion-modal-btn {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 17px;
+  padding: 16px 24px;
 }
 
 /* ── Media Modal (plein écran) ──────────────────────── */

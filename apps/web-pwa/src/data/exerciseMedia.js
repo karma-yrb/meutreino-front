@@ -257,7 +257,12 @@ const EXERCISE_MEDIA = {
   },  "cardio post-entraînement": {
     imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
     videoUrl: null,
-    description: "HIIT post-entraînement. Commencez par 3 à 4 minutes à basse intensité pour préparer le corps. Enchaînez 21 minutes de HIIT : 2 min à intensité modérée/haute (essoufflement marqué, difficile de parler) + 1 min à basse intensité pour récupérer. Réalisable sur tapis, vélo, elliptique, escalier ou en extérieur.",
+    description: "HIIT post-entraînement des membres supérieurs. Durée totale du HIIT : 21 min. 2 min à intensité modérée/haute + 1 min à basse intensité. Réalisable sur tapis, vélo, escalier, elliptique ou en extérieur. Comment faire : commencez à basse intensité et maintenez un rythme lent pendant 3 à 4 minutes pour échauffer le corps avant d'enchaîner le HIIT. Pendant les 2 minutes à intensité modérée/haute, augmentez progressivement l'effort de façon à être très essoufflé en fin de bloc — sollicitez pleinement votre système cardiovasculaire. Pendant la minute à basse intensité, l'effort doit rester facile pour vous permettre de récupérer votre souffle avant le prochain intervalle.",
+  },
+  "aérobio post-entraînement": {
+    imageUrl: "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80",
+    videoUrl: null,
+    description: "HIIT post-entraînement des membres supérieurs. Durée totale du HIIT : 21 min. 2 min à intensité modérée/haute + 1 min à basse intensité. Réalisable sur tapis, vélo, escalier, elliptique ou en extérieur. Comment faire : commencez à basse intensité et maintenez un rythme lent pendant 3 à 4 minutes pour échauffer le corps avant d'enchaîner le HIIT. Pendant les 2 minutes à intensité modérée/haute, augmentez progressivement l'effort de façon à être très essoufflé en fin de bloc — sollicitez pleinement votre système cardiovasculaire. Pendant la minute à basse intensité, l'effort doit rester facile pour vous permettre de récupérer votre souffle avant le prochain intervalle.",
   },
   // ---------- Alias legacy – compatibilité DB existante (anciens noms avant renommage) ----------
   // Membres inférieurs
