@@ -447,14 +447,21 @@ export function DayPage() {
                         </div>
 
                         <div className="exercise-item-body">
-                          <textarea
-                            className="exercise-description-input"
-                            value={exercise.description ?? ""}
-                            onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
-                            placeholder={getExerciseMedia(exercise.name, uiLanguage).description ?? "Description de l'exercice, posture, conseils…"}
-                            rows={3}
-                            aria-label="Description de l'exercice"
-                          />
+                          {(() => {
+                            const mediaDesc = getExerciseMedia(exercise.name, uiLanguage).description ?? "";
+                            const effectiveDesc = exercise.description ?? mediaDesc;
+                            const descRows = Math.max(3, Math.ceil(effectiveDesc.length / 50));
+                            return (
+                              <textarea
+                                className="exercise-description-input"
+                                value={effectiveDesc}
+                                onChange={(e) => handleDescriptionChange(exIndex, e.target.value)}
+                                placeholder="Description de l'exercice, posture, conseils…"
+                                rows={descRows}
+                                aria-label="Description de l'exercice"
+                              />
+                            );
+                          })()}
                           <textarea
                             className="exercise-note-input"
                             value={exercise.note ?? ""}
