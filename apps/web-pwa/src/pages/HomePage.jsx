@@ -103,30 +103,33 @@ export function HomePage() {
       <section className="card">
         {todayPlan ? (
           <>
-            <div className="home-day-overview">
-              <div className="home-day-overview-text">
-                <h3>Séance du jour</h3>
-                <p className="title-main">{todayPlan.fullLabel}</p>
-                <p>{todayPlan.rest ? "Jour de repos" : todayPlan.title}</p>
+            <Link to="/semaine" className="ghost-btn with-icon home-week-btn">
+              <FontAwesomeIcon icon={faCalendarWeek} />
+              <span>Voir la semaine</span>
+            </Link>
+            <div className="home-day-card">
+              <div className="home-day-info">
+                <p className="home-day-day">{todayPlan.fullLabel}</p>
+                <p className="home-day-meta">
+                  <span className="home-day-label">Séance du jour</span>
+                  {!todayPlan.rest && <>{" · "}<span className="home-day-subtitle">{todayPlan.title}</span></>}
+                  {todayPlan.rest && <>{" · "}<span className="home-day-subtitle">Jour de repos</span></>}
+                </p>
               </div>
-              <Link to="/semaine" className="ghost-btn with-icon home-week-btn">
-                <FontAwesomeIcon icon={faCalendarWeek} />
-                <span>Voir la semaine</span>
-              </Link>
-            </div>
-            {!todayPlan.rest && (
-              <div className="btn-row">
-                <Link to={`/jour/${todayPlan.id}`} className="primary-btn with-icon">
-                  <FontAwesomeIcon icon={faEye} />
-                  <span>Visualiser</span>
-                </Link>
-                {!todayPlan.cardioOnly ? (
-                  <Link to={`/session/${todayPlan.id}`} className="ghost-btn">
-                    Lancer la séance
+              {!todayPlan.rest && (
+                <div className="btn-row">
+                  <Link to={`/jour/${todayPlan.id}`} className="primary-btn with-icon">
+                    <FontAwesomeIcon icon={faEye} />
+                    <span>Visualiser</span>
                   </Link>
-                ) : null}
-              </div>
-            )}
+                  {!todayPlan.cardioOnly ? (
+                    <Link to={`/session/${todayPlan.id}`} className="ghost-btn">
+                      Lancer la séance
+                    </Link>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <>

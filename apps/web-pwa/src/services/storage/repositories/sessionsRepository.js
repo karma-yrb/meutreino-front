@@ -17,6 +17,20 @@ export async function saveSessionRun(sessionRun) {
  * that was started less than 2 hours ago.
  * Returns null when no valid in-progress session exists.
  */
+export async function getLastCompletedSessionForDay(userId, dayId) {
+  const candidates = await db.sessions
+    .where("userId")
+    .equals(userId)
+    .filter((s) => s.dayId === dayId)
+    .toArray();
+
+  const completed = candidates
+    .filter((s) => s.status === "completed" || s.status === "stopped")
+    .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+
+  return completed[0] ?? null;
+}
+
 export async function getActiveSessionForDay(userId, dayId, nowMs = Date.now()) {
   const candidates = await db.sessions
     .where("[userId+dayId]")

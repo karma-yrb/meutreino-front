@@ -67,6 +67,7 @@ function getExercisePreviewImage(exercise, language) {
 }
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
+import { getLastCompletedSessionForDay } from "../services/storage/repositories/sessionsRepository";
 import { getExerciseMedia } from "../data/exerciseMedia";
 
 const WEEK_DAYS = [
@@ -85,7 +86,8 @@ export function DayPage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const uiLanguage = i18n.resolvedLanguage || i18n.language || "fr";
-  const [day, setDay] = useState(null);
+  const [day, setDay] = useState(undefined); // undefined = chargement, null = introuvable
+  const [lastSession, setLastSession] = useState(undefined);
   const [openSections, setOpenSections] = useState({ warmup: false, exercises: true });
   const [slideIndices, setSlideIndices] = useState({});
   const [mediaModal, setMediaModal] = useState(null);
@@ -164,8 +166,18 @@ export function DayPage() {
   useEffect(() => {
     async function load() {
       if (!currentUser || !dayId) return;
-      const response = await getDayPlanForUser(currentUser.id, dayId);
-      setDay(response);
+      try {
+        const response = await getDayPlanForUser(currentUser.id, dayId);
+        setDay(response ?? null);
+      } catch {
+        setDay(null);
+      }
+      try {
+        const last = await getLastCompletedSessionForDay(currentUser.id, dayId);
+        setLastSession(last ?? null);
+      } catch {
+        setLastSession(null);
+      }
     }
     load();
   }, [currentUser, dayId]);
@@ -227,7 +239,11 @@ export function DayPage() {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
-  if (!day) {
+  if (day === undefined) {
+    return <div className="page">Chargement...</div>;
+  }
+
+  if (day === null) {
     return <div className="page">Jour introuvable.</div>;
   }
 
@@ -283,15 +299,12 @@ export function DayPage() {
             <div className="day-meta-divider" />
 
             <div className="day-meta-item">
-              <span className="day-meta-label">Catégorie</span>
-              <strong className="day-meta-value">{day.tag ?? "Sans Catégorie"}</strong>
-            </div>
-
-            <div className="day-meta-divider" />
-
-            <div className="day-meta-item">
               <span className="day-meta-label">Dernière exécution</span>
-              <strong className="day-meta-value">Pas de données</strong>
+              <strong className="day-meta-value">
+                {lastSession
+                  ? new Date(lastSession.startedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+                  : "Pas de données"}
+              </strong>
             </div>
           </div>
         </div>
