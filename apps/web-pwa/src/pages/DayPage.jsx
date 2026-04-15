@@ -69,6 +69,7 @@ import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
 import { getLastCompletedSessionForDay } from "../services/storage/repositories/sessionsRepository";
 import { getExerciseMedia } from "../data/exerciseMedia";
+import { estimateSessionCalories, estimateExerciseCalories } from "../data/calorieEstimation";
 
 const WEEK_DAYS = [
   { short: "L", id: "lundi" },
@@ -280,6 +281,10 @@ export function DayPage() {
   const totalSeries = hasExercises
     ? day.main.reduce((acc, ex) => acc + (ex.series?.length ?? 0), 0)
     : 0;
+  const userWeight = currentUser?.profile?.weightKg ?? 0;
+  const sessionCalories = hasExercises && userWeight > 0
+    ? estimateSessionCalories(day.main, userWeight)
+    : 0;
 
   return (
     <div className="day-page">
@@ -322,6 +327,18 @@ export function DayPage() {
                 </div>
               ))}
             </div>
+
+            {sessionCalories > 0 && (
+              <>
+                <div className="day-meta-divider" />
+                <div className="day-meta-item">
+                  <span className="day-meta-label">Calories estimées</span>
+                  <strong className="day-meta-value calorie-value">
+                    <FontAwesomeIcon icon={faFire} size="xs" /> {sessionCalories} kcal
+                  </strong>
+                </div>
+              </>
+            )}
 
             <div className="day-meta-divider" />
 
@@ -504,6 +521,11 @@ export function DayPage() {
                                 ) : (
                                   <p className="muted" style={{ margin: "2px 0 0", fontSize: 13 }} data-testid={`exercise-${exIndex}-series-count`}>
                                     {exercise.series.length} série{exercise.series.length > 1 ? "s" : ""}
+                                  </p>
+                                )}
+                                {userWeight > 0 && (
+                                  <p className="exercise-calorie-badge">
+                                    <FontAwesomeIcon icon={faFire} size="xs" /> ~{estimateExerciseCalories(exercise.name, exercise.series, userWeight)} kcal
                                   </p>
                                 )}
                               </div>

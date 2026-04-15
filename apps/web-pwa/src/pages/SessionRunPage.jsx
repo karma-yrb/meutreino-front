@@ -20,6 +20,7 @@ import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser, getDayPlanForUser, updateUserPlanDay } from "../services/storage/repositories/plansRepository";
 import { getActiveSessionForDay, saveSessionRun } from "../services/storage/repositories/sessionsRepository";
 import { getExerciseMedia } from "../data/exerciseMedia";
+import { estimateSessionCaloriesFromElapsed, estimateExerciseCalories } from "../data/calorieEstimation";
 
 function formatDuration(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -393,6 +394,12 @@ export function SessionRunPage() {
   );
 
   const elapsedLabel = formatDuration(session ? getElapsedMs(session, nowMs) : 0);
+  const userWeight = currentUser?.profile?.weightKg ?? 0;
+  const sessionCalories = useMemo(() => {
+    if (!session || userWeight <= 0) return 0;
+    const elapsed = getElapsedMs(session, nowMs);
+    return estimateSessionCaloriesFromElapsed(session.exercises, userWeight, elapsed);
+  }, [session, userWeight, nowMs]);
   const progressLabel = useMemo(() => {
     if (!session) return "0/0";
     return `${session.completedExercisesCount}/${session.exercises.length}`;
@@ -591,6 +598,11 @@ export function SessionRunPage() {
           <div className="session-mini-block">
             <strong>{day.cardioOnly ? "Temps écoulé" : "Temps global"}</strong>
             <p>{elapsedLabel}</p>
+            {sessionCalories > 0 && (
+              <span className="session-calorie-badge">
+                <FontAwesomeIcon icon={faFire} size="xs" /> {sessionCalories} kcal
+              </span>
+            )}
             <span className="session-compact-day">{day.fullLabel}</span>
           </div>
           {!day.cardioOnly && (
@@ -1291,6 +1303,11 @@ export function SessionRunPage() {
                             ? <span>{exercise.description ?? ""}</span>
                             : <span>{exercise.sets?.length ?? 0} séries de {reps} répétitions</span>
                           }
+                          {userWeight > 0 && exercise.phase !== "warmup" && (
+                            <span className="exercise-calorie-badge exercise-calorie-badge--inline">
+                              <FontAwesomeIcon icon={faFire} size="xs" /> ~{estimateExerciseCalories(exercise.name, exercise.sets, userWeight)} kcal
+                            </span>
+                          )}
                         </p>
                       </div>
                     </button>

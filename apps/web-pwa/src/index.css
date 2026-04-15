@@ -3130,3 +3130,33 @@ button {
   opacity: 0.6;
   padding: 24px 0;
 }
+
+/* ── Calorie badges ─────────────────────────────────── */
+.calorie-value {
+  color: #e86166;
+}
+
+.exercise-calorie-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e86166;
+  margin: 2px 0 0;
+  opacity: 0.85;
+}
+
+.exercise-calorie-badge--inline {
+  margin-left: 8px;
+}
+
+.session-calorie-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e86166;
+  margin-top: 2px;
+}
