@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/karma-yrb/meutreino-front/compare/v1.9.0...v1.11.0) (2026-04-15)
+
+
+### Features
+
+* **progress:** add progress page with stats cards, session history and column bottom-nav layout ([31eef4c](https://github.com/karma-yrb/meutreino-front/commit/31eef4cc608ca581e94d3653a163ba36fc237c5c))
+
 ## [1.10.0](https://github.com/karma-yrb/meutreino-front/compare/v1.9.0...v1.10.0) (2026-04-15)
 
 ## [1.9.0](https://github.com/karma-yrb/meutreino-front/compare/v1.8.6...v1.9.0) (2026-04-15)
