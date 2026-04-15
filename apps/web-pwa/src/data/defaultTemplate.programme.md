@@ -79,7 +79,7 @@
 | Exercice | Détail |
 |---|---|
 | Étirement pectoraux bilatéral | 1 série |
-| Mobilité colonne thoracique | 1 série |
+| Mobilité colonne thoracique au sol | 1 série |
 | Étirement unilatéral latéral tronc | 1 série |
 | Grand étirement du monde | 30 s de chaque côté |
 

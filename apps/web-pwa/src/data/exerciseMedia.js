@@ -27,7 +27,7 @@ const EXERCISE_MEDIA = {
   },
   "squat barre libre": {
     imageUrl: `${EK}/barbell-squat-1.png`,
-    videoUrl: "https://www.youtube.com/watch?v=jMca5TnlOv8",
+    videoUrl: "https://www.youtube.com/watch?v=4nZj-5fuwXY",
     description: "Debout, barre posée sur les trapèzes (position haute) ou les deltoïdes postérieurs (position basse), pieds à largeur d'épaules, pointes légèrement tournées vers l'extérieur. Descendez en poussant les genoux dans l'axe des pieds et en gardant le buste droit et le regard vers l'avant, jusqu'à ce que les cuisses soient parallèles au sol. Remontez en poussant dans le sol, hanches et épaules à la même vitesse.",
   },
   "soulevé de terre jambes tendues": {
@@ -180,7 +180,7 @@ const EXERCISE_MEDIA = {
   },
   "mobilite colonne thoracique": {
     imageUrl: null,
-    videoUrl: "https://www.youtube.com/watch?v=hhvHpsxKjXw",
+    videoUrl: "https://www.youtube.com/watch?v=CzKg4Kf3E0s",
     description: "Mobilité thoracique au sol pour améliorer la posture et la rotation."
   },
   "etirement unilateral lateral tronc": {
@@ -215,7 +215,7 @@ const EXERCISE_MEDIA = {
   },
   "mobilité colonne thoracique au sol": {
     imageUrl: null,
-    videoUrl: "https://www.youtube.com/watch?v=hhvHpsxKjXw",
+    videoUrl: "https://www.youtube.com/watch?v=CzKg4Kf3E0s",
     description: "Allongé sur le côté, genoux fléchis à 90° et bras tendus devant soi. Faites pivoter le bras supérieur vers l'arrière en ouvrant la poitrine, en cherchant à poser l'épaule au sol. Maintenez les genoux groupés pour isoler la rotation à la colonne thoracique.",
   },
   // Alias PT-BR fréquents des captures/imports
@@ -227,7 +227,7 @@ const EXERCISE_MEDIA = {
   "alongamento do peitoral bilateral": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=M850sCj9LHQ" },
   "alongamento do peitoral unilateral": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=86GYarExzgc" },
   "alongamento unilateral da lateral do tronco": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=Dt1LDEkYXDo" },
-  "mobilidade da coluna toracica no chao": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=hhvHpsxKjXw" },
+  "mobilidade da coluna toracica no chao": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=CzKg4Kf3E0s" },
   "alongamento do quadriceps unilateral": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=zi5__zBRzYc" },
   "alongamento dos rotadores internos com bastante": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-YFWrYkJVBs" },
   "maior alongamento do mundo": { imageUrl: null, videoUrl: "https://www.youtube.com/watch?v=-CiWQ2IvY34" },

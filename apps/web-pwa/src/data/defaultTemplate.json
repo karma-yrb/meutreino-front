@@ -69,9 +69,9 @@
           "tag": "Pyramide",
           "tagColor": "#8e44ad",
           "series": [
-            { "reps": "20", "load": "Charge légère", "rest": "60 s", "tempo": "3020" },
-            { "reps": "15", "load": "Charge moyenne", "rest": "60 s", "tempo": "3020" },
-            { "reps": "12", "load": "Charge lourde", "rest": "60 s", "tempo": "3020" }
+            { "reps": "12", "load": "20", "rest": "60 s", "tempo": "3020" },
+            { "reps": "10", "load": "40", "rest": "60 s", "tempo": "3020" },
+            { "reps": "8", "load": "60", "rest": "60 s", "tempo": "3020" }
           ],
           "note": null
         },
@@ -97,7 +97,7 @@
       "title": "Dorsaux + biceps",
       "warmup": [
         { "name": "Étirement pectoraux bilatéral", "detail": "1 série" },
-        { "name": "Mobilité colonne thoracique", "detail": "1 série" },
+        { "name": "Mobilité colonne thoracique au sol", "detail": "1 série" },
         { "name": "Étirement unilatéral latéral tronc", "detail": "1 série" },
         { "name": "Grand étirement du monde", "detail": "30 s de chaque côté" }
       ],
