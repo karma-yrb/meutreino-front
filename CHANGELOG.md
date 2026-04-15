@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/karma-yrb/meutreino-front/compare/v1.8.6...v1.9.0) (2026-04-15)
+
+
+### Features
+
+* **data:** rename exercises to French, fix media & superset grid ([15f822e](https://github.com/karma-yrb/meutreino-front/commit/15f822e48947fe12420d172dbb100c7c727f0a76))
+
 ### [1.8.6](https://github.com/karma-yrb/meutreino-front/compare/v1.8.5...v1.8.6) (2026-04-15)
 
 ### [1.8.5](https://github.com/karma-yrb/meutreino-front/compare/v1.8.4...v1.8.5) (2026-04-15)
