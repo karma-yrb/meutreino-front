@@ -171,4 +171,35 @@ describe("Progress page integration", () => {
       expect(screen.getByLabelText("Exercice")).toBeInTheDocument();
     });
   });
+
+  test("weight trend section shows when weight history exists", async () => {
+    await loginAsUser();
+    await db.weightHistory.bulkAdd([
+      { userId: "user-1", weightKg: 80, recordedAt: "2026-04-01T08:00:00Z" },
+      { userId: "user-1", weightKg: 79, recordedAt: "2026-04-05T08:00:00Z" },
+      { userId: "user-1", weightKg: 78, recordedAt: "2026-04-10T08:00:00Z" },
+    ]);
+
+    await navigateTo("/progres");
+    await screen.findByRole("heading", { name: /Progrès/i });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("weight-trend")).toBeInTheDocument();
+      expect(screen.getByText("Suivi du poids")).toBeInTheDocument();
+      expect(screen.getByText("78 kg")).toBeInTheDocument();
+      expect(screen.getByText("-2 kg")).toBeInTheDocument();
+    });
+  });
+
+  test("weight trend is hidden when no weight history", async () => {
+    await loginAsUser();
+    await navigateTo("/progres");
+    await screen.findByRole("heading", { name: /Progrès/i });
+
+    await waitFor(() => {
+      expect(screen.getByText("Séances totales")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTestId("weight-trend")).not.toBeInTheDocument();
+  });
 });

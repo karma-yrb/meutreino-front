@@ -9,6 +9,7 @@ import {
   faBolt,
   faMedal,
   faCalendarDays,
+  faWeight,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   LineChart,
@@ -21,6 +22,7 @@ import {
 } from "recharts";
 import { useAuth } from "../features/auth/useAuth";
 import { listSessionsForUser } from "../services/storage/repositories/sessionsRepository";
+import { listWeightHistory } from "../services/storage/repositories/weightRepository";
 import {
   computeStats,
   computeTotalCalories,
@@ -176,15 +178,63 @@ function ProgressionChart({ sessions }) {
   );
 }
 
+function WeightTrend({ weightData }) {
+  if (weightData.length === 0) return null;
+
+  const chartData = weightData.map((r) => ({
+    date: new Date(r.recordedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
+    poids: r.weightKg,
+  }));
+
+  const latest = weightData[weightData.length - 1].weightKg;
+  const first = weightData[0].weightKg;
+  const diff = Math.round((latest - first) * 10) / 10;
+  const diffLabel = diff > 0 ? `+${diff}` : `${diff}`;
+
+  return (
+    <section className="progress-section" data-testid="weight-trend">
+      <h2><FontAwesomeIcon icon={faWeight} /> Suivi du poids</h2>
+      <div className="weight-summary">
+        <span className="weight-current">{latest} kg</span>
+        {weightData.length > 1 && (
+          <span className={`weight-diff ${diff > 0 ? "weight-up" : diff < 0 ? "weight-down" : ""}`}>
+            {diffLabel} kg
+          </span>
+        )}
+      </div>
+      {chartData.length >= 2 ? (
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
+              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+              <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fontSize: 11 }} />
+              <Tooltip />
+              <Line type="monotone" dataKey="poids" name="Poids (kg)" stroke="var(--brand-2)" strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <p className="empty-state">Enregistrez votre poids régulièrement depuis le profil pour voir la courbe.</p>
+      )}
+    </section>
+  );
+}
+
 export function ProgressPage() {
   const { currentUser } = useAuth();
   const [sessions, setSessions] = useState([]);
+  const [weightData, setWeightData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!currentUser?.id) return;
-    listSessionsForUser(currentUser.id).then((data) => {
-      setSessions(data);
+    Promise.all([
+      listSessionsForUser(currentUser.id),
+      listWeightHistory(currentUser.id),
+    ]).then(([sessionData, weightRecords]) => {
+      setSessions(sessionData);
+      setWeightData(weightRecords);
       setLoading(false);
     });
   }, [currentUser?.id]);
@@ -223,6 +273,7 @@ export function ProgressPage() {
       </div>
 
       <ProgressionChart sessions={sessions} />
+      <WeightTrend weightData={weightData} />
       <PersonalRecords records={records} />
       <WeeklyCalories weeks={weeks} />
       <ActivityHeatmap heatmap={heatmap} />

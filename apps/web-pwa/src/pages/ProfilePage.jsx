@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "../features/auth/useAuth";
 import { updateUserIdentity, updateUserProfile } from "../services/storage/repositories/usersRepository";
+import { addWeightRecord } from "../services/storage/repositories/weightRepository";
 
 const GENDER_OPTIONS = [
   { value: "femme", label: "Femme" },
@@ -253,6 +254,10 @@ export function ProfilePage() {
       }),
       updateUserProfile(currentUser.id, cleanedProfile),
     ]);
+
+    if (cleanedProfile.weightKg > 0) {
+      await addWeightRecord(currentUser.id, cleanedProfile.weightKg);
+    }
 
     await refreshCurrentUser?.();
     setStatus("Profil sauvegardé");
