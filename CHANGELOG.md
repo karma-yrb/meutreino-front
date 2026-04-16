@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.6](https://github.com/karma-yrb/meutreino-front/compare/v1.14.5...v1.14.6) (2026-04-16)
+
 ### [1.14.5](https://github.com/karma-yrb/meutreino-front/compare/v1.14.2...v1.14.5) (2026-04-15)
 
 ### [1.14.4](https://github.com/karma-yrb/meutreino-front/compare/v1.14.2...v1.14.4) (2026-04-15)

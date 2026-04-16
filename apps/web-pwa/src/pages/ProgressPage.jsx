@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChartLine,
@@ -6,32 +6,19 @@ import {
   faTrophy,
   faDumbbell,
   faCalendarCheck,
+  faBolt,
+  faMedal,
+  faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
 import { useAuth } from "../features/auth/useAuth";
 import { listSessionsForUser } from "../services/storage/repositories/sessionsRepository";
-
-function computeStats(sessions) {
-  const completed = sessions.filter((s) => s.status === "completed");
-  const total = sessions.length;
-  const completedCount = completed.length;
-  const completionRate = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-
-  let currentStreak = 0;
-  const uniqueDays = [...new Set(completed.map((s) => s.dayId))].sort().reverse();
-  for (let i = 0; i < uniqueDays.length; i++) {
-    if (i === 0 || uniqueDays[i - 1] !== uniqueDays[i]) {
-      currentStreak++;
-    }
-  }
-
-  const totalDurationMs = completed.reduce((sum, s) => {
-    if (!s.startedAt || !s.finishedAt) return sum;
-    return sum + (new Date(s.finishedAt).getTime() - new Date(s.startedAt).getTime());
-  }, 0);
-  const avgDurationMin = completedCount > 0 ? Math.round(totalDurationMs / completedCount / 60000) : 0;
-
-  return { total, completedCount, completionRate, currentStreak: Math.min(currentStreak, uniqueDays.length), avgDurationMin };
-}
+import {
+  computeStats,
+  computeTotalCalories,
+  extractPersonalRecords,
+  computeWeeklyCalories,
+  buildActivityHeatmap,
+} from "../data/progressStats";
 
 function StatCard({ icon, label, value, unit }) {
   return (
@@ -48,6 +35,91 @@ function StatCard({ icon, label, value, unit }) {
   );
 }
 
+function PersonalRecords({ records }) {
+  if (records.length === 0) return null;
+  return (
+    <section className="progress-section">
+      <h2><FontAwesomeIcon icon={faMedal} /> Records personnels</h2>
+      <ul className="records-list">
+        {records.map((r) => (
+          <li key={r.exercise} className="record-item">
+            <span className="record-exercise">{r.exercise}</span>
+            <span className="record-value">{r.load} kg × {r.reps}</span>
+            {r.date && (
+              <span className="record-date">
+                {new Date(r.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function WeeklyCalories({ weeks }) {
+  if (weeks.length === 0) return null;
+  const maxCal = Math.max(...weeks.map((w) => w.calories));
+  return (
+    <section className="progress-section">
+      <h2><FontAwesomeIcon icon={faBolt} /> Calories par semaine</h2>
+      <div className="weekly-chart">
+        {weeks.map((w) => (
+          <div key={w.week} className="weekly-bar-row">
+            <span className="weekly-label">{w.week}</span>
+            <div className="weekly-bar-track">
+              <div
+                className="weekly-bar-fill"
+                style={{ width: `${maxCal > 0 ? (w.calories / maxCal) * 100 : 0}%` }}
+              />
+            </div>
+            <span className="weekly-value">{w.calories} kcal</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ActivityHeatmap({ heatmap }) {
+  const days = Object.keys(heatmap);
+  if (days.length === 0) return null;
+
+  const today = new Date();
+  const cells = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const count = heatmap[key] || 0;
+    const level = count === 0 ? 0 : count === 1 ? 1 : count === 2 ? 2 : 3;
+    cells.push({ key, level, count });
+  }
+
+  return (
+    <section className="progress-section">
+      <h2><FontAwesomeIcon icon={faCalendarDays} /> Activité (90 jours)</h2>
+      <div className="heatmap-grid" data-testid="heatmap-grid">
+        {cells.map((c) => (
+          <div
+            key={c.key}
+            className={`heatmap-cell heatmap-level-${c.level}`}
+            title={`${c.key}: ${c.count} séance${c.count > 1 ? "s" : ""}`}
+          />
+        ))}
+      </div>
+      <div className="heatmap-legend">
+        <span>Moins</span>
+        <div className="heatmap-cell heatmap-level-0" />
+        <div className="heatmap-cell heatmap-level-1" />
+        <div className="heatmap-cell heatmap-level-2" />
+        <div className="heatmap-cell heatmap-level-3" />
+        <span>Plus</span>
+      </div>
+    </section>
+  );
+}
+
 export function ProgressPage() {
   const { currentUser } = useAuth();
   const [sessions, setSessions] = useState([]);
@@ -61,11 +133,23 @@ export function ProgressPage() {
     });
   }, [currentUser?.id]);
 
+  const weightKg = currentUser?.profile?.weightKg || 0;
+
+  const stats = useMemo(() => computeStats(sessions), [sessions]);
+  const totalCalories = useMemo(
+    () => computeTotalCalories(sessions, weightKg),
+    [sessions, weightKg],
+  );
+  const records = useMemo(() => extractPersonalRecords(sessions), [sessions]);
+  const weeks = useMemo(
+    () => computeWeeklyCalories(sessions, weightKg),
+    [sessions, weightKg],
+  );
+  const heatmap = useMemo(() => buildActivityHeatmap(sessions), [sessions]);
+
   if (loading) {
     return <div className="progress-page"><p>Chargement…</p></div>;
   }
-
-  const stats = computeStats(sessions);
 
   return (
     <div className="progress-page">
@@ -77,9 +161,14 @@ export function ProgressPage() {
         <StatCard icon={faDumbbell} label="Séances totales" value={stats.total} />
         <StatCard icon={faCalendarCheck} label="Séances terminées" value={stats.completedCount} />
         <StatCard icon={faFire} label="Taux de complétion" value={stats.completionRate} unit="%" />
-        <StatCard icon={faTrophy} label="Jours actifs" value={stats.currentStreak} />
+        <StatCard icon={faTrophy} label="Jours actifs" value={stats.activeDays} />
         <StatCard icon={faChartLine} label="Durée moyenne" value={stats.avgDurationMin} unit="min" />
+        <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" />
       </div>
+
+      <PersonalRecords records={records} />
+      <WeeklyCalories weeks={weeks} />
+      <ActivityHeatmap heatmap={heatmap} />
 
       <section className="progress-section">
         <h2>Historique des séances</h2>
