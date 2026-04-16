@@ -145,3 +145,64 @@ function getISOWeekLabel(date) {
   const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
   return `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
 }
+
+function parseKg(loadStr) {
+  if (!loadStr || loadStr === "-") return 0;
+  const match = String(loadStr).match(/^(\d+(?:[.,]\d+)?)/);
+  return match ? parseFloat(match[1].replace(",", ".")) : 0;
+}
+
+/**
+ * Build progression data for a given exercise across sessions.
+ * Returns array of { date, maxLoad, totalVolume } sorted chronologically.
+ * Volume = sum(reps × load) for all validated sets.
+ */
+export function buildExerciseProgression(sessions, exerciseName) {
+  const points = [];
+  const lowerName = exerciseName.toLowerCase();
+
+  for (const s of sessions) {
+    if (s.status !== "completed") continue;
+    const dateStr = s.startedAt || s.endedAt;
+    if (!dateStr) continue;
+
+    for (const ex of s.exercises || []) {
+      if (ex.phase !== "main") continue;
+      if (ex.name.toLowerCase() !== lowerName) continue;
+
+      let maxLoad = 0;
+      let totalVolume = 0;
+      for (const set of ex.sets || []) {
+        if (!set.validated) continue;
+        const load = parseKg(set.actualLoad || set.targetLoad);
+        const reps = parseInt(set.actualReps || set.targetReps, 10) || 0;
+        if (load > maxLoad) maxLoad = load;
+        totalVolume += load * reps;
+      }
+
+      if (maxLoad > 0 || totalVolume > 0) {
+        points.push({
+          date: new Date(dateStr).toISOString().slice(0, 10),
+          maxLoad,
+          totalVolume: Math.round(totalVolume),
+        });
+      }
+    }
+  }
+
+  return points.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Get list of unique main exercise names from sessions.
+ */
+export function getExerciseNames(sessions) {
+  const names = new Set();
+  for (const s of sessions) {
+    if (s.status !== "completed") continue;
+    for (const ex of s.exercises || []) {
+      if (ex.phase === "main" && ex.name) names.add(ex.name);
+    }
+  }
+  return [...names].sort();
+}

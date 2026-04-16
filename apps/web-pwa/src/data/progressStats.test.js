@@ -5,6 +5,8 @@ import {
   extractPersonalRecords,
   computeWeeklyCalories,
   buildActivityHeatmap,
+  buildExerciseProgression,
+  getExerciseNames,
 } from "./progressStats.js";
 
 // ── Helpers ──────────────────────────────────────────
@@ -266,5 +268,113 @@ describe("buildActivityHeatmap", () => {
       makeSession({ status: "running", startedAt: "2026-04-01T08:00:00Z" }),
     ];
     expect(buildActivityHeatmap(sessions)).toEqual({});
+  });
+});
+
+// ── buildExerciseProgression ─────────────────────────
+
+describe("buildExerciseProgression", () => {
+  test("returns empty for no sessions", () => {
+    expect(buildExerciseProgression([], "Squat barre libre")).toEqual([]);
+  });
+
+  test("extracts maxLoad and totalVolume per session date", () => {
+    const sessions = [
+      makeSession({
+        startedAt: "2026-04-01T08:00:00Z",
+        exercises: [
+          {
+            name: "Squat barre libre",
+            phase: "main",
+            status: "completed",
+            sets: [
+              { actualLoad: "40 kg", actualReps: "10", validated: true },
+              { actualLoad: "60 kg", actualReps: "8", validated: true },
+            ],
+          },
+        ],
+      }),
+      makeSession({
+        startedAt: "2026-04-03T08:00:00Z",
+        exercises: [
+          {
+            name: "Squat barre libre",
+            phase: "main",
+            status: "completed",
+            sets: [
+              { actualLoad: "65 kg", actualReps: "8", validated: true },
+            ],
+          },
+        ],
+      }),
+    ];
+    const prog = buildExerciseProgression(sessions, "Squat barre libre");
+    expect(prog).toHaveLength(2);
+    expect(prog[0].date).toBe("2026-04-01");
+    expect(prog[0].maxLoad).toBe(60);
+    expect(prog[0].totalVolume).toBe(40 * 10 + 60 * 8);
+    expect(prog[1].maxLoad).toBe(65);
+  });
+
+  test("ignores non-validated sets", () => {
+    const sessions = [
+      makeSession({
+        exercises: [
+          {
+            name: "Leg Extension",
+            phase: "main",
+            status: "completed",
+            sets: [
+              { actualLoad: "80 kg", actualReps: "12", validated: false },
+            ],
+          },
+        ],
+      }),
+    ];
+    expect(buildExerciseProgression(sessions, "Leg Extension")).toEqual([]);
+  });
+
+  test("is case insensitive", () => {
+    const sessions = [
+      makeSession({
+        exercises: [
+          {
+            name: "Squat Barre Libre",
+            phase: "main",
+            status: "completed",
+            sets: [{ actualLoad: "50 kg", actualReps: "10", validated: true }],
+          },
+        ],
+      }),
+    ];
+    const prog = buildExerciseProgression(sessions, "squat barre libre");
+    expect(prog).toHaveLength(1);
+  });
+});
+
+// ── getExerciseNames ─────────────────────────────────
+
+describe("getExerciseNames", () => {
+  test("returns empty for no sessions", () => {
+    expect(getExerciseNames([])).toEqual([]);
+  });
+
+  test("returns unique sorted exercise names from main phase only", () => {
+    const sessions = [
+      makeSession({
+        exercises: [
+          { name: "Squat barre libre", phase: "main", status: "completed", sets: [] },
+          { name: "Leg Extension", phase: "main", status: "completed", sets: [] },
+          { name: "Étirement fessier", phase: "warmup", status: "completed", sets: [] },
+        ],
+      }),
+      makeSession({
+        exercises: [
+          { name: "Squat barre libre", phase: "main", status: "completed", sets: [] },
+        ],
+      }),
+    ];
+    const names = getExerciseNames(sessions);
+    expect(names).toEqual(["Leg Extension", "Squat barre libre"]);
   });
 });

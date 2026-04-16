@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "../App";
 import { db } from "../services/storage/db";
@@ -105,10 +105,11 @@ describe("Progress page integration", () => {
       expect(screen.getByText("Records personnels")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Leg Extension")).toBeInTheDocument();
-    expect(screen.getByText(/75 kg/)).toBeInTheDocument();
-    expect(screen.getByText("Squat barre libre")).toBeInTheDocument();
-    expect(screen.getByText(/50 kg/)).toBeInTheDocument();
+    const recordsSection = screen.getByText("Records personnels").closest(".progress-section");
+    expect(within(recordsSection).getByText("Leg Extension")).toBeInTheDocument();
+    expect(within(recordsSection).getByText(/75 kg/)).toBeInTheDocument();
+    expect(within(recordsSection).getByText("Squat barre libre")).toBeInTheDocument();
+    expect(within(recordsSection).getByText(/50 kg/)).toBeInTheDocument();
   });
 
   test("shows empty state when no sessions", async () => {
@@ -138,6 +139,36 @@ describe("Progress page integration", () => {
     await waitFor(() => {
       expect(screen.getByTestId("heatmap-grid")).toBeInTheDocument();
       expect(screen.getByText("Activité (90 jours)")).toBeInTheDocument();
+    });
+  });
+
+  test("progression chart shows exercise selector with sessions data", async () => {
+    await loginAsUser();
+    await db.sessions.bulkPut([
+      makeCompletedSession("run-1", { startedAt: "2026-04-01T08:00:00Z" }),
+      makeCompletedSession("run-2", {
+        startedAt: "2026-04-03T08:00:00Z",
+        exercises: [
+          {
+            id: "ex-a",
+            name: "Squat barre libre",
+            phase: "main",
+            status: "completed",
+            sets: [
+              { id: "sa", index: 0, targetReps: "10", targetLoad: "50 kg", actualReps: "10", actualLoad: "55 kg", validated: true, validatedAt: "2026-04-03T08:15:00Z", restSeconds: 60 },
+            ],
+          },
+        ],
+      }),
+    ]);
+
+    await navigateTo("/progres");
+    await screen.findByRole("heading", { name: /Progrès/i });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("progression-chart")).toBeInTheDocument();
+      expect(screen.getByText("Progression")).toBeInTheDocument();
+      expect(screen.getByLabelText("Exercice")).toBeInTheDocument();
     });
   });
 });

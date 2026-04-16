@@ -10,6 +10,15 @@ import {
   faMedal,
   faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 import { useAuth } from "../features/auth/useAuth";
 import { listSessionsForUser } from "../services/storage/repositories/sessionsRepository";
 import {
@@ -18,6 +27,8 @@ import {
   extractPersonalRecords,
   computeWeeklyCalories,
   buildActivityHeatmap,
+  buildExerciseProgression,
+  getExerciseNames,
 } from "../data/progressStats";
 
 function StatCard({ icon, label, value, unit }) {
@@ -120,6 +131,51 @@ function ActivityHeatmap({ heatmap }) {
   );
 }
 
+function ProgressionChart({ sessions }) {
+  const exerciseNames = useMemo(() => getExerciseNames(sessions), [sessions]);
+  const [selectedExercise, setSelectedExercise] = useState("");
+
+  const currentExercise = selectedExercise || exerciseNames[0] || "";
+  const data = useMemo(
+    () => buildExerciseProgression(sessions, currentExercise),
+    [sessions, currentExercise],
+  );
+
+  if (exerciseNames.length === 0) return null;
+
+  return (
+    <section className="progress-section" data-testid="progression-chart">
+      <h2><FontAwesomeIcon icon={faChartLine} /> Progression</h2>
+      <select
+        className="progression-select"
+        value={currentExercise}
+        onChange={(e) => setSelectedExercise(e.target.value)}
+        aria-label="Exercice"
+      >
+        {exerciseNames.map((name) => (
+          <option key={name} value={name}>{name}</option>
+        ))}
+      </select>
+      {data.length < 2 ? (
+        <p className="empty-state">Pas assez de données pour afficher une courbe.</p>
+      ) : (
+        <div className="chart-wrapper">
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
+              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip />
+              <Line type="monotone" dataKey="maxLoad" name="Charge max (kg)" stroke="var(--brand)" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="totalVolume" name="Volume (kg)" stroke="var(--brand-2)" strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function ProgressPage() {
   const { currentUser } = useAuth();
   const [sessions, setSessions] = useState([]);
@@ -166,6 +222,7 @@ export function ProgressPage() {
         <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" />
       </div>
 
+      <ProgressionChart sessions={sessions} />
       <PersonalRecords records={records} />
       <WeeklyCalories weeks={weeks} />
       <ActivityHeatmap heatmap={heatmap} />
