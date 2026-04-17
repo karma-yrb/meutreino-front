@@ -1,7 +1,7 @@
 {
   "name": "meutreino-frontend",
   "private": true,
-  "version": "1.14.12",
+  "version": "1.15.0",
   "workspaces": [
     "apps/*",
     "packages/*"
