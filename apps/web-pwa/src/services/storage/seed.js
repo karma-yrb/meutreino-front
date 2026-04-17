@@ -78,13 +78,24 @@ export async function ensureSeedData() {
   const template = { ...buildDefaultTemplate(), createdAt: now, updatedAt: now };
 
   const sessionCount = await db.sessions.count();
+  const weightCount = await db.weightHistory.count();
+  const hasUserActivity = sessionCount > 0 || weightCount > 0;
 
-  if (sessionCount > 0) {
+  if (hasUserActivity) {
     // Device already has real user activity — soft seed only.
-    // Refresh system accounts (with hashed passwords) and the default template
-    // without touching sessions, weight history, or user-customised plans.
+    // Only update the password hash on existing accounts; all other fields
+    // (profile, firstName, lastName, assignedUserIds, etc.) are preserved.
+    // New system accounts from seedUsers that don't exist yet are inserted.
     await db.transaction("rw", db.users, db.templates, db.appMeta, async () => {
-      await db.users.bulkPut(users);
+      for (const seedUser of users) {
+        const existing = await db.users.get(seedUser.id);
+        if (existing) {
+          // Preserve every field — only refresh the hashed password
+          await db.users.put({ ...existing, password: seedUser.password });
+        } else {
+          await db.users.put(seedUser);
+        }
+      }
       await db.templates.put(template);
       await db.appMeta.put({ key: "seedVersion", value: SEED_VERSION });
     });

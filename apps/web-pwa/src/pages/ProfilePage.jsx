@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../features/auth/useAuth";
 import { updateUserIdentity, updateUserProfile } from "../services/storage/repositories/usersRepository";
 import { addWeightRecord } from "../services/storage/repositories/weightRepository";
@@ -209,6 +209,21 @@ export function ProfilePage() {
   });
   const [status, setStatus] = useState("");
   const [showWaistGuide, setShowWaistGuide] = useState(false);
+  const [storageStatus, setStorageStatus] = useState(null); // null | "persistent" | "best-effort"
+
+  useEffect(() => {
+    async function checkStorage() {
+      try {
+        if (navigator?.storage?.persisted) {
+          const persisted = await navigator.storage.persisted();
+          setStorageStatus(persisted ? "persistent" : "best-effort");
+        }
+      } catch {
+        // API not available
+      }
+    }
+    checkStorage();
+  }, []);
 
   const gender = normalizeGender(profile.sex);
   const weightKg = parseNumber(profile.weightKg);
@@ -448,6 +463,16 @@ export function ProfilePage() {
             Exporter mes données (JSON)
           </button>
           <p className="muted">Télécharger séances, historique poids et plan — utile comme sauvegarde manuelle.</p>
+          {storageStatus === "best-effort" ? (
+            <p className="storage-warning">
+              ⚠ Les données sont stockées en mode temporaire sur cet appareil. En cas de manque d&apos;espace, le navigateur peut les effacer. Exportez régulièrement vos données pour les conserver.
+            </p>
+          ) : null}
+          {storageStatus === "persistent" ? (
+            <p className="storage-ok">
+              ✓ Données protégées — le navigateur ne supprimera pas votre historique sans votre accord.
+            </p>
+          ) : null}
         </div>
       </section>
     </div>

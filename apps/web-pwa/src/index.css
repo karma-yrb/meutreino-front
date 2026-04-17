@@ -541,6 +541,30 @@ button {
   gap: 6px;
 }
 
+.storage-warning {
+  font-size: 12px;
+  color: #e65100;
+  background: color-mix(in srgb, #ff9800 12%, transparent);
+  border: 1px solid color-mix(in srgb, #ff9800 40%, transparent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0;
+}
+
+[data-theme="dark"] .storage-warning { color: #ffb74d; }
+
+.storage-ok {
+  font-size: 12px;
+  color: #2e7d32;
+  background: color-mix(in srgb, #4caf50 12%, transparent);
+  border: 1px solid color-mix(in srgb, #4caf50 40%, transparent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 0;
+}
+
+[data-theme="dark"] .storage-ok { color: #81c784; }
+
 .ghost-btn {
   background: var(--ghost-bg);
   color: var(--ghost-color);
