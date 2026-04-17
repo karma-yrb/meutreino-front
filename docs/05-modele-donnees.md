@@ -6,7 +6,7 @@
 
 - `id`
 - `email`
-- `passwordHash` (V1 local)
+- `password` — **haché PBKDF2-SHA-256** (100 000 itérations, sel = `"meutreino:" + email`), jamais stocké en clair
 - `role` (`admin` | `coach` | `user`)
 - `profile`
 - `coachId` (nullable)
@@ -17,12 +17,13 @@
 
 - `firstName`
 - `lastName`
-- `birthYear` (ou age si simplifie)
+- `birthYear`
 - `sex`
 - `weightKg`
 - `heightCm`
+- `waistCm` (optionnel)
 
-Note: champs minimaux maintenant, extensibles ensuite (objectif, niveau, contraintes sante).
+Note: champs minimaux maintenant, extensibles ensuite (objectif, niveau, contraintes santé).
 
 ## TemplatePlan
 
@@ -81,6 +82,13 @@ Preparation evolution mensuelle:
 - `validatedAt`
 - `restTimerSec`
 
+## WeightHistory
+
+- `id` (auto-incrémenté)
+- `userId`
+- `weightKg` (max 500)
+- `recordedAt`
+
 ## WeeklyProgressSnapshot
 
 - `userId`
@@ -93,3 +101,29 @@ Preparation evolution mensuelle:
 
 - L'historique session est conserve en permanence.
 - Le tableau de bord hebdo est recalcule/reset par `weekKey`.
+
+## Stockage physique (V1)
+
+Toutes les entités sont stockées dans **IndexedDB** via Dexie (`meutreino`, schema v4).
+
+| Table | Indexes |
+|---|---|
+| `users` | `id`, `email`, `role`, `coachId` |
+| `templates` | `id`, `monthLabel`, `createdByAdminId` |
+| `userPlans` | `id`, `[userId+isActive]`, `userId`, `isActive` |
+| `sessions` | `id`, `userId`, `[userId+dayId]`, `status`, `startedAt`, `dayId` |
+| `weightHistory` | `++id`, `userId`, `recordedAt` |
+| `appMeta` | `key` |
+
+### Session d'authentification
+
+Stockée dans `localStorage` sous la clé `meutreino.session` :
+```json
+{ "userId": "user-1", "expiresAt": 1234567890000 }
+```
+TTL : 7 jours. Expiry vérifiée à chaque `getCurrentUser()`.
+
+### Persistance navigateur
+
+`navigator.storage.persist()` est appelé au démarrage pour demander au navigateur de ne pas évacuer les données sous pression mémoire.
+L'indicateur de statut est visible dans la page Profil.
