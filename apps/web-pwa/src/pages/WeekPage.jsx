@@ -1,10 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarWeek, faEye, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faCalendarWeek, faCircleCheck, faEye, faHourglassHalf, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { DAY_IDS } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
 import { getActivePlanForUser } from "../services/storage/repositories/plansRepository";
+import { getWeekSessionStatusMap } from "../services/storage/repositories/sessionsRepository";
+
+/** Monday 00:00:00 of the current calendar week */
+function getWeekStartMs() {
+  const now = new Date();
+  const daysFromMonday = now.getDay() === 0 ? 6 : now.getDay() - 1;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - daysFromMonday);
+  monday.setHours(0, 0, 0, 0);
+  return monday.getTime();
+}
+
+const SESSION_BADGE = {
+  completed: { icon: faCircleCheck, label: "Terminée",  className: "day-badge day-badge--done" },
+  stopped:   { icon: faBan,         label: "Arrêtée",   className: "day-badge day-badge--stopped" },
+  running:   { icon: faPlay,        label: "En cours",  className: "day-badge day-badge--active" },
+  paused:    { icon: faHourglassHalf, label: "En pause", className: "day-badge day-badge--active" },
+};
 
 function hasVisibleContent(day) {
   if (!day || day.rest) return false;
@@ -29,15 +47,20 @@ function describeDay(day) {
 export function WeekPage() {
   const { currentUser } = useAuth();
   const [days, setDays] = useState([]);
+  const [sessionStatusMap, setSessionStatusMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       if (!currentUser) return;
-      const activePlan = await getActivePlanForUser(currentUser.id);
+      const [activePlan, weekMap] = await Promise.all([
+        getActivePlanForUser(currentUser.id),
+        getWeekSessionStatusMap(currentUser.id, getWeekStartMs()),
+      ]);
       const dayById = new Map((activePlan?.days ?? []).map((day) => [day.id, day]));
       const orderedDays = DAY_IDS.map((dayId) => dayById.get(dayId)).filter(hasVisibleContent);
       setDays(orderedDays);
+      setSessionStatusMap(weekMap);
       setIsLoading(false);
     }
     load();
@@ -63,9 +86,20 @@ export function WeekPage() {
         </section>
       ) : (
         <section className="week-grid">
-          {days.map((day) => (
+          {days.map((day) => {
+            const sessionStatus = sessionStatusMap[day.id];
+            const badge = sessionStatus ? SESSION_BADGE[sessionStatus.status] : null;
+            return (
             <article key={day.id} className="card week-day-card" data-testid={`week-day-${day.id}`}>
-              <h3>{day.fullLabel}</h3>
+              <div className="week-day-header">
+                <h3>{day.fullLabel}</h3>
+                {badge ? (
+                  <span className={badge.className} aria-label={badge.label}>
+                    <FontAwesomeIcon icon={badge.icon} />
+                    <span>{badge.label}</span>
+                  </span>
+                ) : null}
+              </div>
               <p className="muted">{describeDay(day)}</p>
               <div className="btn-row">
                 <Link to={`/jour/${day.id}`} className="primary-btn with-icon">
@@ -80,7 +114,8 @@ export function WeekPage() {
                 ) : null}
               </div>
             </article>
-          ))}
+            );
+          })}
         </section>
       )}
     </div>

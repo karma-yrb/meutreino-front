@@ -14,7 +14,7 @@ import {
 import { getCurrentDayId } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, getActivePlanForUser } from "../services/storage/repositories/plansRepository";
-import { listSessionsForUser } from "../services/storage/repositories/sessionsRepository";
+import { listSessionsForUser, getLastCompletedSessionForDay, getActiveSessionForDay } from "../services/storage/repositories/sessionsRepository";
 
 const SESSION_STATUS_LABELS = {
   running: "En cours",
@@ -72,24 +72,35 @@ function formatSessionMeta(session) {
   return `${duration} \u2014 ${session.completedExercisesCount} exos`;
 }
 
+const TODAY_SESSION_BADGE = {
+  completed: { icon: faCircleCheck, label: "Terminée ce jour",    className: "day-badge day-badge--done" },
+  stopped:   { icon: faBan,         label: "Arrêtée ce jour",     className: "day-badge day-badge--stopped" },
+  running:   { icon: faPlay,        label: "En cours",            className: "day-badge day-badge--active" },
+  paused:    { icon: faHourglassHalf, label: "En pause",          className: "day-badge day-badge--active" },
+};
+
 export function HomePage() {
   const { currentUser } = useAuth();
   const [todayPlan, setTodayPlan] = useState(null);
   const [activePlan, setActivePlan] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
+  const [todaySessionStatus, setTodaySessionStatus] = useState(null);
   const dayId = getCurrentDayId();
 
   useEffect(() => {
     async function load() {
       if (!currentUser) return;
-      const [day, plan] = await Promise.all([
+      const [day, plan, sessions, lastCompleted, activeSession] = await Promise.all([
         getDayPlanForUser(currentUser.id, dayId),
         getActivePlanForUser(currentUser.id),
+        listSessionsForUser(currentUser.id),
+        getLastCompletedSessionForDay(currentUser.id, dayId),
+        getActiveSessionForDay(currentUser.id, dayId),
       ]);
-      const sessions = await listSessionsForUser(currentUser.id);
       setTodayPlan(day);
       setActivePlan(plan);
       setRecentSessions(sessions.slice(0, 5));
+      setTodaySessionStatus(activeSession?.status ?? lastCompleted?.status ?? null);
     }
     load();
   }, [currentUser, dayId]);
@@ -116,6 +127,12 @@ export function HomePage() {
                   {!todayPlan.rest && <>{" · "}<span className="home-day-subtitle">{todayPlan.title}</span></>}
                   {todayPlan.rest && <>{" · "}<span className="home-day-subtitle">Jour de repos</span></>}
                 </p>
+                {todaySessionStatus && TODAY_SESSION_BADGE[todaySessionStatus] ? (
+                  <span className={TODAY_SESSION_BADGE[todaySessionStatus].className}>
+                    <FontAwesomeIcon icon={TODAY_SESSION_BADGE[todaySessionStatus].icon} />
+                    <span>{TODAY_SESSION_BADGE[todaySessionStatus].label}</span>
+                  </span>
+                ) : null}
               </div>
               {!todayPlan.rest && (
                 <div className="btn-row">

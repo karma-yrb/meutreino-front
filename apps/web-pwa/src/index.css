@@ -1129,6 +1129,52 @@ button {
   gap: 12px;
 }
 
+.week-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.week-day-header h3 {
+  margin: 0;
+}
+
+/* ── Session status badges (WeekPage + HomePage) ── */
+.day-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.day-badge--done {
+  background: color-mix(in srgb, #4caf50 15%, transparent);
+  color: #2e7d32;
+  border: 1px solid color-mix(in srgb, #4caf50 40%, transparent);
+}
+
+.day-badge--stopped {
+  background: color-mix(in srgb, #ff9800 15%, transparent);
+  color: #e65100;
+  border: 1px solid color-mix(in srgb, #ff9800 40%, transparent);
+}
+
+.day-badge--active {
+  background: color-mix(in srgb, #2979ff 15%, transparent);
+  color: #1565c0;
+  border: 1px solid color-mix(in srgb, #2979ff 40%, transparent);
+}
+
+[data-theme="dark"] .day-badge--done    { color: #81c784; }
+[data-theme="dark"] .day-badge--stopped { color: #ffb74d; }
+[data-theme="dark"] .day-badge--active  { color: #90caf9; }
+
 .week-day-card h3 {
   margin: 0;
 }
