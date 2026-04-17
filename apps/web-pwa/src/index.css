@@ -522,6 +522,25 @@ button {
   font-weight: 700;
 }
 
+.secondary-btn {
+  background: var(--ghost-bg);
+  color: var(--text);
+  border-color: var(--line);
+  font-weight: 600;
+}
+
+.secondary-btn:hover,
+.secondary-btn:focus-visible {
+  background: color-mix(in srgb, var(--brand) 12%, var(--ghost-bg));
+}
+
+.profile-export-section {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .ghost-btn {
   background: var(--ghost-bg);
   color: var(--ghost-color);
@@ -605,6 +624,63 @@ button {
   text-align: center;
   gap: 4px;
   margin-bottom: 16px;
+}
+
+/* ── Resume banner ── */
+.resume-banner {
+  border-left: 4px solid #ff9800;
+  background: color-mix(in srgb, #ff9800 8%, var(--card));
+}
+
+.resume-banner__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #e65100;
+  margin: 0 0 10px;
+}
+
+[data-theme="dark"] .resume-banner__title { color: #ffb74d; }
+
+.resume-banner__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resume-banner__btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.resume-banner__btn:hover,
+.resume-banner__btn:focus-visible {
+  background: color-mix(in srgb, var(--brand) 10%, var(--card));
+}
+
+.resume-banner__day {
+  flex: 1;
+  text-transform: capitalize;
+}
+
+.resume-banner__cta {
+  font-size: 13px;
+  color: var(--brand);
+  font-weight: 700;
 }
 
 .home-day-card .btn-row {

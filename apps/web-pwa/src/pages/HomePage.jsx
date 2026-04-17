@@ -10,11 +10,12 @@ import {
   faEye,
   faHourglassHalf,
   faPlay,
+  faRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { getCurrentDayId } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, getActivePlanForUser } from "../services/storage/repositories/plansRepository";
-import { listSessionsForUser, getLastCompletedSessionForDay, getActiveSessionForDay } from "../services/storage/repositories/sessionsRepository";
+import { listSessionsForUser, getLastCompletedSessionForDay, getActiveSessionForDay, getResumableSessionsForUser } from "../services/storage/repositories/sessionsRepository";
 
 const SESSION_STATUS_LABELS = {
   running: "En cours",
@@ -85,22 +86,25 @@ export function HomePage() {
   const [activePlan, setActivePlan] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
   const [todaySessionStatus, setTodaySessionStatus] = useState(null);
+  const [resumableSessions, setResumableSessions] = useState([]);
   const dayId = getCurrentDayId();
 
   useEffect(() => {
     async function load() {
       if (!currentUser) return;
-      const [day, plan, sessions, lastCompleted, activeSession] = await Promise.all([
+      const [day, plan, sessions, lastCompleted, activeSession, resumable] = await Promise.all([
         getDayPlanForUser(currentUser.id, dayId),
         getActivePlanForUser(currentUser.id),
         listSessionsForUser(currentUser.id),
         getLastCompletedSessionForDay(currentUser.id, dayId),
         getActiveSessionForDay(currentUser.id, dayId),
+        getResumableSessionsForUser(currentUser.id),
       ]);
       setTodayPlan(day);
       setActivePlan(plan);
       setRecentSessions(sessions.slice(0, 5));
       setTodaySessionStatus(activeSession?.status ?? lastCompleted?.status ?? null);
+      setResumableSessions(resumable);
     }
     load();
   }, [currentUser, dayId]);
@@ -111,6 +115,29 @@ export function HomePage() {
         <h2>Bienvenue {currentUser?.firstName ?? "à vous"}</h2>
         <p className="muted">{formatPlanLabel(activePlan?.version)}</p>
       </section>
+
+      {resumableSessions.length > 0 ? (
+        <section className="card resume-banner" aria-label="Séances à reprendre">
+          <p className="resume-banner__title">
+            <FontAwesomeIcon icon={faRotateLeft} />
+            <span>Séance{resumableSessions.length > 1 ? "s" : ""} interrompue{resumableSessions.length > 1 ? "s" : ""}</span>
+          </p>
+          <ul className="resume-banner__list">
+            {resumableSessions.map((s) => (
+              <li key={s.id}>
+                <Link to={`/session/${s.dayId}`} className="resume-banner__btn">
+                  <span className="resume-banner__day">{s.dayId}</span>
+                  <span className={`day-badge ${s.status === "paused" ? "day-badge--active" : "day-badge--active"}`}>
+                    <FontAwesomeIcon icon={s.status === "paused" ? faHourglassHalf : faPlay} />
+                    <span>{s.status === "paused" ? "En pause" : "En cours"}</span>
+                  </span>
+                  <span className="resume-banner__cta">Reprendre →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="card">
         {todayPlan ? (
