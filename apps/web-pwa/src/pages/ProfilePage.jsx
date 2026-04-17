@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useAuth } from "../features/auth/useAuth";
 import { updateUserIdentity, updateUserProfile } from "../services/storage/repositories/usersRepository";
 import { addWeightRecord } from "../services/storage/repositories/weightRepository";
+import { exportUserData, downloadJson } from "../services/storage/exportRepository";
 
 const GENDER_OPTIONS = [
   { value: "femme", label: "Femme" },
@@ -234,6 +235,13 @@ export function ProfilePage() {
   const stepHeight = stepField("heightCm", { min: 50, max: 260, step: 1 });
   const stepWaist = stepField("waistCm", { min: 0, max: 250, step: 1 });
 
+  async function onExport() {
+    if (!currentUser) return;
+    const data = await exportUserData(currentUser.id);
+    const date = new Date().toISOString().slice(0, 10);
+    downloadJson(data, `meutreino-export-${date}.json`);
+  }
+
   async function onSave(event) {
     event.preventDefault();
     if (!currentUser) return;
@@ -434,6 +442,13 @@ export function ProfilePage() {
         </form>
 
         {status ? <p className="muted">{status}</p> : null}
+
+        <div className="profile-export-section">
+          <button type="button" className="secondary-btn" onClick={onExport}>
+            Exporter mes données (JSON)
+          </button>
+          <p className="muted">Télécharger séances, historique poids et plan — utile comme sauvegarde manuelle.</p>
+        </div>
       </section>
     </div>
   );

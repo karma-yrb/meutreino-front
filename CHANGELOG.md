@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.9](https://github.com/karma-yrb/meutreino-front/compare/v1.14.5...v1.14.9) (2026-04-17)
+
+
+### Features
+
+* **progress:** add calories, records, weekly trends and heatmap ([2d172e7](https://github.com/karma-yrb/meutreino-front/commit/2d172e70ac0d88bc736ce3920bab26b720fe02ca))
+* **progress:** add recharts progression curves per exercise ([fc27973](https://github.com/karma-yrb/meutreino-front/commit/fc27973c0da2bae5ab7670a64c996fe64f1cf086))
+* **progress:** add weight tracking with history and trend chart ([5166724](https://github.com/karma-yrb/meutreino-front/commit/51667249216ec5f8caee50d0f98bb960a7390d3d))
+
 ### [1.14.8](https://github.com/karma-yrb/meutreino-front/compare/v1.14.5...v1.14.8) (2026-04-16)
 
 

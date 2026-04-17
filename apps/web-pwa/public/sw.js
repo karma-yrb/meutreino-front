@@ -1,4 +1,4 @@
-const CACHE_NAME = "meutreino-v1";
+const CACHE_NAME = "meutreino-v2";
 const APP_SHELL = ["/", "/manifest.webmanifest", "/favicon.svg", "/icons.svg"];
 
 self.addEventListener("install", (event) => {
