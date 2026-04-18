@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.19.0](https://github.com/karma-yrb/meutreino-front/compare/v1.17.0...v1.19.0) (2026-04-18)
+
+
+### Features
+
+* **progress:** clickable stat cards for calories and sessions pages ([cf00f0c](https://github.com/karma-yrb/meutreino-front/commit/cf00f0c643d06f249d14d0ed27bca2c29f9caaf0))
+
 ## [1.18.0](https://github.com/karma-yrb/meutreino-front/compare/v1.17.0...v1.18.0) (2026-04-18)
 
 ## [1.17.0](https://github.com/karma-yrb/meutreino-front/compare/v1.15.0...v1.17.0) (2026-04-18)
