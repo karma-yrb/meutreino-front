@@ -123,7 +123,13 @@ describe("Progress page integration", () => {
       expect(screen.getByText("Calories brûlées").closest(".stat-card")).toHaveTextContent("0");
     });
 
-    expect(screen.queryByText("Records personnels")).not.toBeInTheDocument();
+    // All sections are visible with empty state messages
+    expect(screen.getByText("Records personnels")).toBeInTheDocument();
+    expect(screen.getByText("Complétez des séances pour voir vos records de charge.")).toBeInTheDocument();
+    expect(screen.getByText("Progression")).toBeInTheDocument();
+    expect(screen.getByText("Suivi du poids")).toBeInTheDocument();
+    expect(screen.getByText("Calories par semaine")).toBeInTheDocument();
+    expect(screen.getByText("Activité (90 jours)")).toBeInTheDocument();
   });
 
   test("heatmap grid renders when sessions exist", async () => {
@@ -191,15 +197,14 @@ describe("Progress page integration", () => {
     });
   });
 
-  test("weight trend is hidden when no weight history", async () => {
+  test("weight trend shows empty message when no weight history", async () => {
     await loginAsUser();
     await navigateTo("/progres");
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByText("Séances totales")).toBeInTheDocument();
+      expect(screen.getByTestId("weight-trend")).toBeInTheDocument();
+      expect(screen.getByText("Enregistrez votre poids dans votre profil pour commencer le suivi.")).toBeInTheDocument();
     });
-
-    expect(screen.queryByTestId("weight-trend")).not.toBeInTheDocument();
   });
 });

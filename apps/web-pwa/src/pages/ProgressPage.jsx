@@ -49,33 +49,38 @@ function StatCard({ icon, label, value, unit }) {
 }
 
 function PersonalRecords({ records }) {
-  if (records.length === 0) return null;
   return (
     <section className="progress-section">
       <h2><FontAwesomeIcon icon={faMedal} /> Records personnels</h2>
-      <ul className="records-list">
-        {records.map((r) => (
-          <li key={r.exercise} className="record-item">
-            <span className="record-exercise">{r.exercise}</span>
-            <span className="record-value">{r.load} kg × {r.reps}</span>
-            {r.date && (
-              <span className="record-date">
-                {new Date(r.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
+      {records.length === 0 ? (
+        <p className="empty-state">Complétez des séances pour voir vos records de charge.</p>
+      ) : (
+        <ul className="records-list">
+          {records.map((r) => (
+            <li key={r.exercise} className="record-item">
+              <span className="record-exercise">{r.exercise}</span>
+              <span className="record-value">{r.load} kg × {r.reps}</span>
+              {r.date && (
+                <span className="record-date">
+                  {new Date(r.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
 
 function WeeklyCalories({ weeks }) {
-  if (weeks.length === 0) return null;
-  const maxCal = Math.max(...weeks.map((w) => w.calories));
+  const maxCal = weeks.length > 0 ? Math.max(...weeks.map((w) => w.calories)) : 0;
   return (
     <section className="progress-section">
       <h2><FontAwesomeIcon icon={faBolt} /> Calories par semaine</h2>
+      {weeks.length === 0 ? (
+        <p className="empty-state">Complétez des séances pour suivre vos calories hebdomadaires.</p>
+      ) : (
       <div className="weekly-chart">
         {weeks.map((w) => (
           <div key={w.week} className="weekly-bar-row">
@@ -90,14 +95,12 @@ function WeeklyCalories({ weeks }) {
           </div>
         ))}
       </div>
+      )}
     </section>
   );
 }
 
 function ActivityHeatmap({ heatmap }) {
-  const days = Object.keys(heatmap);
-  if (days.length === 0) return null;
-
   const today = new Date();
   const cells = [];
   for (let i = 89; i >= 0; i--) {
@@ -143,7 +146,14 @@ function ProgressionChart({ sessions }) {
     [sessions, currentExercise],
   );
 
-  if (exerciseNames.length === 0) return null;
+  if (exerciseNames.length === 0) {
+    return (
+      <section className="progress-section" data-testid="progression-chart">
+        <h2><FontAwesomeIcon icon={faChartLine} /> Progression</h2>
+        <p className="empty-state">Complétez des séances pour voir l&apos;évolution de vos charges et volumes.</p>
+      </section>
+    );
+  }
 
   return (
     <section className="progress-section" data-testid="progression-chart">
@@ -179,7 +189,14 @@ function ProgressionChart({ sessions }) {
 }
 
 function WeightTrend({ weightData }) {
-  if (weightData.length === 0) return null;
+  if (weightData.length === 0) {
+    return (
+      <section className="progress-section" data-testid="weight-trend">
+        <h2><FontAwesomeIcon icon={faWeight} /> Suivi du poids</h2>
+        <p className="empty-state">Enregistrez votre poids dans votre profil pour commencer le suivi.</p>
+      </section>
+    );
+  }
 
   const chartData = weightData.map((r) => ({
     date: new Date(r.recordedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
