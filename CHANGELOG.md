@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/karma-yrb/meutreino-front/compare/v1.15.0...v1.17.0) (2026-04-18)
+
+
+### Features
+
+* **weight:** dedicated weight page with upsert, delete, BMI and history ([d80075b](https://github.com/karma-yrb/meutreino-front/commit/d80075b924dd5ccc55fd6c57a7219bb9aa31e6de))
+
+
+### Bug Fixes
+
+* **progress:** show all sections with empty state guides ([46c06d1](https://github.com/karma-yrb/meutreino-front/commit/46c06d1a08930c2b89e8ef907feb6ba0f76e46be))
+
 ## [1.16.0](https://github.com/karma-yrb/meutreino-front/compare/v1.15.0...v1.16.0) (2026-04-18)
 
 
