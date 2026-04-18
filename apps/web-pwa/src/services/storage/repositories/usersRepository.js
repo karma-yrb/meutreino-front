@@ -20,27 +20,20 @@ export async function updateUserProfile(userId, profilePatch) {
   const user = await db.users.get(userId);
   if (!user) return null;
 
-  const updated = {
-    ...user,
-    profile: {
-      ...user.profile,
-      ...profilePatch,
-    },
-    updatedAt: new Date().toISOString(),
+  const updatedAt = new Date().toISOString();
+  const profile = {
+    ...(user.profile ?? {}),
+    ...(profilePatch ?? {}),
   };
-  await db.users.put(updated);
-  return updated;
+  await db.users.update(userId, { profile, updatedAt });
+  return db.users.get(userId);
 }
 
 export async function updateUserIdentity(userId, identityPatch) {
   const user = await db.users.get(userId);
   if (!user) return null;
 
-  const updated = {
-    ...user,
-    ...identityPatch,
-    updatedAt: new Date().toISOString(),
-  };
-  await db.users.put(updated);
-  return updated;
+  const updatedAt = new Date().toISOString();
+  await db.users.update(userId, { ...(identityPatch ?? {}), updatedAt });
+  return db.users.get(userId);
 }

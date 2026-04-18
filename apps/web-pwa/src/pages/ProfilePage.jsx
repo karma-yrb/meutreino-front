@@ -269,13 +269,11 @@ export function ProfilePage() {
       waistCm: parseNumber(profile.waistCm),
     };
 
-    await Promise.all([
-      updateUserIdentity(currentUser.id, {
-        firstName: firstName.trim() || currentUser.firstName,
-        lastName: lastName.trim(),
-      }),
-      updateUserProfile(currentUser.id, cleanedProfile),
-    ]);
+    await updateUserIdentity(currentUser.id, {
+      firstName: firstName.trim() || currentUser.firstName,
+      lastName: lastName.trim(),
+    });
+    await updateUserProfile(currentUser.id, cleanedProfile);
 
     await refreshCurrentUser?.();
     setStatus("Profil sauvegardé");
