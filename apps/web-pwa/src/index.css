@@ -3612,3 +3612,161 @@ button {
   font-size: 14px;
   padding: 4px 8px;
 }
+
+/* ── Calories page ─────────────────────────────────── */
+.calories-total {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.calories-total-value {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.calories-total-unit {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.calories-section {
+  margin-top: 16px;
+}
+
+.calories-section h2 {
+  margin-bottom: 12px;
+}
+
+.calories-session-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.calories-session-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--ghost-bg);
+  border: 1px solid var(--ghost-border);
+  border-radius: 10px;
+}
+
+.calories-session-day {
+  font-weight: 700;
+  min-width: 70px;
+  text-transform: capitalize;
+}
+
+.calories-session-date {
+  flex: 1;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.calories-session-duration {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.calories-session-value {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--brand);
+}
+
+/* ── Sessions page ─────────────────────────────────── */
+.sessions-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--ghost-border);
+  background: var(--ghost-bg);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+}
+
+.filter-btn--active {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+
+.sessions-count {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+.sessions-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sessions-item {
+  padding: 12px 14px;
+  background: var(--ghost-bg);
+  border: 1px solid var(--ghost-border);
+  border-radius: 10px;
+}
+
+.sessions-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.sessions-item-day {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.sessions-item-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.sessions-badge-completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.sessions-badge-stopped {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.sessions-badge-running,
+.sessions-badge-paused {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.sessions-item-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  opacity: 0.7;
+}

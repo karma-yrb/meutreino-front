@@ -118,7 +118,6 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByText("Aucune séance enregistrée pour le moment.")).toBeInTheDocument();
       expect(screen.getByText("Séances totales").closest(".stat-card")).toHaveTextContent("0");
       expect(screen.getByText("Calories brûlées").closest(".stat-card")).toHaveTextContent("0");
     });
@@ -128,7 +127,6 @@ describe("Progress page integration", () => {
     expect(screen.getByText("Complétez des séances pour voir vos records de charge.")).toBeInTheDocument();
     expect(screen.getByText("Progression")).toBeInTheDocument();
     expect(screen.getByText("Poids").closest(".stat-card")).toHaveTextContent("—");
-    expect(screen.getByText("Calories par semaine")).toBeInTheDocument();
     expect(screen.getByText("Activité (90 jours)")).toBeInTheDocument();
   });
 
@@ -208,5 +206,25 @@ describe("Progress page integration", () => {
       const weightCard = screen.getByText("Poids").closest(".stat-card");
       expect(weightCard).toHaveTextContent("—");
     });
+  });
+
+  test("calories stat card navigates to /calories", async () => {
+    const user = await loginAsUser();
+    await navigateTo("/progres");
+    await screen.findByRole("heading", { name: /Progrès/i });
+
+    const calCard = screen.getByText("Calories brûlées").closest(".stat-card");
+    await user.click(calCard);
+    await screen.findByRole("heading", { name: /Calories/i });
+  });
+
+  test("sessions stat card navigates to /seances", async () => {
+    const user = await loginAsUser();
+    await navigateTo("/progres");
+    await screen.findByRole("heading", { name: /Progrès/i });
+
+    const sessCard = screen.getByText("Séances totales").closest(".stat-card");
+    await user.click(sessCard);
+    await screen.findByRole("heading", { name: /Séances/i });
   });
 });

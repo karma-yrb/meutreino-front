@@ -28,7 +28,6 @@ import {
   computeStats,
   computeTotalCalories,
   extractPersonalRecords,
-  computeWeeklyCalories,
   buildActivityHeatmap,
   buildExerciseProgression,
   getExerciseNames,
@@ -70,33 +69,6 @@ function PersonalRecords({ records }) {
             </li>
           ))}
         </ul>
-      )}
-    </section>
-  );
-}
-
-function WeeklyCalories({ weeks }) {
-  const maxCal = weeks.length > 0 ? Math.max(...weeks.map((w) => w.calories)) : 0;
-  return (
-    <section className="progress-section">
-      <h2><FontAwesomeIcon icon={faBolt} /> Calories par semaine</h2>
-      {weeks.length === 0 ? (
-        <p className="empty-state">Complétez des séances pour suivre vos calories hebdomadaires.</p>
-      ) : (
-      <div className="weekly-chart">
-        {weeks.map((w) => (
-          <div key={w.week} className="weekly-bar-row">
-            <span className="weekly-label">{w.week}</span>
-            <div className="weekly-bar-track">
-              <div
-                className="weekly-bar-fill"
-                style={{ width: `${maxCal > 0 ? (w.calories / maxCal) * 100 : 0}%` }}
-              />
-            </div>
-            <span className="weekly-value">{w.calories} kcal</span>
-          </div>
-        ))}
-      </div>
       )}
     </section>
   );
@@ -217,10 +189,6 @@ export function ProgressPage() {
     [sessions, weightKg],
   );
   const records = useMemo(() => extractPersonalRecords(sessions), [sessions]);
-  const weeks = useMemo(
-    () => computeWeeklyCalories(sessions, weightKg),
-    [sessions, weightKg],
-  );
   const heatmap = useMemo(() => buildActivityHeatmap(sessions), [sessions]);
   const latestWeight = weightData.length > 0 ? weightData[weightData.length - 1].weightKg : "—";
 
@@ -235,38 +203,18 @@ export function ProgressPage() {
       </h1>
 
       <div className="stats-grid">
-        <StatCard icon={faDumbbell} label="Séances totales" value={stats.total} />
+        <StatCard icon={faDumbbell} label="Séances totales" value={stats.total} onClick={() => navigate("/seances")} />
         <StatCard icon={faCalendarCheck} label="Séances terminées" value={stats.completedCount} />
         <StatCard icon={faFire} label="Taux de complétion" value={stats.completionRate} unit="%" />
         <StatCard icon={faTrophy} label="Jours actifs" value={stats.activeDays} />
         <StatCard icon={faChartLine} label="Durée moyenne" value={stats.avgDurationMin} unit="min" />
-        <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" />
+        <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" onClick={() => navigate("/calories")} />
         <StatCard icon={faWeight} label="Poids" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
       </div>
 
       <ProgressionChart sessions={sessions} />
       <PersonalRecords records={records} />
-      <WeeklyCalories weeks={weeks} />
       <ActivityHeatmap heatmap={heatmap} />
-
-      <section className="progress-section">
-        <h2>Historique des séances</h2>
-        {sessions.length === 0 ? (
-          <p className="empty-state">Aucune séance enregistrée pour le moment.</p>
-        ) : (
-          <ul className="session-history">
-            {sessions.slice(0, 20).map((s) => (
-              <li key={s.id} className={`session-history-item session-status-${s.status}`}>
-                <span className="session-history-day">{s.dayId}</span>
-                <span className="session-history-status">{s.status === "completed" ? "Terminée" : s.status === "running" ? "En cours" : s.status === "paused" ? "En pause" : "Arrêtée"}</span>
-                <span className="session-history-date">
-                  {s.startedAt ? new Date(s.startedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "-"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
     </div>
   );
 }

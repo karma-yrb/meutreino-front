@@ -12,6 +12,8 @@ import { CoachUsersPage } from "../pages/CoachUsersPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ProgressPage } from "../pages/ProgressPage";
 import { WeightPage } from "../pages/WeightPage";
+import { CaloriesPage } from "../pages/CaloriesPage";
+import { SessionsPage } from "../pages/SessionsPage";
 
 export function AppRouter() {
   const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, "");
@@ -36,6 +38,8 @@ export function AppRouter() {
           <Route path="semaine" element={<WeekPage />} />
           <Route path="progres" element={<ProgressPage />} />
           <Route path="poids" element={<WeightPage />} />
+          <Route path="calories" element={<CaloriesPage />} />
+          <Route path="seances" element={<SessionsPage />} />
           <Route path="profil" element={<ProfilePage />} />
           <Route
             path="admin/templates"
