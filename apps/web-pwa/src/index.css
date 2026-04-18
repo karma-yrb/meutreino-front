@@ -3194,10 +3194,86 @@ button {
   margin-bottom: 20px;
 }
 
+/* ── Shortcuts (clickable nav cards) ────────────────── */
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.shortcut-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--brand) 8%, var(--ghost-bg));
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, transparent);
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+}
+
+.shortcut-card:hover,
+.shortcut-card:focus-visible {
+  background: color-mix(in srgb, var(--brand) 14%, var(--ghost-bg));
+  transform: translateX(3px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  outline: 2px solid var(--brand);
+}
+
+.shortcut-card-icon {
+  font-size: 20px;
+  color: var(--brand);
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.shortcut-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.shortcut-card-label {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.shortcut-card-value {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.shortcut-card-unit {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 3px;
+}
+
+.shortcut-card-arrow {
+  font-size: 13px;
+  color: var(--brand);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ── Stat grid (read-only) ───────────────────────────── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
   margin-bottom: 28px;
 }
 
@@ -3206,25 +3282,11 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 16px 12px;
+  padding: 14px 12px;
   border-radius: 14px;
   background: var(--ghost-bg);
   border: 1px solid var(--ghost-border);
   text-align: center;
-}
-
-.stat-card--clickable {
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-  font-family: inherit;
-  color: inherit;
-}
-
-.stat-card--clickable:hover,
-.stat-card--clickable:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  outline: 2px solid var(--brand);
 }
 
 .stat-card-icon {

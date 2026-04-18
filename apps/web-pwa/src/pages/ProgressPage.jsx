@@ -11,6 +11,7 @@ import {
   faMedal,
   faCalendarDays,
   faWeight,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   LineChart,
@@ -33,10 +34,29 @@ import {
   getExerciseNames,
 } from "../data/progressStats";
 
-function StatCard({ icon, label, value, unit, onClick }) {
-  const Tag = onClick ? "button" : "div";
+function ShortcutCard({ icon, label, value, unit, onClick }) {
   return (
-    <Tag className={`stat-card${onClick ? " stat-card--clickable" : ""}`} onClick={onClick}>
+    <button className="shortcut-card" onClick={onClick}>
+      <span className="shortcut-card-icon">
+        <FontAwesomeIcon icon={icon} />
+      </span>
+      <span className="shortcut-card-body">
+        <span className="shortcut-card-label">{label}</span>
+        <span className="shortcut-card-value">
+          {value}
+          {unit ? <span className="shortcut-card-unit">{unit}</span> : null}
+        </span>
+      </span>
+      <span className="shortcut-card-arrow" aria-hidden="true">
+        <FontAwesomeIcon icon={faChevronRight} />
+      </span>
+    </button>
+  );
+}
+
+function StatCard({ icon, label, value, unit }) {
+  return (
+    <div className="stat-card">
       <div className="stat-card-icon">
         <FontAwesomeIcon icon={icon} />
       </div>
@@ -45,7 +65,7 @@ function StatCard({ icon, label, value, unit, onClick }) {
         {unit ? <span className="stat-card-unit">{unit}</span> : null}
       </div>
       <div className="stat-card-label">{label}</div>
-    </Tag>
+    </div>
   );
 }
 
@@ -202,14 +222,17 @@ export function ProgressPage() {
         <FontAwesomeIcon icon={faChartLine} /> Progrès
       </h1>
 
+      <div className="shortcuts-list">
+        <ShortcutCard icon={faDumbbell} label="Séances totales" value={stats.total} onClick={() => navigate("/seances")} />
+        <ShortcutCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" onClick={() => navigate("/calories")} />
+        <ShortcutCard icon={faWeight} label="Poids actuel" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
+      </div>
+
       <div className="stats-grid">
-        <StatCard icon={faDumbbell} label="Séances totales" value={stats.total} onClick={() => navigate("/seances")} />
         <StatCard icon={faCalendarCheck} label="Séances terminées" value={stats.completedCount} />
         <StatCard icon={faFire} label="Taux de complétion" value={stats.completionRate} unit="%" />
         <StatCard icon={faTrophy} label="Jours actifs" value={stats.activeDays} />
         <StatCard icon={faChartLine} label="Durée moyenne" value={stats.avgDurationMin} unit="min" />
-        <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" onClick={() => navigate("/calories")} />
-        <StatCard icon={faWeight} label="Poids" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
       </div>
 
       <ProgressionChart sessions={sessions} />
