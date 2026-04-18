@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.19.1](https://github.com/karma-yrb/meutreino-front/compare/v1.19.0...v1.19.1) (2026-04-18)
+
 ## [1.19.0](https://github.com/karma-yrb/meutreino-front/compare/v1.17.0...v1.19.0) (2026-04-18)
 
 

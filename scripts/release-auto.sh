@@ -71,16 +71,46 @@ fi
 
 echo "Checks passed. Proceeding with release."
 
-echo "Running dry-run (standard-version)..."
-node ./scripts/exec-bin.js npx standard-version --dry-run \
-  "${STANDARD_VERSION_ARGS[@]}"
+# Detect current version from package.json
+CURRENT_VERSION="$(node -p "require('./package.json').version")"
+TAG_NAME="${RELEASE_TAG_PREFIX}${CURRENT_VERSION}"
 
-echo
-read -r -p "Dry-run complete. Press Enter to continue with the real release (this WILL push commits+tags), or Ctrl+C to abort..."
+# Check if current commit already has a release tag
+HEAD_TAGS="$(git tag --points-at HEAD 2>/dev/null || true)"
 
-echo "Running real release (standard-version)..."
-node ./scripts/exec-bin.js npx standard-version \
-  "${STANDARD_VERSION_ARGS[@]}"
+if echo "$HEAD_TAGS" | grep -q "^${RELEASE_TAG_PREFIX}"; then
+  echo "HEAD is already tagged (${HEAD_TAGS}). Running standard-version to bump again..."
+  NEEDS_BUMP=true
+else
+  echo "HEAD is not tagged. Current version: ${CURRENT_VERSION}"
+  # Check if the tag already exists on another commit
+  if git rev-parse "${TAG_NAME}" >/dev/null 2>&1; then
+    echo "Tag ${TAG_NAME} exists on another commit. Running standard-version to bump..."
+    NEEDS_BUMP=true
+  else
+    echo "Will tag current commit as ${TAG_NAME} (no re-bump needed)."
+    NEEDS_BUMP=false
+  fi
+fi
+
+if [ "$NEEDS_BUMP" = true ]; then
+  echo "Running dry-run (standard-version)..."
+  node ./scripts/exec-bin.js npx standard-version --dry-run \
+    "${STANDARD_VERSION_ARGS[@]}"
+
+  echo
+  read -r -p "Dry-run complete. Press Enter to continue with the real release (this WILL push commits+tags), or Ctrl+C to abort..."
+
+  echo "Running real release (standard-version)..."
+  node ./scripts/exec-bin.js npx standard-version \
+    "${STANDARD_VERSION_ARGS[@]}"
+else
+  echo
+  read -r -p "Will tag as ${TAG_NAME} and push. Press Enter to continue, or Ctrl+C to abort..."
+
+  echo "Creating tag ${TAG_NAME}..."
+  git tag -a "${TAG_NAME}" -m "chore(release): ${CURRENT_VERSION}"
+fi
 
 echo
 echo "Local release complete - package files and CHANGELOG.md updated, tag created."
