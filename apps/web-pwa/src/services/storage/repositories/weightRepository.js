@@ -50,3 +50,29 @@ export async function listWeightHistory(userId) {
     .sortBy("recordedAt");
   return records;
 }
+
+function getISOWeekBounds() {
+  const now = new Date();
+  const day = now.getDay() || 7; // Mon=1 … Sun=7
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (day - 1));
+  monday.setHours(0, 0, 0, 0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+  return { monday, sunday };
+}
+
+export async function hasWeightThisWeek(userId) {
+  if (!userId) return false;
+  const { monday, sunday } = getISOWeekBounds();
+  const record = await db.weightHistory
+    .where("userId")
+    .equals(userId)
+    .filter((r) => {
+      const d = new Date(r.recordedAt);
+      return d >= monday && d <= sunday;
+    })
+    .first();
+  return !!record;
+}

@@ -16,6 +16,9 @@ import { getCurrentDayId } from "@meutreino/core-domain";
 import { useAuth } from "../features/auth/useAuth";
 import { getDayPlanForUser, getActivePlanForUser } from "../services/storage/repositories/plansRepository";
 import { listSessionsForUser, getLastCompletedSessionForDay, getActiveSessionForDay, getResumableSessionsForUser } from "../services/storage/repositories/sessionsRepository";
+import { hasWeightThisWeek } from "../services/storage/repositories/weightRepository";
+import { WeeklyWeightPrompt } from "../components/WeeklyWeightPrompt";
+import { isDismissedThisWeek } from "../components/weeklyWeightPromptUtils";
 
 const SESSION_STATUS_LABELS = {
   running: "En cours",
@@ -87,6 +90,7 @@ export function HomePage() {
   const [recentSessions, setRecentSessions] = useState([]);
   const [todaySessionStatus, setTodaySessionStatus] = useState(null);
   const [resumableSessions, setResumableSessions] = useState([]);
+  const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const dayId = getCurrentDayId();
 
   useEffect(() => {
@@ -105,6 +109,10 @@ export function HomePage() {
       setRecentSessions(sessions.slice(0, 5));
       setTodaySessionStatus(activeSession?.status ?? lastCompleted?.status ?? null);
       setResumableSessions(resumable);
+      if (!isDismissedThisWeek()) {
+        const hasWeight = await hasWeightThisWeek(currentUser.id);
+        if (!hasWeight) setShowWeightPrompt(true);
+      }
     }
     load();
   }, [currentUser, dayId]);
@@ -138,6 +146,13 @@ export function HomePage() {
           </ul>
         </section>
       ) : null}
+
+      {showWeightPrompt && (
+        <WeeklyWeightPrompt
+          userId={currentUser?.id}
+          onDone={() => setShowWeightPrompt(false)}
+        />
+      )}
 
       <section className="card">
         {todayPlan ? (

@@ -3675,6 +3675,72 @@ button {
   padding: 4px 8px;
 }
 
+/* ── Weekly Weight Prompt ───────────────────────────── */
+.weekly-weight-prompt {
+  border-left: 4px solid var(--brand-2, #4dabf7);
+  background: color-mix(in srgb, var(--brand-2, #4dabf7) 8%, var(--card));
+}
+
+.weekly-weight-prompt__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.weekly-weight-prompt__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--brand-2, #1c7ed6);
+}
+
+[data-theme="dark"] .weekly-weight-prompt__title {
+  color: #74c0fc;
+}
+
+.weekly-weight-prompt__skip-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted, #888);
+  font-size: 16px;
+  padding: 4px 6px;
+  line-height: 1;
+}
+
+.weekly-weight-prompt__sub {
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+.weekly-weight-prompt__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weekly-weight-prompt__input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.weekly-weight-prompt__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.weekly-weight-prompt__btn-save {
+  flex: 1;
+}
+
+.weekly-weight-prompt__btn-skip {
+  flex: 1;
+  font-size: 14px;
+}
+
 /* ── Calories page ─────────────────────────────────── */
 .calories-total {
   display: flex;
