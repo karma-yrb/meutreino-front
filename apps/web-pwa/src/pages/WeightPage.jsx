@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWeight, faPlus, faTrash, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faWeight, faPlus, faTrash, faArrowLeft, faMinus, faCheck } from "@fortawesome/free-solid-svg-icons";
 import {
   LineChart,
   Line,
@@ -45,20 +45,29 @@ export function WeightPage() {
     if (!currentUser?.id) return;
     listWeightHistory(currentUser.id).then((data) => {
       setRecords(data);
+      if (data.length > 0) {
+        setWeightInput(String(data[data.length - 1].weightKg));
+      }
       setLoading(false);
     });
   }, [currentUser?.id]);
 
   async function handleAddWeight(e) {
     e.preventDefault();
-    const value = parseFloat(weightInput.replace(",", "."));
+    const value = parseFloat(String(weightInput).replace(",", "."));
     if (!value || value <= 0 || value > 500) return;
     setSaving(true);
     await upsertWeightForToday(currentUser.id, value);
     const fresh = await listWeightHistory(currentUser.id);
     setRecords(fresh);
-    setWeightInput("");
     setSaving(false);
+  }
+
+  function adjustWeight(delta) {
+    const current = parseFloat(String(weightInput).replace(",", ".")) || 0;
+    const next = Math.round((current + delta) * 10) / 10;
+    if (next <= 0 || next > 500) return;
+    setWeightInput(String(next));
   }
 
   async function handleDelete(id) {
@@ -112,24 +121,51 @@ export function WeightPage() {
       )}
 
       {/* Add form */}
-      <form className="weight-add-form" onSubmit={handleAddWeight}>
-        <label>
-          <input
-            type="number"
-            step="0.1"
-            min="1"
-            max="500"
-            placeholder="Poids (kg)"
-            value={weightInput}
-            onChange={(e) => setWeightInput(e.target.value)}
-            aria-label="Poids en kg"
-            required
-          />
-        </label>
-        <button type="submit" disabled={saving} className="btn-add-weight">
-          <FontAwesomeIcon icon={faPlus} /> Ajouter
-        </button>
-      </form>
+      <section className="card weight-entry-card">
+        <h2 className="weight-entry-title">
+          <FontAwesomeIcon icon={faPlus} />
+          Ajouter une pesée
+        </h2>
+        <form className="weight-add-form" onSubmit={handleAddWeight}>
+          <div className="weight-stepper-row">
+            <button
+              type="button"
+              className="weight-stepper-btn"
+              onClick={() => adjustWeight(-1)}
+              aria-label="Diminuer de 1 kg"
+            >
+              <FontAwesomeIcon icon={faMinus} />
+            </button>
+            <div className="weight-input-wrap">
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="500"
+                placeholder="0.0"
+                value={weightInput}
+                onChange={(e) => setWeightInput(e.target.value)}
+                aria-label="Poids en kg"
+                className="weight-input"
+                required
+              />
+              <span className="weight-input-unit">kg</span>
+            </div>
+            <button
+              type="button"
+              className="weight-stepper-btn"
+              onClick={() => adjustWeight(1)}
+              aria-label="Augmenter de 1 kg"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
+          <button type="submit" disabled={saving} className="primary-btn with-icon weight-submit-btn">
+            <FontAwesomeIcon icon={faCheck} />
+            {saving ? "Enregistrement…" : "Enregistrer"}
+          </button>
+        </form>
+      </section>
 
       {/* Chart */}
       {chartData.length >= 2 && (
