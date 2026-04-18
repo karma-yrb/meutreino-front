@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../features/auth/useAuth";
 import { updateUserIdentity, updateUserProfile } from "../services/storage/repositories/usersRepository";
-import { addWeightRecord } from "../services/storage/repositories/weightRepository";
 import { exportUserData, downloadJson } from "../services/storage/exportRepository";
 
 const GENDER_OPTIONS = [
@@ -277,10 +276,6 @@ export function ProfilePage() {
       }),
       updateUserProfile(currentUser.id, cleanedProfile),
     ]);
-
-    if (cleanedProfile.weightKg > 0) {
-      await addWeightRecord(currentUser.id, cleanedProfile.weightKg);
-    }
 
     await refreshCurrentUser?.();
     setStatus("Profil sauvegardé");

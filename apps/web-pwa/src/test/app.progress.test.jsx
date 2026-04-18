@@ -127,7 +127,7 @@ describe("Progress page integration", () => {
     expect(screen.getByText("Records personnels")).toBeInTheDocument();
     expect(screen.getByText("Complétez des séances pour voir vos records de charge.")).toBeInTheDocument();
     expect(screen.getByText("Progression")).toBeInTheDocument();
-    expect(screen.getByText("Suivi du poids")).toBeInTheDocument();
+    expect(screen.getByText("Poids").closest(".stat-card")).toHaveTextContent("—");
     expect(screen.getByText("Calories par semaine")).toBeInTheDocument();
     expect(screen.getByText("Activité (90 jours)")).toBeInTheDocument();
   });
@@ -178,11 +178,10 @@ describe("Progress page integration", () => {
     });
   });
 
-  test("weight trend section shows when weight history exists", async () => {
-    await loginAsUser();
+  test("weight stat card shows last weight and navigates to /poids", async () => {
+    const user = await loginAsUser();
     await db.weightHistory.bulkAdd([
       { userId: "user-1", weightKg: 80, recordedAt: "2026-04-01T08:00:00Z" },
-      { userId: "user-1", weightKg: 79, recordedAt: "2026-04-05T08:00:00Z" },
       { userId: "user-1", weightKg: 78, recordedAt: "2026-04-10T08:00:00Z" },
     ]);
 
@@ -190,21 +189,24 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByTestId("weight-trend")).toBeInTheDocument();
-      expect(screen.getByText("Suivi du poids")).toBeInTheDocument();
-      expect(screen.getByText("78 kg")).toBeInTheDocument();
-      expect(screen.getByText("-2 kg")).toBeInTheDocument();
+      const weightCard = screen.getByText("Poids").closest(".stat-card");
+      expect(weightCard).toHaveTextContent("78");
+      expect(weightCard).toHaveTextContent("kg");
     });
+
+    const weightCard = screen.getByText("Poids").closest(".stat-card");
+    await user.click(weightCard);
+    await screen.findByRole("heading", { name: /Suivi du poids/i });
   });
 
-  test("weight trend shows empty message when no weight history", async () => {
+  test("weight stat card shows dash when no weight data", async () => {
     await loginAsUser();
     await navigateTo("/progres");
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByTestId("weight-trend")).toBeInTheDocument();
-      expect(screen.getByText("Enregistrez votre poids dans votre profil pour commencer le suivi.")).toBeInTheDocument();
+      const weightCard = screen.getByText("Poids").closest(".stat-card");
+      expect(weightCard).toHaveTextContent("—");
     });
   });
 });

@@ -3213,6 +3213,20 @@ button {
   text-align: center;
 }
 
+.stat-card--clickable {
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  font-family: inherit;
+  color: inherit;
+}
+
+.stat-card--clickable:hover,
+.stat-card--clickable:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  outline: 2px solid var(--brand);
+}
+
 .stat-card-icon {
   font-size: 22px;
   color: var(--brand);
@@ -3499,4 +3513,102 @@ button {
 
 .weight-down {
   color: #2e7d32;
+}
+
+/* ── Weight page ───────────────────────────────────── */
+.weight-page h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.weight-summary-block {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.weight-bmi {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.weight-add-form {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+.weight-add-form input {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-add-weight {
+  white-space: nowrap;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-add-weight:disabled {
+  opacity: 0.5;
+}
+
+.weight-chart-section {
+  margin-bottom: 20px;
+}
+
+.weight-history-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weight-history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--ghost-bg);
+  border: 1px solid var(--ghost-border);
+  border-radius: 10px;
+}
+
+.weight-history-date {
+  flex: 1;
+  font-size: 14px;
+}
+
+.weight-history-value {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.btn-delete-weight {
+  background: none;
+  border: none;
+  color: #e86166;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
 }

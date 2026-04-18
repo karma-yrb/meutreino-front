@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChartLine,
@@ -33,9 +34,10 @@ import {
   getExerciseNames,
 } from "../data/progressStats";
 
-function StatCard({ icon, label, value, unit }) {
+function StatCard({ icon, label, value, unit, onClick }) {
+  const Tag = onClick ? "button" : "div";
   return (
-    <div className="stat-card">
+    <Tag className={`stat-card${onClick ? " stat-card--clickable" : ""}`} onClick={onClick}>
       <div className="stat-card-icon">
         <FontAwesomeIcon icon={icon} />
       </div>
@@ -44,7 +46,7 @@ function StatCard({ icon, label, value, unit }) {
         {unit ? <span className="stat-card-unit">{unit}</span> : null}
       </div>
       <div className="stat-card-label">{label}</div>
-    </div>
+    </Tag>
   );
 }
 
@@ -188,58 +190,9 @@ function ProgressionChart({ sessions }) {
   );
 }
 
-function WeightTrend({ weightData }) {
-  if (weightData.length === 0) {
-    return (
-      <section className="progress-section" data-testid="weight-trend">
-        <h2><FontAwesomeIcon icon={faWeight} /> Suivi du poids</h2>
-        <p className="empty-state">Enregistrez votre poids dans votre profil pour commencer le suivi.</p>
-      </section>
-    );
-  }
-
-  const chartData = weightData.map((r) => ({
-    date: new Date(r.recordedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }),
-    poids: r.weightKg,
-  }));
-
-  const latest = weightData[weightData.length - 1].weightKg;
-  const first = weightData[0].weightKg;
-  const diff = Math.round((latest - first) * 10) / 10;
-  const diffLabel = diff > 0 ? `+${diff}` : `${diff}`;
-
-  return (
-    <section className="progress-section" data-testid="weight-trend">
-      <h2><FontAwesomeIcon icon={faWeight} /> Suivi du poids</h2>
-      <div className="weight-summary">
-        <span className="weight-current">{latest} kg</span>
-        {weightData.length > 1 && (
-          <span className={`weight-diff ${diff > 0 ? "weight-up" : diff < 0 ? "weight-down" : ""}`}>
-            {diffLabel} kg
-          </span>
-        )}
-      </div>
-      {chartData.length >= 2 ? (
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: -10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-              <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fontSize: 11 }} />
-              <Tooltip />
-              <Line type="monotone" dataKey="poids" name="Poids (kg)" stroke="var(--brand-2)" strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      ) : (
-        <p className="empty-state">Enregistrez votre poids régulièrement depuis le profil pour voir la courbe.</p>
-      )}
-    </section>
-  );
-}
-
 export function ProgressPage() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
   const [weightData, setWeightData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -269,6 +222,7 @@ export function ProgressPage() {
     [sessions, weightKg],
   );
   const heatmap = useMemo(() => buildActivityHeatmap(sessions), [sessions]);
+  const latestWeight = weightData.length > 0 ? weightData[weightData.length - 1].weightKg : "—";
 
   if (loading) {
     return <div className="progress-page"><p>Chargement…</p></div>;
@@ -287,10 +241,10 @@ export function ProgressPage() {
         <StatCard icon={faTrophy} label="Jours actifs" value={stats.activeDays} />
         <StatCard icon={faChartLine} label="Durée moyenne" value={stats.avgDurationMin} unit="min" />
         <StatCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" />
+        <StatCard icon={faWeight} label="Poids" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
       </div>
 
       <ProgressionChart sessions={sessions} />
-      <WeightTrend weightData={weightData} />
       <PersonalRecords records={records} />
       <WeeklyCalories weeks={weeks} />
       <ActivityHeatmap heatmap={heatmap} />
