@@ -225,7 +225,7 @@ export function ProgressPage() {
       <div className="shortcuts-list">
         <ShortcutCard icon={faDumbbell} label="Séances totales" value={stats.total} onClick={() => navigate("/seances")} />
         <ShortcutCard icon={faBolt} label="Calories brûlées" value={totalCalories} unit="kcal" onClick={() => navigate("/calories")} />
-        <ShortcutCard icon={faWeight} label="Poids actuel" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
+        <ShortcutCard icon={faWeight} label="Poids" value={latestWeight} unit={latestWeight !== "—" ? "kg" : ""} onClick={() => navigate("/poids")} />
       </div>
 
       <div className="stats-grid">

@@ -82,16 +82,16 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByText("Séances totales").closest(".stat-card")).toHaveTextContent("2");
+      expect(screen.getByText("Séances totales").closest(".shortcut-card")).toHaveTextContent("2");
       expect(screen.getByText("Séances terminées").closest(".stat-card")).toHaveTextContent("2");
       expect(screen.getByText("Taux de complétion").closest(".stat-card")).toHaveTextContent("100%");
       expect(screen.getByText("Jours actifs").closest(".stat-card")).toHaveTextContent("2");
-      expect(screen.getByText("Calories brûlées").closest(".stat-card")).toBeInTheDocument();
+      expect(screen.getByText("Calories brûlées").closest(".shortcut-card")).toBeInTheDocument();
     });
 
-    const calCard = screen.getByText("Calories brûlées").closest(".stat-card");
+    const calCard = screen.getByText("Calories brûlées").closest(".shortcut-card");
     expect(calCard).toHaveTextContent("kcal");
-    expect(calCard.querySelector(".stat-card-value").textContent).not.toBe("0kcal");
+    expect(calCard.querySelector(".shortcut-card-value").textContent).not.toBe("0kcal");
   });
 
   test("displays personal records section with max loads", async () => {
@@ -118,15 +118,15 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      expect(screen.getByText("Séances totales").closest(".stat-card")).toHaveTextContent("0");
-      expect(screen.getByText("Calories brûlées").closest(".stat-card")).toHaveTextContent("0");
+      expect(screen.getByText("Séances totales").closest(".shortcut-card")).toHaveTextContent("0");
+      expect(screen.getByText("Calories brûlées").closest(".shortcut-card")).toHaveTextContent("0");
     });
 
     // All sections are visible with empty state messages
     expect(screen.getByText("Records personnels")).toBeInTheDocument();
     expect(screen.getByText("Complétez des séances pour voir vos records de charge.")).toBeInTheDocument();
     expect(screen.getByText("Progression")).toBeInTheDocument();
-    expect(screen.getByText("Poids").closest(".stat-card")).toHaveTextContent("—");
+    expect(screen.getByText("Poids").closest(".shortcut-card")).toHaveTextContent("—");
     expect(screen.getByText("Activité (90 jours)")).toBeInTheDocument();
   });
 
@@ -187,12 +187,12 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      const weightCard = screen.getByText("Poids").closest(".stat-card");
+      const weightCard = screen.getByText("Poids").closest(".shortcut-card");
       expect(weightCard).toHaveTextContent("78");
       expect(weightCard).toHaveTextContent("kg");
     });
 
-    const weightCard = screen.getByText("Poids").closest(".stat-card");
+    const weightCard = screen.getByText("Poids").closest(".shortcut-card");
     await user.click(weightCard);
     await screen.findByRole("heading", { name: /Suivi du poids/i });
   });
@@ -203,7 +203,7 @@ describe("Progress page integration", () => {
     await screen.findByRole("heading", { name: /Progrès/i });
 
     await waitFor(() => {
-      const weightCard = screen.getByText("Poids").closest(".stat-card");
+      const weightCard = screen.getByText("Poids").closest(".shortcut-card");
       expect(weightCard).toHaveTextContent("—");
     });
   });
@@ -213,7 +213,7 @@ describe("Progress page integration", () => {
     await navigateTo("/progres");
     await screen.findByRole("heading", { name: /Progrès/i });
 
-    const calCard = screen.getByText("Calories brûlées").closest(".stat-card");
+    const calCard = screen.getByText("Calories brûlées").closest(".shortcut-card");
     await user.click(calCard);
     await screen.findByRole("heading", { name: /Calories/i });
   });
@@ -223,7 +223,7 @@ describe("Progress page integration", () => {
     await navigateTo("/progres");
     await screen.findByRole("heading", { name: /Progrès/i });
 
-    const sessCard = screen.getByText("Séances totales").closest(".stat-card");
+    const sessCard = screen.getByText("Séances totales").closest(".shortcut-card");
     await user.click(sessCard);
     await screen.findByRole("heading", { name: /Séances/i });
   });
