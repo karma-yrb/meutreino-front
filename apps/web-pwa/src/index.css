@@ -3768,9 +3768,24 @@ button {
 }
 
 /* ── Weekly Weight Prompt ───────────────────────────── */
+.weekly-weight-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(10 17 30 / 0.58);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
 .weekly-weight-prompt {
-  border-left: 4px solid var(--brand-2, #4dabf7);
-  background: color-mix(in srgb, var(--brand-2, #4dabf7) 8%, var(--card));
+  width: min(560px, 100%);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 18px;
+  box-shadow: 0 18px 50px rgba(10, 17, 30, 0.32);
 }
 
 .weekly-weight-prompt__header {
@@ -3784,39 +3799,40 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--brand-2, #1c7ed6);
-}
-
-[data-theme="dark"] .weekly-weight-prompt__title {
-  color: #74c0fc;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--brand);
 }
 
 .weekly-weight-prompt__skip-icon {
-  background: none;
-  border: none;
+  background: var(--ghost-bg);
+  border: 1px solid var(--ghost-border);
+  border-radius: 10px;
   cursor: pointer;
-  color: var(--muted, #888);
+  color: var(--muted);
   font-size: 16px;
-  padding: 4px 6px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
 .weekly-weight-prompt__sub {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   font-size: 13px;
 }
 
 .weekly-weight-prompt__form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.weekly-weight-prompt__input {
-  width: 100%;
-  box-sizing: border-box;
+.weekly-weight-prompt__stepper-row .weight-stepper-btn,
+.weekly-weight-prompt__stepper-row .weight-input {
+  min-height: 58px;
 }
 
 .weekly-weight-prompt__actions {
@@ -3824,13 +3840,36 @@ button {
   gap: 10px;
 }
 
-.weekly-weight-prompt__btn-save {
+.weekly-weight-prompt__btn-save,
+.weekly-weight-prompt__btn-skip {
   flex: 1;
+  min-height: 46px;
+}
+
+.weekly-weight-prompt__btn-save {
+  font-size: 15px;
 }
 
 .weekly-weight-prompt__btn-skip {
-  flex: 1;
   font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .weekly-weight-modal-overlay {
+    padding: 0;
+  }
+
+  .weekly-weight-prompt {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 18px 14px;
+  }
 }
 
 /* ── Calories page ─────────────────────────────────── */
