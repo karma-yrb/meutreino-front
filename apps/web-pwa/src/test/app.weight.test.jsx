@@ -39,8 +39,9 @@ describe("Weight page integration", () => {
     await screen.findByRole("heading", { name: /Suivi du poids/i });
 
     const input = screen.getByLabelText("Poids en kg");
+    await user.clear(input);
     await user.type(input, "78.5");
-    await user.click(screen.getByRole("button", { name: /Ajouter/i }));
+    await user.click(screen.getByRole("button", { name: /Enregistrer/i }));
 
     await waitFor(() => {
       const summary = screen.getByText(/kg/, { selector: ".weight-current" });
@@ -58,15 +59,18 @@ describe("Weight page integration", () => {
     await screen.findByRole("heading", { name: /Suivi du poids/i });
 
     // Add first record
-    await user.type(screen.getByLabelText("Poids en kg"), "80");
-    await user.click(screen.getByRole("button", { name: /Ajouter/i }));
+    const input = screen.getByLabelText("Poids en kg");
+    await user.clear(input);
+    await user.type(input, "80");
+    await user.click(screen.getByRole("button", { name: /Enregistrer/i }));
     await waitFor(() => {
       expect(screen.getByText(/kg/, { selector: ".weight-current" })).toHaveTextContent("80");
     });
 
     // Add second record same day — should update, not duplicate
+    await user.clear(screen.getByLabelText("Poids en kg"));
     await user.type(screen.getByLabelText("Poids en kg"), "79");
-    await user.click(screen.getByRole("button", { name: /Ajouter/i }));
+    await user.click(screen.getByRole("button", { name: /Enregistrer/i }));
     await waitFor(() => {
       expect(screen.getByText(/kg/, { selector: ".weight-current" })).toHaveTextContent("79");
     });
